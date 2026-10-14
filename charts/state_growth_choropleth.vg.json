@@ -35,7 +35,7 @@
   "layer": [
     {
       "data": {
-        "url": "data/australia_states.json",
+        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/australia_states.json",
         "format": {
           "type": "topojson",
           "feature": "STE_2026_AUST_GDA2020"
@@ -70,7 +70,7 @@
     },
     {
       "data": {
-        "url": "data/abs_fruit_state_growth.csv",
+        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/abs_fruit_state_growth.csv",
         "format": {
           "type": "csv"
         }
@@ -106,7 +106,7 @@
           "lookup": "State",
           "from": {
             "data": {
-              "url": "data/australia_states.json",
+              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/australia_states.json",
               "format": {
                 "type": "topojson",
                 "feature": "STE_2026_AUST_GDA2020"
@@ -194,7 +194,7 @@
     },
     {
       "data": {
-        "url": "data/abs_fruit_state_growth.csv",
+        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/abs_fruit_state_growth.csv",
         "format": {
           "type": "csv"
         }
@@ -222,7 +222,7 @@
           "lookup": "State",
           "from": {
             "data": {
-              "url": "data/australia_states.json",
+              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/australia_states.json",
               "format": {
                 "type": "topojson",
                 "feature": "STE_2026_AUST_GDA2020"

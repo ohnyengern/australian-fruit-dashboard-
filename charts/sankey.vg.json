@@ -41,7 +41,7 @@
   "data": [
     {
       "name": "flows",
-      "url": "data/fruit_sankey.csv",
+      "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/fruit_sankey.csv",
       "format": {
         "type": "csv",
         "parse": {

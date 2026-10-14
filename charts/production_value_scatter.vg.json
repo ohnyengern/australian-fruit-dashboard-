@@ -10,7 +10,7 @@
   "width": 720,
   "height": 410,
   "data": {
-    "url": "data/fruit_production_value.csv",
+    "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/fruit_production_value.csv",
     "format": {
       "type": "csv"
     }

@@ -11,7 +11,7 @@
   "width": 720,
   "height": 390,
   "data": {
-    "url": "data/fruit_export_value.csv",
+    "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/fruit_export_value.csv",
     "format": {
       "type": "csv",
       "parse": {

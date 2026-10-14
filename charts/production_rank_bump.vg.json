@@ -8,7 +8,7 @@
     "font": "Arial"
   },
   "data": {
-    "url": "data/abs_fruit_production.csv",
+    "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/abs_fruit_production.csv",
     "format": {
       "type": "csv"
     }
