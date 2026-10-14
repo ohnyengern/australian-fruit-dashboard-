@@ -1,0 +1,302 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "How have production rankings changed over time?",
+    "fontSize": 20,
+    "anchor": "start",
+    "offset": 15,
+    "font": "Arial"
+  },
+  "data": {
+    "url": "../data/abs_fruit_production.csv",
+    "format": {
+      "type": "csv"
+    }
+  },
+  "transform": [
+    {
+      "fold": [
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "as": [
+        "Year",
+        "ProductionRaw"
+      ]
+    },
+    {
+      "calculate": "toNumber(datum.ProductionRaw)",
+      "as": "Production"
+    },
+    {
+      "window": [
+        {
+          "op": "rank",
+          "as": "Rank"
+        }
+      ],
+      "sort": [
+        {
+          "field": "Production",
+          "order": "descending"
+        }
+      ],
+      "groupby": [
+        "Year"
+      ]
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "Year",
+      "type": "ordinal",
+      "title": "Year ending June",
+      "sort": [
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "axis": {
+        "labelAngle": 0,
+        "labelPadding": 8,
+        "titlePadding": 12,
+        "ticks": true,
+        "domain": true,
+        "domainColor": "#999999",
+        "tickColor": "#999999"
+      }
+    },
+    "y": {
+      "field": "Rank",
+      "type": "quantitative",
+      "title": "Production rank",
+      "scale": {
+        "domain": [
+          9,
+          1
+        ]
+      },
+      "axis": {
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "format": "d",
+        "grid": true,
+        "gridColor": "#e6e6e6",
+        "gridOpacity": 0.7,
+        "titlePadding": 12
+      }
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "line",
+        "strokeWidth": 2.5
+      },
+      "encoding": {
+        "color": {
+          "field": "Fruit",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "Apple",
+              "Avocado",
+              "Banana",
+              "Blueberry",
+              "Mandarin",
+              "Orange",
+              "Strawberry",
+              "Table grapes"
+            ],
+            "range": [
+              "#4c78a8",
+              "#f58518",
+              "#A59837",
+              "#72b7b2",
+              "#54a24b",
+              "#eeca3b",
+              "#b279a2",
+              "#ff9da6"
+            ]
+          }
+        },
+        "detail": {
+          "field": "Fruit"
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit:"
+          },
+          {
+            "field": "Year",
+            "type": "ordinal",
+            "title": "Year ending June:"
+          },
+          {
+            "field": "Rank",
+            "type": "quantitative",
+            "title": "Rank:",
+            "format": ".0f"
+          },
+          {
+            "field": "Production",
+            "type": "quantitative",
+            "title": "Production (tonnes):",
+            "format": ","
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 90
+      },
+      "encoding": {
+        "color": {
+          "field": "Fruit",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "Apple",
+              "Avocado",
+              "Banana",
+              "Blueberry",
+              "Mandarin",
+              "Orange",
+              "Strawberry",
+              "Table grapes"
+            ],
+            "range": [
+              "#4c78a8",
+              "#f58518",
+              "#A59837",
+              "#72b7b2",
+              "#54a24b",
+              "#eeca3b",
+              "#b279a2",
+              "#ff9da6"
+            ]
+          }
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit:"
+          },
+          {
+            "field": "Year",
+            "type": "ordinal",
+            "title": "Year ending June:"
+          },
+          {
+            "field": "Rank",
+            "type": "quantitative",
+            "title": "Rank:",
+            "format": ".0f"
+          },
+          {
+            "field": "Production",
+            "type": "quantitative",
+            "title": "Production (tonnes):",
+            "format": ","
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.Year == '2025'"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 10,
+        "fontSize": 12,
+        "font": "Arial"
+      },
+      "encoding": {
+        "text": {
+          "field": "Fruit"
+        },
+        "color": {
+          "field": "Fruit",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "Apple",
+              "Avocado",
+              "Banana",
+              "Blueberry",
+              "Mandarin",
+              "Orange",
+              "Strawberry",
+              "Table grapes"
+            ],
+            "range": [
+              "#4c78a8",
+              "#f58518",
+              "#A59837",
+              "#72b7b2",
+              "#54a24b",
+              "#eeca3b",
+              "#b279a2",
+              "#ff9da6"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "width": 720,
+  "height": 280,
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 13,
+      "labelColor": "#444444",
+      "titleColor": "#222222",
+      "domainColor": "#999999",
+      "tickColor": "#999999",
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    },
+    "font": "Arial",
+    "legend": {
+      "labelFont": "Arial",
+      "titleFont": "Arial",
+      "labelFontSize": 12,
+      "titleFontSize": 15
+    },
+    "header": {
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    }
+  }
+}

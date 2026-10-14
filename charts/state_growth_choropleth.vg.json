@@ -1,0 +1,307 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Where is fruit production growing or declining?",
+    "fontSize": 20,
+    "anchor": "start",
+    "offset": 15,
+    "font": "Arial"
+  },
+  "width": 560,
+  "height": 500,
+  "params": [
+    {
+      "name": "FruitSelection",
+      "value": "Avocado",
+      "bind": {
+        "input": "select",
+        "options": [
+          "Apple",
+          "Avocado",
+          "Banana",
+          "Blueberry",
+          "Mandarin",
+          "Orange",
+          "Strawberry",
+          "Table grapes"
+        ],
+        "name": "Select fruit: "
+      }
+    }
+  ],
+  "projection": {
+    "type": "mercator"
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "../data/australia_states.json",
+        "format": {
+          "type": "topojson",
+          "feature": "STE_2026_AUST_GDA2020"
+        }
+      },
+      "transform": [
+        {
+          "calculate": "'No production data'",
+          "as": "DataStatus"
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "fill": "#7a7a7a",
+        "stroke": "#ffffff",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "tooltip": [
+          {
+            "field": "properties.STE_NAME26",
+            "type": "nominal",
+            "title": "State / territory:"
+          },
+          {
+            "field": "DataStatus",
+            "type": "nominal",
+            "title": "Production change:"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "../data/abs_fruit_state_growth.csv",
+        "format": {
+          "type": "csv"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.Fruit == FruitSelection"
+        },
+        {
+          "calculate": "toNumber(datum.StartProduction)",
+          "as": "StartProductionNum"
+        },
+        {
+          "calculate": "toNumber(datum.EndProduction)",
+          "as": "EndProductionNum"
+        },
+        {
+          "filter": "datum.StartProductionNum > 0"
+        },
+        {
+          "calculate": "((datum.EndProductionNum - datum.StartProductionNum) / datum.StartProductionNum) * 100",
+          "as": "GrowthPct"
+        },
+        {
+          "calculate": "datum.GrowthPct == 0 ? '0.0%' : (datum.GrowthPct > 0 ? '+' : '') + format(datum.GrowthPct, '.1f') + '%'",
+          "as": "GrowthLabel"
+        },
+        {
+          "calculate": "datum.GrowthPct < -50 ? '< -50%' : datum.GrowthPct < -20 ? '-50% to < -20%' : datum.GrowthPct < 0 ? '-20% to < 0%' : datum.GrowthPct == 0 ? '0%' : datum.GrowthPct < 20 ? '> 0% to < 20%' : datum.GrowthPct < 50 ? '20% to < 50%' : datum.GrowthPct < 100 ? '50% to < 100%' : '>= 100%'",
+          "as": "GrowthClass"
+        },
+        {
+          "lookup": "State",
+          "from": {
+            "data": {
+              "url": "../data/australia_states.json",
+              "format": {
+                "type": "topojson",
+                "feature": "STE_2026_AUST_GDA2020"
+              }
+            },
+            "key": "properties.STE_NAME26",
+            "fields": [
+              "geometry"
+            ]
+          },
+          "as": [
+            "geometry"
+          ]
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "stroke": "#ffffff",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "shape": {
+          "field": "geometry",
+          "type": "geojson"
+        },
+        "color": {
+          "field": "GrowthClass",
+          "type": "nominal",
+          "title": "Production change (%)",
+          "scale": {
+            "domain": [
+              "< -50%",
+              "-50% to < -20%",
+              "-20% to < 0%",
+              "0%",
+              "> 0% to < 20%",
+              "20% to < 50%",
+              "50% to < 100%",
+              ">= 100%"
+            ],
+            "range": [
+              "#f58518",
+              "#fdb863",
+              "#fee0b6",
+              "#ffffff",
+              "#deebf7",
+              "#9ecae1",
+              "#6baed6",
+              "#08519c"
+            ],
+            "unknown": "#7a7a7a"
+          },
+          "legend": null
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit:"
+          },
+          {
+            "field": "State",
+            "type": "nominal",
+            "title": "State / territory:"
+          },
+          {
+            "field": "StartProductionNum",
+            "type": "quantitative",
+            "title": "Year ending June 2021 production (tonnes):",
+            "format": ",.0f"
+          },
+          {
+            "field": "EndProductionNum",
+            "type": "quantitative",
+            "title": "Year ending June 2025 production (tonnes):",
+            "format": ",.0f"
+          },
+          {
+            "field": "GrowthLabel",
+            "type": "nominal",
+            "title": "Production change:"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "../data/abs_fruit_state_growth.csv",
+        "format": {
+          "type": "csv"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.Fruit == FruitSelection"
+        },
+        {
+          "calculate": "toNumber(datum.StartProduction)",
+          "as": "StartProductionNum"
+        },
+        {
+          "calculate": "toNumber(datum.EndProduction)",
+          "as": "EndProductionNum"
+        },
+        {
+          "filter": "datum.StartProductionNum == 0"
+        },
+        {
+          "calculate": "'Undefined production change due to zero initial production'",
+          "as": "GrowthLabel"
+        },
+        {
+          "lookup": "State",
+          "from": {
+            "data": {
+              "url": "../data/australia_states.json",
+              "format": {
+                "type": "topojson",
+                "feature": "STE_2026_AUST_GDA2020"
+              }
+            },
+            "key": "properties.STE_NAME26",
+            "fields": [
+              "geometry"
+            ]
+          },
+          "as": [
+            "geometry"
+          ]
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "fill": "#e0e0e0",
+        "stroke": "#ffffff",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "shape": {
+          "field": "geometry",
+          "type": "geojson"
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit:"
+          },
+          {
+            "field": "State",
+            "type": "nominal",
+            "title": "State / territory:"
+          },
+          {
+            "field": "StartProductionNum",
+            "type": "quantitative",
+            "title": "Year ending June 2021 production (tonnes):",
+            "format": ",.0f"
+          },
+          {
+            "field": "EndProductionNum",
+            "type": "quantitative",
+            "title": "Year ending June 2025 production (tonnes):",
+            "format": ",.0f"
+          },
+          {
+            "field": "GrowthLabel",
+            "type": "nominal",
+            "title": "Production change:"
+          }
+        ]
+      }
+    }
+  ],
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "legend": {
+      "labelFontSize": 12,
+      "titleFontSize": 15,
+      "titleOrient": "top",
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    },
+    "font": "Arial",
+    "axis": {
+      "labelFont": "Arial",
+      "titleFont": "Arial",
+      "labelFontSize": 12,
+      "titleFontSize": 13
+    },
+    "header": {
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    }
+  }
+}

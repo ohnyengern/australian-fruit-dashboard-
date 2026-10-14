@@ -1,0 +1,45 @@
+﻿Fruit,State,StartProduction,EndProduction
+Apple,New South Wales,38283,40389
+Apple,Victoria,127938,134976
+Apple,Queensland,29558,31184
+Apple,South Australia,26788,28261
+Apple,Western Australia,28691,30269
+Apple,Tasmania,29015,30611
+Avocado,New South Wales,7453,13151
+Avocado,Victoria,1599,566
+Avocado,Queensland,54686,76501
+Avocado,South Australia,800,4261
+Avocado,Western Australia,13547,36889
+Avocado,Tasmania,0,17
+Banana,New South Wales,16119,14748
+Banana,Queensland,378804,346579
+Banana,Western Australia,7052,6452
+Banana,Northern Territory,1007,922
+Blueberry,New South Wales,20076,24116
+Blueberry,Victoria,469,564
+Blueberry,Queensland,879,1057
+Blueberry,South Australia,117,141
+Blueberry,Western Australia,504,606
+Blueberry,Tasmania,1407,1900
+Mandarin,New South Wales,2490,37497
+Mandarin,Victoria,28227,39502
+Mandarin,Queensland,87171,120019
+Mandarin,South Australia,41510,37034
+Mandarin,Western Australia,6642,6433
+Orange,New South Wales,246322,352479
+Orange,Victoria,87634,84096
+Orange,Queensland,5684,5604
+Orange,South Australia,120793,116744
+Orange,Western Australia,13264,13618
+Strawberry,New South Wales,778,721
+Strawberry,Victoria,27601,25599
+Strawberry,Queensland,32655,30287
+Strawberry,South Australia,5443,5048
+Strawberry,Western Australia,8164,7572
+Strawberry,Tasmania,3110,8645
+Table grapes,New South Wales,19839,36621
+Table grapes,Victoria,154743,160217
+Table grapes,Queensland,9919,18311
+Table grapes,South Australia,7936,1144
+Table grapes,Western Australia,4980,11444
+Table grapes,Northern Territory,972,1144

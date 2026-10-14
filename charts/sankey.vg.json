@@ -1,0 +1,655 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Australian-grown fruit allocation, year ending June 2025. Domestic fresh is production minus fresh exports minus processing. Imports excluded.",
+  "title": {
+    "text": "Where Australian-grown fruit goes, year ending June 2025",
+    "font": "Arial",
+    "fontSize": 20,
+    "anchor": "start",
+    "offset": 15,
+    "color": "#222"
+  },
+  "width": 800,
+  "height": 525,
+  "padding": 5,
+  "autosize": "pad",
+  "background": "white",
+  "signals": [
+    {
+      "name": "sourceX",
+      "value": 105
+    },
+    {
+      "name": "targetX",
+      "update": "width - 185"
+    },
+    {
+      "name": "hoverFruit",
+      "value": null,
+      "on": [
+        {
+          "events": "@ribbons:mouseover, @fruitNodes:mouseover, @fruitLabels:mouseover",
+          "update": "datum.Fruit"
+        },
+        {
+          "events": "@ribbons:mouseout, @fruitNodes:mouseout, @fruitLabels:mouseout",
+          "update": "null"
+        }
+      ]
+    }
+  ],
+  "data": [
+    {
+      "name": "flows",
+      "url": "data/fruit_sankey.csv",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "Tonnes": "number",
+          "ProductionTonnes": "number",
+          "FruitOrder": "number",
+          "DestinationOrder": "number"
+        }
+      }
+    },
+    {
+      "name": "total",
+      "source": "flows",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": [
+            "Tonnes"
+          ],
+          "ops": [
+            "sum"
+          ],
+          "as": [
+            "Tonnes"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "fruits",
+      "source": "flows",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": [
+            "Fruit",
+            "FruitOrder"
+          ],
+          "fields": [
+            "Tonnes"
+          ],
+          "ops": [
+            "sum"
+          ],
+          "as": [
+            "Tonnes"
+          ]
+        },
+        {
+          "type": "stack",
+          "field": "Tonnes",
+          "sort": {
+            "field": "FruitOrder"
+          },
+          "as": [
+            "Start",
+            "End"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "35 + scale('size', datum.Start) + datum.FruitOrder * 27",
+          "as": "Top"
+        },
+        {
+          "type": "formula",
+          "expr": "scale('size', datum.Tonnes)",
+          "as": "Height"
+        }
+      ]
+    },
+    {
+      "name": "destinations",
+      "source": "flows",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": [
+            "Destination",
+            "DestinationOrder"
+          ],
+          "fields": [
+            "Tonnes"
+          ],
+          "ops": [
+            "sum"
+          ],
+          "as": [
+            "Tonnes"
+          ]
+        },
+        {
+          "type": "stack",
+          "field": "Tonnes",
+          "sort": {
+            "field": "DestinationOrder"
+          },
+          "as": [
+            "Start",
+            "End"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "35 + scale('size', datum.Start) + datum.DestinationOrder * 55",
+          "as": "Top"
+        },
+        {
+          "type": "formula",
+          "expr": "scale('size', datum.Tonnes)",
+          "as": "Height"
+        }
+      ]
+    },
+    {
+      "name": "links",
+      "source": "flows",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.Tonnes > 0"
+        },
+        {
+          "type": "stack",
+          "field": "Tonnes",
+          "groupby": [
+            "Fruit"
+          ],
+          "sort": {
+            "field": "DestinationOrder"
+          },
+          "as": [
+            "SourceStart",
+            "SourceEnd"
+          ]
+        },
+        {
+          "type": "stack",
+          "field": "Tonnes",
+          "groupby": [
+            "Destination"
+          ],
+          "sort": {
+            "field": "FruitOrder"
+          },
+          "as": [
+            "TargetStart",
+            "TargetEnd"
+          ]
+        },
+        {
+          "type": "lookup",
+          "from": "fruits",
+          "key": "Fruit",
+          "fields": [
+            "Fruit"
+          ],
+          "values": [
+            "Top"
+          ],
+          "as": [
+            "SourceTop"
+          ]
+        },
+        {
+          "type": "lookup",
+          "from": "destinations",
+          "key": "Destination",
+          "fields": [
+            "Destination"
+          ],
+          "values": [
+            "Top"
+          ],
+          "as": [
+            "TargetTop"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "datum.SourceTop + scale('size', datum.SourceStart)",
+          "as": "SourceY"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.TargetTop + scale('size', datum.TargetStart)",
+          "as": "TargetY"
+        },
+        {
+          "type": "formula",
+          "expr": "scale('size', datum.Tonnes)",
+          "as": "FlowHeight"
+        },
+        {
+          "type": "formula",
+          "expr": "'M' + (sourceX + 13) + ',' + datum.SourceY + ' C' + (sourceX + (targetX-sourceX)*0.45) + ',' + datum.SourceY + ' ' + (sourceX + (targetX-sourceX)*0.55) + ',' + datum.TargetY + ' ' + targetX + ',' + datum.TargetY + ' L' + targetX + ',' + (datum.TargetY + datum.FlowHeight) + ' C' + (sourceX + (targetX-sourceX)*0.55) + ',' + (datum.TargetY + datum.FlowHeight) + ' ' + (sourceX + (targetX-sourceX)*0.45) + ',' + (datum.SourceY + datum.FlowHeight) + ' ' + (sourceX + 13) + ',' + (datum.SourceY + datum.FlowHeight) + ' Z'",
+          "as": "Path"
+        }
+      ]
+    },
+    {
+      "name": "annotationLines",
+      "values": [
+        {
+          "i": 0,
+          "t": "Spans all three markets,"
+        },
+        {
+          "i": 1,
+          "t": "contributing heavily to"
+        },
+        {
+          "i": 2,
+          "t": "Australia's fruit processing,"
+        },
+        {
+          "i": 3,
+          "t": "such as juice production"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "size",
+      "type": "linear",
+      "domain": [
+        0,
+        {
+          "signal": "length(data('total')) ? max(1, data('total')[0].Tonnes) : 1"
+        }
+      ],
+      "range": [
+        0,
+        300
+      ]
+    },
+    {
+      "name": "fruitColor",
+      "type": "ordinal",
+      "domain": [
+        "Apple",
+        "Avocado",
+        "Banana",
+        "Blueberry",
+        "Mandarin",
+        "Orange",
+        "Strawberry",
+        "Table grapes"
+      ],
+      "range": [
+        "#4c78a8",
+        "#f58518",
+        "#A59837",
+        "#72b7b2",
+        "#54a24b",
+        "#eeca3b",
+        "#b279a2",
+        "#ff9da6"
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "name": "ribbons",
+      "type": "path",
+      "from": {
+        "data": "links"
+      },
+      "encode": {
+        "update": {
+          "path": {
+            "field": "Path"
+          },
+          "fill": {
+            "scale": "fruitColor",
+            "field": "Fruit"
+          },
+          "fillOpacity": {
+            "signal": "hoverFruit === null ? 0.56 : hoverFruit === datum.Fruit ? 0.94 : 0.08"
+          },
+          "tooltip": {
+            "signal": "{'Fruit:': datum.Fruit, 'Use:': datum.Destination, 'Tonnes:': format(datum.Tonnes, ','), 'Share of fruit production:': format(datum.Tonnes / datum.ProductionTonnes, '.1%')}"
+          }
+        }
+      }
+    },
+    {
+      "name": "fruitNodes",
+      "type": "rect",
+      "from": {
+        "data": "fruits"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX"
+          },
+          "width": {
+            "value": 13
+          },
+          "y": {
+            "field": "Top"
+          },
+          "height": {
+            "field": "Height"
+          },
+          "fill": {
+            "scale": "fruitColor",
+            "field": "Fruit"
+          },
+          "tooltip": {
+            "signal": "{'Fruit:': datum.Fruit, 'Production:': format(datum.Tonnes, ',') + ' t'}"
+          }
+        }
+      }
+    },
+    {
+      "name": "destinationNodes",
+      "type": "rect",
+      "from": {
+        "data": "destinations"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "targetX"
+          },
+          "width": {
+            "value": 13
+          },
+          "y": {
+            "field": "Top"
+          },
+          "height": {
+            "field": "Height"
+          },
+          "fill": {
+            "value": "#999999"
+          },
+          "tooltip": {
+            "signal": "{'Use:': datum.Destination, 'Tonnes:': format(datum.Tonnes, ',') + ' t'}"
+          }
+        }
+      }
+    },
+    {
+      "name": "fruitLabels",
+      "type": "text",
+      "from": {
+        "data": "fruits"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX - 12"
+          },
+          "y": {
+            "signal": "datum.Top + datum.Height / 2 - 8"
+          },
+          "align": {
+            "value": "right"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "text": {
+            "field": "Fruit"
+          },
+          "font": {
+            "value": "Arial"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "fruits"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX - 12"
+          },
+          "y": {
+            "signal": "datum.Top + datum.Height / 2 + 12"
+          },
+          "align": {
+            "value": "right"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "text": {
+            "signal": "format(datum.Tonnes, ',') + ' t'"
+          },
+          "font": {
+            "value": "Arial"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "destinations"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "targetX + 24"
+          },
+          "y": {
+            "signal": "datum.Top + datum.Height / 2 - 8"
+          },
+          "align": {
+            "value": "left"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "text": {
+            "field": "Destination"
+          },
+          "font": {
+            "value": "Arial"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "destinations"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "targetX + 24"
+          },
+          "y": {
+            "signal": "datum.Top + datum.Height / 2 + 12"
+          },
+          "align": {
+            "value": "left"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "text": {
+            "signal": "format(datum.Tonnes, ',') + ' t'"
+          },
+          "font": {
+            "value": "Arial"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX - 12"
+          },
+          "y": {
+            "value": 15
+          },
+          "align": {
+            "value": "right"
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "fontWeight": {
+            "value": "bold"
+          },
+          "text": {
+            "value": "Fruit Production"
+          },
+          "font": {
+            "value": "Arial"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "targetX + 24"
+          },
+          "y": {
+            "value": 15
+          },
+          "align": {
+            "value": "left"
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "fontWeight": {
+            "value": "bold"
+          },
+          "text": {
+            "value": "Destination / Use"
+          },
+          "font": {
+            "value": "Arial"
+          }
+        }
+      }
+    },
+    {
+      "type": "rule",
+      "encode": {
+        "update": {
+          "x": {
+            "value": 190
+          },
+          "y": {
+            "value": 500
+          },
+          "x2": {
+            "value": 505
+          },
+          "y2": {
+            "value": 500
+          },
+          "stroke": {
+            "value": "#333333"
+          },
+          "strokeWidth": {
+            "value": 1
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "annotationLines"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "value": 515
+          },
+          "y": {
+            "signal": "468 + datum.i * 14"
+          },
+          "align": {
+            "value": "left"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "fill": {
+            "value": "#333333"
+          },
+          "text": {
+            "field": "t"
+          },
+          "font": {
+            "value": "Arial"
+          }
+        }
+      }
+    }
+  ],
+  "config": {
+    "text": {
+      "font": "Arial",
+      "fill": "#444444"
+    },
+    "font": "Arial",
+    "axis": {
+      "labelFont": "Arial",
+      "titleFont": "Arial",
+      "labelFontSize": 12,
+      "titleFontSize": 13
+    },
+    "legend": {
+      "labelFont": "Arial",
+      "titleFont": "Arial",
+      "labelFontSize": 12,
+      "titleFontSize": 15
+    },
+    "header": {
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    }
+  }
+}

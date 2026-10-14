@@ -1,0 +1,550 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore Australian fruit production, regional trends and export markets.">
+
+  <title>Australian Fruit Production</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <script defer src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <script defer src="js/vega_lite_vis.js"></script>
+</head>
+
+<body>
+  <main class="container">
+
+    <header class="page-header">
+      <h1>Australian Fruit Production</h1>
+    </header>
+
+    <!-- SECTION 01 -->
+
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <h2 class="section-title">
+        A Snapshot of Eight Selected Fruits
+      </h2>
+    </div>
+
+    <section class="story-row">
+      <div class="chart-column">
+        <div
+          class="chart-shell"
+          id="production_lollipop"
+          role="group"
+          aria-label="Production volume of eight selected fruits"
+        ></div>
+      </div>
+
+      <aside class="explanation-column">
+        <p>
+          <span class="fruit-highlight fruit-orange">Oranges</span>
+          dominated the harvest among the eight selected
+          fruits, reaching 572,540 tonnes in the year ending June
+          2025. They contributed almost 30% of the combined
+          production, while
+          <span class="fruit-highlight fruit-strawberry">strawberries</span>
+          and
+          <span class="fruit-highlight fruit-blueberry">blueberries</span>
+          together
+          accounted for only about 5.5%. The large difference in
+          production volume shows that <strong>production is unevenly
+          distributed across the selected fruit categories in
+          Australia.</strong>
+        </p>
+      </aside>
+    </section>
+
+    <!-- SECTION 02 -->
+
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <h2 class="section-title">
+        How Fruit Production Has Changed Over Time
+      </h2>
+    </div>
+
+    <section class="story-row">
+      <div class="chart-column">
+        <div
+          class="chart-shell"
+          id="production_trend"
+          role="group"
+          aria-label="Long-term production trends"
+        ></div>
+      </div>
+
+      <aside class="explanation-column">
+        <p>
+          <span class="fruit-highlight fruit-orange">Orange</span>
+          and
+          <span class="fruit-highlight fruit-mandarin">mandarin</span>
+          production followed the clearest upward trajectories from
+          2021 to 2025.
+          <span class="fruit-highlight fruit-orange">Orange</span>
+          production increased every year, rising from 473,697 tonnes
+          to 572,540 tonnes.
+        </p>
+        <p>
+          <span class="fruit-highlight fruit-banana">Bananas</span>
+          moved in the opposite direction, declining from 402,982
+          tonnes to 368,701 tonnes. This contrast suggests that
+          overall fruit production growth is being driven by specific
+          categories rather than by a uniform industry-wide increase.
+        </p>
+      </aside>
+    </section>
+
+    <section class="story-row">
+      <div class="chart-column">
+        <div
+          class="chart-shell"
+          id="growth_heatmap"
+          role="group"
+          aria-label="Year-to-year percentage changes"
+        ></div>
+      </div>
+
+      <aside class="explanation-column">
+        <p>
+          Annual production growth varied across the eight fruits,
+          with <strong>some growing consistently while others
+          fluctuated sharply.</strong>
+          <span class="fruit-highlight fruit-mandarin">Mandarins</span>
+          and
+          <span class="fruit-highlight fruit-orange">oranges</span>
+          recorded positive growth every year, while
+          <span class="fruit-highlight fruit-avocado">avocados</span>,
+          <span class="fruit-highlight fruit-blueberry">blueberries</span>
+          and
+          <span class="fruit-highlight fruit-table-grapes">table grapes</span>
+          experienced greater volatility. Notably, while several fruits
+          recorded strong growth in 2024,
+          <span class="fruit-highlight fruit-table-grapes">table grapes</span>
+          experienced the sharpest decline at 19.9%, followed by a
+          22.6% rebound in 2025.
+        </p>
+      </aside>
+    </section>
+
+    <section class="story-row">
+      <div class="chart-column">
+        <div
+          class="chart-shell"
+          id="growth_slopegraph"
+          role="group"
+          aria-label="Changes in production between 2021 and 2025"
+        ></div>
+      </div>
+
+      <aside class="explanation-column">
+        <p>
+          Australia's fruit production expanded unevenly between 2021
+          and 2025, changing the relative importance of different
+          crops.
+          <span class="fruit-highlight fruit-avocado">Avocados</span>
+          <strong>recorded the fastest percentage growth</strong>,
+          while
+          <span class="fruit-highlight fruit-orange">oranges</span>
+          contributed the largest increase in production volume.
+          <span class="fruit-highlight fruit-mandarin">Mandarins</span>
+          also gained ground, overtaking
+          <span class="fruit-highlight fruit-table-grapes">table grapes</span>
+          despite starting 32,000 tonnes behind in 2021. Meanwhile,
+          <span class="fruit-highlight fruit-banana">bananas</span>
+          remained a major crop despite declining production, showing
+          that high production volume does not necessarily translate
+          into continued growth.
+        </p>
+      </aside>
+    </section>
+
+    <section class="story-row">
+      <div class="chart-column">
+        <div
+          class="chart-shell"
+          id="production_rank_bump"
+          role="group"
+          aria-label="Changes in fruit production rankings"
+        ></div>
+      </div>
+
+      <aside class="explanation-column">
+        <p>
+          <strong>The production ranking was mostly stable, which
+          suggests that Australia's largest fruit categories remained
+          structurally dominant.</strong>
+          <span class="fruit-highlight fruit-orange">Oranges</span>,
+          <span class="fruit-highlight fruit-banana">bananas</span>,
+          and
+          <span class="fruit-highlight fruit-apple">apples</span>
+          held the top three positions throughout the period.
+        </p>
+        <p>
+          The most visible change occurred in the middle of the
+          ranking, where
+          <span class="fruit-highlight fruit-mandarin">mandarins</span>
+          overtook
+          <span class="fruit-highlight fruit-table-grapes">table grapes</span>
+          in 2024 and retained that higher position in 2025.
+        </p>
+      </aside>
+    </section>
+
+    <!-- SECTION 03 -->
+
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <h2 class="section-title">
+        Where Australia's Fruit Is Grown
+      </h2>
+    </div>
+
+    <!-- Full-width 4-column, 2-row faceted map -->
+
+    <section
+      class="story-row small-multiples-row"
+      aria-label="State production patterns across eight fruits"
+    >
+      <div class="chart-column">
+        <div
+          class="chart-shell"
+          id="state_production_small_multiples"
+          role="group"
+          aria-label="Eight fruit production maps arranged in four columns"
+        ></div>
+
+        <!-- Two-column area below the maps -->
+        <div class="small-multiples-bottom">
+
+          <!-- LEFT: Legend and year slider -->
+          <div class="small-multiples-controls">
+            <h3>Production (tonnes)</h3>
+
+            <div
+              class="production-size-legend"
+              aria-label="Circle areas represent production volumes of 100,000, 200,000 and 300,000 tonnes"
+            >
+              <div class="legend-item">
+                <span class="legend-circle legend-100"></span>
+                <span>100,000</span>
+              </div>
+
+              <div class="legend-item">
+                <span class="legend-circle legend-200"></span>
+                <span>200,000</span>
+              </div>
+
+              <div class="legend-item">
+                <span class="legend-circle legend-300"></span>
+                <span>300,000</span>
+              </div>
+            </div>
+
+            <!-- The existing Vega-Lite slider is moved here -->
+            <div id="small-multiples-year-control"></div>
+          </div>
+
+          <!-- RIGHT: Explanatory narrative -->
+          <div class="small-multiples-narrative">
+            <p>
+              <strong>
+                Fruit production is not evenly distributed across
+                Australia, and the degree of concentration differs
+                considerably between crops.
+              </strong>
+              Some fruits rely heavily on a single producing state,
+              while others have a broader production base across
+              multiple states.
+            </p>
+
+            <p>
+              These differences partly reflect Australia's diverse
+              climate and growing conditions. Tropical regions favour
+              warm-climate fruits, while cooler southern regions
+              support temperate crops. As a result, the geographical
+              distribution of fruit production varies according to
+              the growing requirements of each crop.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Regional growth map -->
+
+    <section class="story-row">
+      <div class="chart-column">
+        <div class="choropleth-layout">
+          <div
+            class="chart-shell"
+            id="state_growth_choropleth"
+            role="group"
+            aria-label="State and territory production growth"
+          ></div>
+
+          <div
+            class="choropleth-legend"
+            aria-label="Production change percentage classes"
+          >
+            <h3>Production change (%)</h3>
+            <div class="choropleth-scale">
+              <span style="background: #08519c;"></span>
+              <span style="background: #6baed6;"></span>
+              <span style="background: #9ecae1;"></span>
+              <span style="background: #deebf7;"></span>
+              <span style="background: #ffffff;"></span>
+              <span style="background: #fee0b6;"></span>
+              <span style="background: #fdb863;"></span>
+              <span style="background: #f58518;"></span>
+            </div>
+            <ol>
+              <li>&gt;= 100%</li>
+              <li>50% to &lt; 100%</li>
+              <li>20% to &lt; 50%</li>
+              <li>&gt; 0% to &lt; 20%</li>
+              <li>0%</li>
+              <li>-20% to &lt; 0%</li>
+              <li>-50% to &lt; -20%</li>
+              <li>&lt; -50%</li>
+            </ol>
+
+            <div class="choropleth-special-legend">
+              <div class="choropleth-special-item">
+                <span style="background: #7a7a7a;"></span>
+                <p>No production data</p>
+              </div>
+              <div class="choropleth-special-item">
+                <span style="background: #e0e0e0;"></span>
+                <p>Undefined production change due to zero initial production</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="explanation-column choropleth-explanation">
+        <p>
+          <strong>Fruit production growth varied across Australian
+          states between the years ending June 2021 and June
+          2025.</strong>
+          <span class="fruit-highlight fruit-avocado">Avocado</span>
+          production more than doubled in Western Australia and South
+          Australia but declined by over 50% in Victoria. In Tasmania,
+          <span class="fruit-highlight fruit-avocado">avocado</span>
+          production rose from zero to 17 tonnes, but its percentage
+          change cannot be calculated because production started at
+          zero.
+        </p>
+
+        <p>
+          <span class="fruit-highlight fruit-banana">Banana</span>
+          production declined across its main producing states, whereas
+          <span class="fruit-highlight fruit-apple">apple</span>
+          production increased modestly across its major growing
+          regions. These differences show that growth patterns vary
+          between both states and fruits, with some experiencing
+          widespread increases while others face broader declines.
+        </p>
+      </aside>
+    </section>
+
+    <!-- SECTION 04 -->
+
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <h2 class="section-title">
+        The Value Behind Fruit Production
+      </h2>
+    </div>
+
+    <section class="story-row">
+      <div class="chart-column">
+        <div
+          class="chart-shell"
+          id="production_value_scatter"
+          role="group"
+          aria-label="Production volume and value comparison"
+        ></div>
+      </div>
+
+      <aside class="explanation-column">
+        <p>
+          <strong>Higher production volume does not necessarily
+          result in greater production value.</strong> While
+          high-volume crops such as
+          <span class="fruit-highlight fruit-orange">oranges</span>
+          lead in production tonnage, they generate relatively low
+          value per tonne. In contrast,
+          <span class="fruit-highlight fruit-table-grapes">table grapes</span>,
+          <span class="fruit-highlight fruit-avocado">avocados</span>
+          and
+          <span class="fruit-highlight fruit-blueberry">blueberries</span>
+          achieve substantial production value from smaller harvests.
+          This highlights how the economic contribution of fruit
+          production depends not only on the quantity harvested, but
+          also on the market value of different fruits.
+        </p>
+      </aside>
+    </section>
+
+    <!-- SECTION 05 -->
+
+    <div class="section-header">
+      <span class="section-number">05</span>
+      <h2 class="section-title">
+        From Australian Farms to the World
+      </h2>
+    </div>
+
+    <section class="story-row">
+      <div class="chart-column">
+        <div
+          class="chart-shell"
+          id="fruit_sankey"
+          role="group"
+          aria-label="Australian-grown fruit allocation"
+        ></div>
+      </div>
+
+      <aside class="explanation-column">
+        <p>
+          The <strong>domestic fresh market absorbs nearly 62% of
+          production</strong> across the eight selected fruits, but
+          their market destinations vary considerably. Bananas are
+          supplied almost entirely domestically, while table grapes are
+          more export-oriented, with over 60% of their production
+          exported fresh. <strong>Fresh exports account for around
+          22%</strong> of the combined harvest, driven mainly by
+          oranges, table grapes and mandarins. The <strong>16% goes to
+          processing</strong>, with oranges and apples contributing
+          most of this volume.
+        </p>
+      </aside>
+    </section>
+
+    <section class="story-row">
+      <div class="chart-column">
+        <div
+          class="chart-shell"
+          id="export_flow_map"
+          role="group"
+          aria-label="Australian fresh-fruit export destinations"
+        ></div>
+      </div>
+
+      <aside class="explanation-column">
+        <p>
+          <strong>Australia's fresh-fruit exports are strongly
+          concentrated in Asian markets, but different fruits have
+          distinct trading patterns.</strong> China is a major
+          destination for
+          <span class="fruit-highlight fruit-table-grapes">table grapes</span>,
+          <span class="fruit-highlight fruit-mandarin">mandarins</span>
+          and
+          <span class="fruit-highlight fruit-orange">oranges</span>,
+          while
+          Southeast Asian markets such as Singapore, Malaysia and
+          Thailand receive a wider variety of Australian fruits.
+          Beyond Asia,
+          <span class="fruit-highlight fruit-avocado">avocados</span>
+          also reach the United Arab Emirates,
+          demonstrating Australia's trade connections with the Middle
+          East.
+        </p>
+      </aside>
+    </section>
+
+    <section class="story-row">
+      <div class="chart-column">
+        <div
+          class="chart-shell"
+          id="export_value_waterfall"
+          role="group"
+          aria-label="Changes in fresh-fruit export value"
+        ></div>
+      </div>
+
+      <aside class="explanation-column">
+        <p>
+          Fresh-fruit export value rose by approximately A$330 million
+          across the eight selected fruits between 2021 and 2025, but
+          the gains were concentrated in a few industries.
+          <span class="fruit-highlight fruit-table-grapes">Table grapes</span>,
+          <span class="fruit-highlight fruit-mandarin">mandarins</span>
+          and
+          <span class="fruit-highlight fruit-avocado">avocados</span>
+          contributed nearly 80% of the total increase, highlighting
+          their growing importance to Australia's international fruit
+          trade.
+        </p>
+
+        <p>
+          While most selected fruits recorded higher export values,
+          <span class="fruit-highlight fruit-apple">apple</span>
+          export value declined slightly, and
+          <span class="fruit-highlight fruit-banana">bananas</span>
+          had no recorded fresh exports. This uneven growth shows that
+          Australia's expanding fresh-fruit export trade is driven
+          primarily by a few key crops.
+        </p>
+      </aside>
+    </section>
+
+    <!-- FOOTER -->
+
+    <footer class="page-footer">
+      <p>
+        <strong>Author:</strong> Oh Nyeng Ern
+      </p>
+
+      <p>
+        <strong>Publication Date:</strong> 13 October 2026
+      </p>
+
+      <div class="footer-sources">
+        <p><strong>Data Sources:</strong></p>
+
+        <ul>
+          <li>
+            <strong>Hort Innovation - </strong>
+            Australian Horticulture Statistics Handbook 2024-25
+            <a href="https://www.horticulture.com.au/about-hort-innovation/what-we-do/data-and-insights/australian-horticulture-statistics-handbook">
+              https://www.horticulture.com.au/about-hort-innovation/what-we-do/data-and-insights/australian-horticulture-statistics-handbook
+            </a>
+          </li>
+          <li>
+            <strong>Australian Bureau of Statistics (ABS) - </strong>
+            Australian Agriculture: Horticulture
+            <a href="https://www.abs.gov.au/statistics/industry/agriculture/australian-agriculture-horticulture/2024-25">
+              https://www.abs.gov.au/statistics/industry/agriculture/australian-agriculture-horticulture/2024-25
+            </a>
+          </li>
+          <li>
+            <strong>Australian Bureau of Statistics (ABS) - </strong>
+            Digital Boundary Files
+            <a href="https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs/edition-4-july-2026-june-2031/access-and-downloads/digital-boundary-files">
+              https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs/edition-4-july-2026-june-2031/access-and-downloads/digital-boundary-files
+            </a>
+          </li>
+          <li>
+            <strong>Natural Earth - </strong>
+            1:110m Cultural Vectors
+            <a href="https://www.naturalearthdata.com/downloads/110m-cultural-vectors/">
+              https://www.naturalearthdata.com/downloads/110m-cultural-vectors/
+            </a>
+          </li>
+        </ul>
+      </div>
+    </footer>
+
+  </main>
+</body>
+</html>

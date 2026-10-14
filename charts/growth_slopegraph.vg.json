@@ -1,0 +1,490 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "How much has production changed since year ending June 2021?",
+    "fontSize": 20,
+    "anchor": "start",
+    "offset": 15,
+    "font": "Arial"
+  },
+  "data": {
+    "url": "../data/abs_fruit_production.csv",
+    "format": {
+      "type": "csv"
+    }
+  },
+  "transform": [
+    {
+      "calculate": "toNumber(datum['2021'])",
+      "as": "StartProduction"
+    },
+    {
+      "calculate": "toNumber(datum['2025'])",
+      "as": "EndProduction"
+    },
+    {
+      "calculate": "((datum.EndProduction - datum.StartProduction) / datum.StartProduction) * 100",
+      "as": "GrowthPct"
+    },
+    {
+      "fold": [
+        "StartProduction",
+        "EndProduction"
+      ],
+      "as": [
+        "PeriodField",
+        "Production"
+      ]
+    },
+    {
+      "calculate": "datum.PeriodField == 'StartProduction' ? '2021' : '2025'",
+      "as": "Period"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "line",
+        "strokeWidth": 2
+      },
+      "encoding": {
+        "x": {
+          "field": "Period",
+          "type": "ordinal",
+          "title": null,
+          "sort": [
+            "2021",
+            "2025"
+          ],
+          "axis": {
+            "labelAngle": 0,
+            "labelFontSize": 12,
+            "labelFontWeight": "bold",
+            "ticks": false,
+            "domain": false
+          }
+        },
+        "y": {
+          "field": "Production",
+          "type": "quantitative",
+          "title": "Production (tonnes)",
+          "axis": {
+            "format": "~s",
+            "gridColor": "#e6e6e6",
+            "gridOpacity": 0.7,
+            "titlePadding": 12
+          }
+        },
+        "color": {
+          "field": "Fruit",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "Apple",
+              "Avocado",
+              "Banana",
+              "Blueberry",
+              "Mandarin",
+              "Orange",
+              "Strawberry",
+              "Table grapes"
+            ],
+            "range": [
+              "#4c78a8",
+              "#f58518",
+              "#A59837",
+              "#72b7b2",
+              "#54a24b",
+              "#eeca3b",
+              "#b279a2",
+              "#ff9da6"
+            ]
+          }
+        },
+        "detail": {
+          "field": "Fruit"
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit:"
+          },
+          {
+            "field": "Period",
+            "type": "ordinal",
+            "title": "Year ending June:"
+          },
+          {
+            "field": "Production",
+            "type": "quantitative",
+            "title": "Production (tonnes):",
+            "format": ","
+          },
+          {
+            "field": "GrowthPct",
+            "type": "quantitative",
+            "title": "Overall change (%):",
+            "format": "+.1f"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 80
+      },
+      "encoding": {
+        "x": {
+          "field": "Period",
+          "type": "ordinal",
+          "sort": [
+            "2021",
+            "2025"
+          ]
+        },
+        "y": {
+          "field": "Production",
+          "type": "quantitative"
+        },
+        "color": {
+          "field": "Fruit",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "Apple",
+              "Avocado",
+              "Banana",
+              "Blueberry",
+              "Mandarin",
+              "Orange",
+              "Strawberry",
+              "Table grapes"
+            ],
+            "range": [
+              "#4c78a8",
+              "#f58518",
+              "#A59837",
+              "#72b7b2",
+              "#54a24b",
+              "#eeca3b",
+              "#b279a2",
+              "#ff9da6"
+            ]
+          }
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit:"
+          },
+          {
+            "field": "Period",
+            "type": "ordinal",
+            "title": "Year ending June:"
+          },
+          {
+            "field": "Production",
+            "type": "quantitative",
+            "title": "Production (tonnes):",
+            "format": ","
+          },
+          {
+            "field": "GrowthPct",
+            "type": "quantitative",
+            "title": "Overall change (%):",
+            "format": "+.1f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.Period == '2025' && datum.Fruit != 'Mandarin' && datum.Fruit != 'Table grapes'"
+        },
+        {
+          "calculate": "datum.Fruit + '  ' + format(datum.GrowthPct, '+.1f') + '%'",
+          "as": "EndLabel"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 10,
+        "fontSize": 12,
+        "font": "Arial"
+      },
+      "encoding": {
+        "x": {
+          "field": "Period",
+          "type": "ordinal",
+          "sort": [
+            "2021",
+            "2025"
+          ]
+        },
+        "y": {
+          "field": "Production",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "EndLabel"
+        },
+        "color": {
+          "field": "Fruit",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "Apple",
+              "Avocado",
+              "Banana",
+              "Blueberry",
+              "Mandarin",
+              "Orange",
+              "Strawberry",
+              "Table grapes"
+            ],
+            "range": [
+              "#4c78a8",
+              "#f58518",
+              "#A59837",
+              "#72b7b2",
+              "#54a24b",
+              "#eeca3b",
+              "#b279a2",
+              "#ff9da6"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.Period == '2025' && datum.Fruit == 'Mandarin'"
+        },
+        {
+          "calculate": "datum.Fruit + '  ' + format(datum.GrowthPct, '+.1f') + '%'",
+          "as": "EndLabel"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 10,
+        "dy": -10,
+        "fontSize": 12,
+        "font": "Arial"
+      },
+      "encoding": {
+        "x": {
+          "field": "Period",
+          "type": "ordinal",
+          "sort": [
+            "2021",
+            "2025"
+          ]
+        },
+        "y": {
+          "field": "Production",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "EndLabel"
+        },
+        "color": {
+          "field": "Fruit",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "Apple",
+              "Avocado",
+              "Banana",
+              "Blueberry",
+              "Mandarin",
+              "Orange",
+              "Strawberry",
+              "Table grapes"
+            ],
+            "range": [
+              "#4c78a8",
+              "#f58518",
+              "#A59837",
+              "#72b7b2",
+              "#54a24b",
+              "#eeca3b",
+              "#b279a2",
+              "#ff9da6"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.Period == '2025' && datum.Fruit == 'Table grapes'"
+        },
+        {
+          "calculate": "datum.Fruit + '  ' + format(datum.GrowthPct, '+.1f') + '%'",
+          "as": "EndLabel"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 10,
+        "dy": 3,
+        "fontSize": 12,
+        "font": "Arial"
+      },
+      "encoding": {
+        "x": {
+          "field": "Period",
+          "type": "ordinal",
+          "sort": [
+            "2021",
+            "2025"
+          ]
+        },
+        "y": {
+          "field": "Production",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "EndLabel"
+        },
+        "color": {
+          "field": "Fruit",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "Apple",
+              "Avocado",
+              "Banana",
+              "Blueberry",
+              "Mandarin",
+              "Orange",
+              "Strawberry",
+              "Table grapes"
+            ],
+            "range": [
+              "#4c78a8",
+              "#f58518",
+              "#A59837",
+              "#72b7b2",
+              "#54a24b",
+              "#eeca3b",
+              "#b279a2",
+              "#ff9da6"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "StartProduction": 220800,
+            "EndProduction": 178000
+          }
+        ]
+      },
+      "mark": {
+        "type": "rule",
+        "stroke": "#333333",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "x": {
+          "value": 426
+        },
+        "x2": {
+          "value": 426
+        },
+        "y": {
+          "field": "StartProduction",
+          "type": "quantitative"
+        },
+        "y2": {
+          "field": "EndProduction"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "Production": 166000,
+            "line": "Mandarins overtook table grapes,"
+          },
+          {
+            "Production": 143000,
+            "line": "from 32,000 tonnes behind in 2021"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "center",
+        "baseline": "middle",
+        "fontSize": 12,
+        "color": "#333333",
+        "font": "Arial"
+      },
+      "encoding": {
+        "x": {
+          "value": 426
+        },
+        "y": {
+          "field": "Production",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "line"
+        }
+      }
+    }
+  ],
+  "width": 720,
+  "height": 370,
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 13,
+      "labelColor": "#444444",
+      "titleColor": "#222222",
+      "domainColor": "#999999",
+      "tickColor": "#999999",
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    },
+    "font": "Arial",
+    "legend": {
+      "labelFont": "Arial",
+      "titleFont": "Arial",
+      "labelFontSize": 12,
+      "titleFontSize": 15
+    },
+    "header": {
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    }
+  }
+}

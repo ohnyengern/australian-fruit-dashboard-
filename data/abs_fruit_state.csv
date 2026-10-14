@@ -1,0 +1,49 @@
+﻿Fruit,State,Production,Longitude,Latitude
+Apple,New South Wales,40389,147.0,-32.5
+Apple,Victoria,134976,144.5,-37.0
+Apple,Queensland,31184,145.0,-22.0
+Apple,South Australia,28261,135.5,-30.0
+Apple,Western Australia,30269,121.5,-25.5
+Apple,Tasmania,30611,146.5,-42.0
+
+Avocado,New South Wales,13151,147.0,-32.5
+Avocado,Victoria,566,144.5,-37.0
+Avocado,Queensland,76501,145.0,-22.0
+Avocado,South Australia,4261,135.5,-30.0
+Avocado,Western Australia,36889,121.5,-25.5
+Avocado,Tasmania,17,146.5,-42.0
+
+Banana,New South Wales,14748,147.0,-32.5
+Banana,Queensland,346579,145.0,-22.0
+Banana,Western Australia,6452,121.5,-25.5
+Banana,Northern Territory,922,133.5,-19.5
+
+Blueberry,New South Wales,24116,147.0,-32.5
+Blueberry,Victoria,564,144.5,-37.0
+Blueberry,Queensland,1057,145.0,-22.0
+Blueberry,South Australia,141,135.5,-30.0
+
+Mandarin,New South Wales,37497,147.0,-32.5
+Mandarin,Victoria,17435,144.5,-37.0
+Mandarin,Queensland,117083,145.0,-22.0
+Mandarin,South Australia,34944,135.5,-30.0
+Mandarin,Western Australia,33527,121.5,-25.5
+
+Orange,New South Wales,352479,147.0,-32.5
+Orange,Victoria,117148,144.5,-37.0
+Orange,Queensland,22498,145.0,-22.0
+Orange,South Australia,35812,135.5,-30.0
+Orange,Western Australia,44603,121.5,-25.5
+
+Strawberry,New South Wales,11526,147.0,-32.5
+Strawberry,Victoria,32662,144.5,-37.0
+Strawberry,Queensland,16704,145.0,-22.0
+Strawberry,South Australia,3860,135.5,-30.0
+Strawberry,Western Australia,10475,121.5,-25.5
+Strawberry,Tasmania,8645,146.5,-42.0
+
+Table grapes,New South Wales,36621,147.0,-32.5
+Table grapes,Victoria,157957,144.5,-37.0
+Table grapes,Queensland,18311,145.0,-22.0
+Table grapes,South Australia,4568,135.5,-30.0
+Table grapes,Western Australia,11444,121.5,-25.5

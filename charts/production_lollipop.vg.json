@@ -1,0 +1,141 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Production Volume Across Eight Selected Fruits, Year Ending June 2025",
+    "fontSize": 20,
+    "anchor": "start",
+    "offset": 15,
+    "font": "Arial"
+  },
+  "data": {
+    "url": "../data/abs_fruit_production.csv",
+    "format": {
+      "type": "csv"
+    }
+  },
+  "transform": [
+    {
+      "calculate": "toNumber(datum['2025'])",
+      "as": "Production"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "rule",
+        "strokeWidth": 2,
+        "color": "#8F5601",
+        "opacity": 1
+      },
+      "encoding": {
+        "y": {
+          "field": "Fruit",
+          "type": "nominal",
+          "sort": "-x",
+          "title": null
+        },
+        "x": {
+          "field": "Production",
+          "type": "quantitative",
+          "title": "Production (tonnes)"
+        },
+        "x2": {
+          "value": 0
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 130,
+        "opacity": 1
+      },
+      "encoding": {
+        "y": {
+          "field": "Fruit",
+          "type": "nominal",
+          "sort": "-x",
+          "title": null
+        },
+        "x": {
+          "field": "Production",
+          "type": "quantitative",
+          "title": "Production (tonnes)"
+        },
+        "color": {
+          "value": "#8F5601"
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit:"
+          },
+          {
+            "field": "Production",
+            "type": "quantitative",
+            "title": "Production (tonnes):",
+            "format": ","
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 10,
+        "fontSize": 12,
+        "font": "Arial"
+      },
+      "encoding": {
+        "y": {
+          "field": "Fruit",
+          "type": "nominal",
+          "sort": "-x"
+        },
+        "x": {
+          "field": "Production",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "Production",
+          "type": "quantitative",
+          "format": ","
+        }
+      }
+    }
+  ],
+  "width": 720,
+  "height": 250,
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 13,
+      "labelColor": "#444",
+      "titleColor": "#222",
+      "domainColor": "#999",
+      "tickColor": "#999",
+      "gridColor": "#e6e6e6",
+      "gridOpacity": 0.6,
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    },
+    "font": "Arial",
+    "legend": {
+      "labelFont": "Arial",
+      "titleFont": "Arial",
+      "labelFontSize": 12,
+      "titleFontSize": 15
+    },
+    "header": {
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    }
+  }
+}

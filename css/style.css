@@ -1,0 +1,886 @@
+
+/* ==========================================
+   FIT3179 — Australian Fruit Production
+   Four-Column Responsive Website
+   ========================================== */
+
+:root {
+  color-scheme: light;
+
+  --ink: #30251D;
+  --muted: #61564F;
+  --rule: #E7DED4;
+
+  --page-bg: #FAF8F5;
+  --chart-bg: #FFFFFF;
+  --section-bg: #F3E7D9;
+  --accent: #A77A51;
+
+  --page-margin: clamp(40px, 7vw, 120px);
+  --column-padding: 24px;
+}
+
+/* ==========================================
+   1. Global
+   ========================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--page-bg);
+}
+
+body {
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ==========================================
+   2. Main Container
+   ========================================== */
+
+.container {
+  width: min(
+    calc(100% - (var(--page-margin) * 2)),
+    1360px
+  );
+
+  margin: 0 auto;
+}
+
+/* ==========================================
+   3. Page Header
+   ========================================== */
+
+.page-header {
+  padding: 68px 0 0;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 16px;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: clamp(38px, 3.5vw, 56px);
+  letter-spacing: -0.035em;
+  line-height: 1.14;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 780px;
+  color: var(--muted);
+  font-size: clamp(16px, 1.28vw, 19px);
+  line-height: 1.65;
+}
+
+/* ==========================================
+   4. Section Headings
+   ========================================== */
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  background: var(--section-bg);
+
+  padding: 12px 20px;
+  margin-top: 65px;
+  margin-bottom: 20px;
+}
+
+.page-header + .section-header {
+  margin-top: 68px;
+}
+
+.section-number {
+  flex-shrink: 0;
+
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+
+  background: var(--accent);
+  color: #FFFFFF;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.section-title {
+  margin: 0;
+  color: #35251B;
+  font-size: 24px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+/* ==========================================
+   5. Standard Chart Rows
+   Four underlying columns
+   ========================================== */
+
+.story-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  column-gap: 0;
+  align-items: stretch;
+  min-width: 0;
+
+  background: var(--chart-bg);
+  border: none;
+  border-radius: 10px;
+
+  padding: 38px 0;
+  margin-bottom: 24px;
+}
+
+/* ==========================================
+   6. Standard Chart Column
+   Three of four columns
+   ========================================== */
+
+.chart-column {
+  grid-column: span 3;
+
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+
+  padding-left: var(--column-padding);
+  padding-right: var(--column-padding);
+}
+
+/* ==========================================
+   7. Standard Explanation Column
+   Fourth website column
+   ========================================== */
+
+.explanation-column {
+  grid-column: 4;
+  min-width: 0;
+
+  padding-left: var(--column-padding);
+  padding-right: var(--column-padding);
+  padding-top: 40px;
+
+  border-left: 1px solid var(--rule);
+}
+
+.explanation-column h2,
+.explanation-column h3 {
+  margin: 0 0 17px;
+
+  color: var(--ink);
+  font-size: 24px;
+  line-height: 1.32;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.explanation-column p {
+  margin: 0 0 14px;
+  max-width: 46ch;
+
+  color: #424242;
+  font-size: 15px;
+  line-height: 1.65;
+  overflow-wrap: break-word;
+}
+
+.explanation-column p:last-child {
+  margin-bottom: 0;
+}
+
+.fruit-highlight {
+  font-weight: 700;
+}
+
+.fruit-apple {
+  color: #4C78A8;
+}
+
+.fruit-orange {
+  color: #B88700;
+}
+
+.fruit-strawberry {
+  color: #B279A2;
+}
+
+.fruit-blueberry {
+  color: #4F8F8A;
+}
+
+.fruit-mandarin {
+  color: #54A24B;
+}
+
+.fruit-banana {
+  color: #8D7F1F;
+}
+
+.fruit-avocado {
+  color: #F58518;
+}
+
+.fruit-table-grapes {
+  color: #D96F82;
+}
+
+/* Optional insight cards */
+
+.insight-card {
+  background: #F0F0EE;
+  border-left: 4px solid var(--accent);
+  padding: 18px 20px 20px;
+  max-width: 46ch;
+}
+
+.insight-card-wide {
+  max-width: 78ch;
+}
+
+.insight-label {
+  margin: 0 0 8px !important;
+  color: var(--ink) !important;
+  font-size: 15px !important;
+  line-height: 1.3 !important;
+  font-weight: 700;
+}
+
+.insight-card p {
+  max-width: none;
+}
+
+.insight-card strong {
+  color: #2E241C;
+  font-weight: 700;
+}
+
+/* ==========================================
+   8. Chart Containers
+   ========================================== */
+
+.chart-shell {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.chart-column .vega-embed {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Resize main chart graphics only.
+   Do not enlarge Vega's three-dot menu. */
+
+.chart-column .vega-embed > svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+.chart-column .vega-embed > canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ==========================================
+   9. Vega Three-Dot Menu
+   ========================================== */
+
+.chart-column .vega-embed details {
+  z-index: 30;
+}
+
+.chart-column .vega-embed summary {
+  cursor: pointer;
+}
+
+.chart-column .vega-embed summary svg {
+  width: 16px !important;
+  height: 16px !important;
+  max-width: none !important;
+}
+
+.chart-column .vega-embed .vega-actions {
+  z-index: 30;
+}
+
+/* ==========================================
+   10. Vega Interaction Controls
+   ========================================== */
+
+.chart-column .vega-bindings {
+  margin-top: 12px;
+  max-width: 100%;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.chart-column .vega-bindings select,
+.chart-column .vega-bindings input {
+  max-width: 100%;
+}
+
+/* ==========================================
+   11. Choropleth Legend
+   ========================================== */
+
+.choropleth-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  width: 100%;
+  min-width: 0;
+}
+
+.choropleth-layout .chart-shell {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.choropleth-legend {
+  flex: 0 0 190px;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  column-gap: 10px;
+  padding-top: 40px;
+  color: #111111;
+}
+
+.choropleth-legend h3 {
+  grid-column: 1 / -1;
+  margin: 0 0 8px;
+  font-size: 15px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.choropleth-scale {
+  display: flex;
+  flex-direction: column;
+  width: 28px;
+  height: 196px;
+  border: 1px solid #222222;
+}
+
+.choropleth-scale span {
+  flex: 1 1 0;
+  border-bottom: 1px solid #222222;
+}
+
+.choropleth-scale span:last-child {
+  border-bottom: none;
+}
+
+.choropleth-legend ol {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.choropleth-special-legend {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.choropleth-special-item {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  column-gap: 10px;
+  align-items: center;
+}
+
+.choropleth-special-item span {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+}
+
+.choropleth-special-item p {
+  margin: 0;
+  color: #424242;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+/* ==========================================
+   12. Small Multiples
+
+   Maps: 4 columns x 2 rows
+
+   Bottom:
+   1.5 columns = Legend + slider
+   0.5 column  = Empty
+   1.5 columns = Narrative
+   0.5 column  = Empty
+   ========================================== */
+
+.small-multiples-row {
+  overflow: hidden;
+}
+
+/* Maps occupy the full website width */
+
+.small-multiples-row .chart-column {
+  grid-column: 1 / -1;
+
+  position: relative;
+  width: 100%;
+  min-width: 0;
+
+  padding-left: var(--column-padding);
+  padding-right: var(--column-padding);
+
+  overflow: hidden;
+}
+
+/* ==========================================
+   12. Small Multiples Map Container
+   ========================================== */
+
+.small-multiples-row .chart-shell,
+.small-multiples-row .vega-embed {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Keep Vega-Lite's calculated facet widths */
+
+.small-multiples-row .vega-embed > svg {
+  display: block;
+  width: auto;
+  max-width: none;
+  height: auto;
+}
+
+/* ==========================================
+   13. Small Multiples Bottom Grid
+
+   Eight equal half-column tracks:
+
+   Tracks 1–3: Legend (1.5 columns)
+   Track 4:    Empty  (0.5 column)
+   Tracks 5–7: Text   (1.5 columns)
+   Track 8:    Empty  (0.5 column)
+   ========================================== */
+
+.small-multiples-bottom {
+  display: grid;
+
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+
+  align-items: start;
+  column-gap: 0;
+
+  width: 100%;
+  min-width: 0;
+
+  margin-top: 46px;
+}
+
+/* ==========================================
+   14. Legend and Year Slider
+   Spans 1.5 columns
+   ========================================== */
+
+.small-multiples-controls {
+  grid-column: 1 / span 3;
+
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  padding-right: 12px;
+}
+
+.small-multiples-controls h3 {
+  margin: 0 0 16px;
+
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* ==========================================
+   15. Production Size Legend
+   Three evenly distributed legend items
+   ========================================== */
+
+.production-size-legend {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  align-items: end;
+
+  column-gap: 8px;
+  row-gap: 10px;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  margin-bottom: 22px;
+}
+
+/* Legend labels below circles */
+
+.legend-item {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 7px;
+  min-width: 0;
+
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.legend-circle {
+  display: inline-block;
+  flex-shrink: 0;
+
+  background: #8F5601;
+  opacity: 0.9;
+
+  border: 1px solid white;
+  border-radius: 50%;
+}
+
+.legend-100 {
+  width: 30px;
+  height: 30px;
+}
+
+.legend-200 {
+  width: 42px;
+  height: 42px;
+}
+
+.legend-300 {
+  width: 51px;
+  height: 51px;
+}
+
+/* ==========================================
+   16. Year Slider
+   Original Horizontal Layout
+
+   Year ending June: [-------●] 2025
+   ========================================== */
+
+#small-multiples-year-control {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+#small-multiples-year-control .vega-bindings {
+  margin: 0;
+
+  width: 100%;
+  max-width: 100%;
+
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#small-multiples-year-control .vega-bind {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 8px;
+
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+#small-multiples-year-control .vega-bind label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+#small-multiples-year-control input[type="range"] {
+  flex: 1 1 auto;
+
+  width: 160px;
+  min-width: 0;
+  max-width: 100%;
+
+  margin: 0;
+}
+
+#small-multiples-year-control .vega-bind span {
+  flex: 0 0 auto;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+/* ==========================================
+   17. Narrative Text
+
+   Starts at third map column.
+   Ends halfway through fourth map column.
+
+   1.5 underlying columns.
+   ========================================== */
+
+
+.small-multiples-narrative {
+  grid-column: 5 / span 3;
+
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  margin: 0;
+  padding-left: 32px;
+
+  border-left: 1px solid var(--rule);
+}
+
+
+.small-multiples-narrative p {
+  width: 100%;
+  max-width: 100%;
+
+  margin: 0 0 14px;
+
+  color: #424242;
+  font-size: 15px;
+  line-height: 1.65;
+
+  overflow-wrap: break-word;
+}
+
+.small-multiples-narrative p:last-child {
+  margin-bottom: 0;
+}
+
+.small-multiples-narrative strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* ==========================================
+   18. Page Footer
+   ========================================== */
+
+.page-footer {
+  border-top: 1px solid var(--rule);
+  padding: 32px 0 62px;
+}
+
+.page-footer p {
+  margin: 0 0 12px;
+  max-width: 100ch;
+
+  color: #555555;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.footer-sources ul {
+  margin: 0;
+  padding-left: 18px;
+  max-width: 100ch;
+}
+
+.footer-sources li {
+  margin-bottom: 12px;
+  color: #555555;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.footer-sources a {
+  display: block;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   19. Tablet
+   ========================================== */
+
+@media (max-width: 920px) {
+
+  :root {
+    --page-margin: clamp(24px, 4vw, 40px);
+  }
+
+  .story-row:not(.small-multiples-row) {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 24px;
+  }
+
+  .story-row:not(.small-multiples-row)
+  .chart-column,
+  .story-row:not(.small-multiples-row)
+  .explanation-column {
+    grid-column: 1;
+  }
+
+  .explanation-column {
+    border-left: none;
+    border-top: 1px solid var(--rule);
+    padding-top: 20px;
+  }
+
+  .small-multiples-row .chart-column {
+    grid-column: 1 / -1;
+  }
+
+  .choropleth-layout {
+    flex-direction: column;
+  }
+
+  .choropleth-legend {
+    padding-top: 0;
+  }
+}
+
+/* ==========================================
+   20. Responsive Small Multiples Footer
+   ========================================== */
+
+@media (max-width: 700px) {
+
+  .small-multiples-bottom {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 36px;
+    row-gap: 24px;
+  }
+
+  .small-multiples-controls {
+    grid-column: 1;
+    padding-right: 0;
+  }
+
+  .small-multiples-narrative {
+    grid-column: 1;
+
+    padding: 20px 0 0;
+
+    border-left: none;
+    border-top: 1px solid var(--rule);
+  }
+
+  .small-multiples-narrative p {
+    max-width: 100%;
+  }
+}
+
+/* ==========================================
+   21. Mobile
+   ========================================== */
+
+@media (max-width: 560px) {
+
+  :root {
+    --page-margin: 20px;
+    --column-padding: 16px;
+  }
+
+  .page-header {
+    padding: 42px 0 34px;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+
+  .section-header {
+    gap: 12px;
+    padding: 14px;
+    margin-top: 52px;
+    margin-bottom: 16px;
+  }
+
+  .section-number {
+    width: 38px;
+    height: 38px;
+    font-size: 17px;
+  }
+
+  .section-title {
+    font-size: 24px;
+  }
+
+  .story-row {
+    padding: 25px 0;
+    margin-bottom: 16px;
+    border-radius: 8px;
+  }
+
+  .explanation-column h2,
+  .explanation-column h3 {
+    font-size: 24px;
+  }
+
+  .explanation-column p {
+    font-size: 15px;
+  }
+
+  .chart-column .vega-bindings {
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,1007 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Major Fresh-Fruit Export Destinations, Year Ending June 2025",
+    "fontSize": 20,
+    "fontWeight": "bold",
+    "anchor": "start",
+    "offset": 15,
+    "font": "Arial"
+  },
+  "width": 720,
+  "height": 520,
+  "params": [
+    {
+      "name": "FruitSelection",
+      "value": "Apple",
+      "bind": {
+        "input": "select",
+        "options": [
+          "Apple",
+          "Avocado",
+          "Blueberry",
+          "Mandarin",
+          "Orange",
+          "Strawberry",
+          "Table grapes"
+        ],
+        "name": "Select fruit: "
+      }
+    }
+  ],
+  "projection": {
+    "type": "equirectangular",
+    "center": [
+      115,
+      4
+    ],
+    "scale": 270,
+    "translate": [
+      353,
+      260
+    ]
+  },
+  "layer": [
+    {
+      "data": {
+        "sphere": true
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": "#F0F7FA",
+        "stroke": null
+      }
+    },
+    {
+      "data": {
+        "url": "../data/ne_110m_graticules_30.json",
+        "format": {
+          "type": "topojson",
+          "feature": "ne_110m_graticules_30"
+        }
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": null,
+        "stroke": "#CBDDE7",
+        "strokeWidth": 0.7,
+        "opacity": 0.7,
+        "clip": true
+      }
+    },
+    {
+      "data": {
+        "url": "../data/ne_110m_admin_0_countries.json",
+        "format": {
+          "type": "topojson",
+          "feature": "ne_110m_admin_0_countries"
+        }
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": "#E6E6E6",
+        "stroke": "#FFFFFF",
+        "strokeWidth": 0.7,
+        "clip": true
+      }
+    },
+    {
+      "data": {
+        "url": "../data/hort_fruit_exports.csv",
+        "format": {
+          "type": "csv"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.Fruit == FruitSelection"
+        },
+        {
+          "filter": "datum.Destination != 'Others'"
+        },
+        {
+          "lookup": "Destination",
+          "from": {
+            "data": {
+              "url": "../data/country_locations.csv",
+              "format": {
+                "type": "csv"
+              }
+            },
+            "key": "Destination",
+            "fields": [
+              "Longitude",
+              "Latitude"
+            ]
+          },
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "calculate": "'Australia'",
+          "as": "Origin"
+        },
+        {
+          "lookup": "Origin",
+          "from": {
+            "data": {
+              "url": "../data/country_locations.csv",
+              "format": {
+                "type": "csv"
+              }
+            },
+            "key": "Destination",
+            "fields": [
+              "Longitude",
+              "Latitude"
+            ]
+          },
+          "as": [
+            "OriginLongitude",
+            "OriginLatitude"
+          ]
+        },
+        {
+          "calculate": "toNumber(datum.ExportTonnes)",
+          "as": "ExportTonnesNum"
+        },
+        {
+          "calculate": "toNumber(datum.Bend)",
+          "as": "BendNum"
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.OriginLongitude)",
+          "as": "OriginLongitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.OriginLatitude)",
+          "as": "OriginLatitudeNum"
+        },
+        {
+          "calculate": "(datum.OriginLongitudeNum + datum.DestinationLongitudeNum) / 2 + datum.BendNum",
+          "as": "MidLongitude"
+        },
+        {
+          "calculate": "(datum.OriginLatitudeNum + datum.DestinationLatitudeNum) / 2",
+          "as": "MidLatitude"
+        },
+        {
+          "calculate": "[datum.OriginLongitudeNum, datum.MidLongitude, datum.DestinationLongitudeNum]",
+          "as": "PathLongitude"
+        },
+        {
+          "calculate": "[datum.OriginLatitudeNum, datum.MidLatitude, datum.DestinationLatitudeNum]",
+          "as": "PathLatitude"
+        },
+        {
+          "calculate": "[0, 1, 2]",
+          "as": "PathOrder"
+        },
+        {
+          "flatten": [
+            "PathLongitude",
+            "PathLatitude",
+            "PathOrder"
+          ]
+        }
+      ],
+      "mark": {
+        "type": "line",
+        "interpolate": "basis",
+        "opacity": 0.8,
+        "strokeCap": "round",
+        "clip": true
+      },
+      "encoding": {
+        "longitude": {
+          "field": "PathLongitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "PathLatitude",
+          "type": "quantitative"
+        },
+        "detail": {
+          "field": "Destination",
+          "type": "nominal"
+        },
+        "order": {
+          "field": "PathOrder",
+          "type": "ordinal"
+        },
+        "strokeWidth": {
+          "field": "ExportTonnesNum",
+          "type": "quantitative",
+          "title": "Export volume (tonnes)",
+          "scale": {
+            "type": "sqrt",
+            "domain": [
+              0,
+              45000
+            ],
+            "range": [
+              0.7,
+              10
+            ]
+          },
+          "legend": {
+            "titleOrient": "top",
+            "orient": "right",
+            "direction": "vertical",
+            "title": "Export volume (tonnes)",
+            "format": ",.0f",
+            "values": [
+              0,
+              10000,
+              20000,
+              30000,
+              40000
+            ],
+            "labelLimit": 90,
+            "titleLimit": 180,
+            "offset": 18
+          }
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit:"
+          },
+          {
+            "field": "Destination",
+            "type": "nominal",
+            "title": "Destination:"
+          },
+          {
+            "field": "ExportTonnesNum",
+            "type": "quantitative",
+            "title": "Export volume (tonnes):",
+            "format": ",.0f"
+          }
+        ],
+        "color": {
+          "value": "#8F5601"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "../data/hort_fruit_exports.csv",
+        "format": {
+          "type": "csv"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.Fruit == FruitSelection"
+        },
+        {
+          "filter": "datum.Destination != 'Others'"
+        },
+        {
+          "lookup": "Destination",
+          "from": {
+            "data": {
+              "url": "../data/country_locations.csv",
+              "format": {
+                "type": "csv"
+              }
+            },
+            "key": "Destination",
+            "fields": [
+              "Longitude",
+              "Latitude"
+            ]
+          },
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.ExportTonnes)",
+          "as": "ExportTonnesNum"
+        }
+      ],
+      "mark": {
+        "type": "circle",
+        "size": 55,
+        "color": "#8F5601",
+        "stroke": "#FFFFFF",
+        "strokeWidth": 1.2,
+        "opacity": 1,
+        "clip": true
+      },
+      "encoding": {
+        "longitude": {
+          "field": "DestinationLongitudeNum",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "DestinationLatitudeNum",
+          "type": "quantitative"
+        },
+        "tooltip": [
+          {
+            "field": "Destination",
+            "type": "nominal",
+            "title": "Destination:"
+          },
+          {
+            "field": "ExportTonnesNum",
+            "type": "quantitative",
+            "title": "Export volume (tonnes):",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "../data/hort_fruit_exports.csv",
+        "format": {
+          "type": "csv"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.Fruit == FruitSelection"
+        },
+        {
+          "filter": "datum.Destination != 'Others' && datum.Destination != 'Singapore' && datum.Destination != 'Indonesia' && datum.Destination != 'South Korea' && datum.Destination != 'Thailand' && datum.Destination != 'New Zealand' && datum.Destination != 'United Arab Emirates' && datum.Destination != 'Philippines' && datum.Destination != 'China' && datum.Destination != 'Malaysia' && datum.Destination != 'Vietnam'"
+        },
+        {
+          "lookup": "Destination",
+          "from": {
+            "data": {
+              "url": "../data/country_locations.csv",
+              "format": {
+                "type": "csv"
+              }
+            },
+            "key": "Destination",
+            "fields": [
+              "Longitude",
+              "Latitude"
+            ]
+          },
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "font": "Arial",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#333333",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 9,
+        "clip": true
+      },
+      "encoding": {
+        "longitude": {
+          "field": "DestinationLongitudeNum",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "DestinationLatitudeNum",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "Destination",
+          "type": "nominal"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "../data/hort_fruit_exports.csv",
+        "format": {
+          "type": "csv"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.Fruit == FruitSelection"
+        },
+        {
+          "filter": "datum.Destination == 'Singapore'"
+        },
+        {
+          "lookup": "Destination",
+          "from": {
+            "data": {
+              "url": "../data/country_locations.csv",
+              "format": {
+                "type": "csv"
+              }
+            },
+            "key": "Destination",
+            "fields": [
+              "Longitude",
+              "Latitude"
+            ]
+          },
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "font": "Arial",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#333333",
+        "align": "right",
+        "baseline": "bottom",
+        "dx": -7,
+        "dy": -10,
+        "clip": true
+      },
+      "encoding": {
+        "longitude": {
+          "field": "DestinationLongitudeNum",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "DestinationLatitudeNum",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "Destination",
+          "type": "nominal"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "../data/hort_fruit_exports.csv",
+        "format": {
+          "type": "csv"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.Fruit == FruitSelection"
+        },
+        {
+          "filter": "datum.Destination == 'Indonesia' || datum.Destination == 'South Korea'"
+        },
+        {
+          "lookup": "Destination",
+          "from": {
+            "data": {
+              "url": "../data/country_locations.csv",
+              "format": {
+                "type": "csv"
+              }
+            },
+            "key": "Destination",
+            "fields": [
+              "Longitude",
+              "Latitude"
+            ]
+          },
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "font": "Arial",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#333333",
+        "align": "right",
+        "baseline": "middle",
+        "dx": -9,
+        "clip": true
+      },
+      "encoding": {
+        "longitude": {
+          "field": "DestinationLongitudeNum",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "DestinationLatitudeNum",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "Destination",
+          "type": "nominal"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "../data/hort_fruit_exports.csv",
+        "format": {
+          "type": "csv"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.Fruit == FruitSelection"
+        },
+        {
+          "filter": "datum.Destination == 'Thailand' || datum.Destination == 'China'"
+        },
+        {
+          "lookup": "Destination",
+          "from": {
+            "data": {
+              "url": "../data/country_locations.csv",
+              "format": {
+                "type": "csv"
+              }
+            },
+            "key": "Destination",
+            "fields": [
+              "Longitude",
+              "Latitude"
+            ]
+          },
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "font": "Arial",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#333333",
+        "align": "right",
+        "baseline": "middle",
+        "dx": -9,
+        "clip": true
+      },
+      "encoding": {
+        "longitude": {
+          "field": "DestinationLongitudeNum",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "DestinationLatitudeNum",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "Destination",
+          "type": "nominal"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "../data/hort_fruit_exports.csv",
+        "format": {
+          "type": "csv"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.Fruit == FruitSelection"
+        },
+        {
+          "filter": "datum.Destination == 'Philippines'"
+        },
+        {
+          "lookup": "Destination",
+          "from": {
+            "data": {
+              "url": "../data/country_locations.csv",
+              "format": {
+                "type": "csv"
+              }
+            },
+            "key": "Destination",
+            "fields": [
+              "Longitude",
+              "Latitude"
+            ]
+          },
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "font": "Arial",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#333333",
+        "align": "center",
+        "baseline": "bottom",
+        "dy": -10,
+        "clip": true
+      },
+      "encoding": {
+        "longitude": {
+          "field": "DestinationLongitudeNum",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "DestinationLatitudeNum",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "Destination",
+          "type": "nominal"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "../data/hort_fruit_exports.csv",
+        "format": {
+          "type": "csv"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.Fruit == FruitSelection"
+        },
+        {
+          "filter": "datum.Destination == 'Malaysia'"
+        },
+        {
+          "lookup": "Destination",
+          "from": {
+            "data": {
+              "url": "../data/country_locations.csv",
+              "format": {
+                "type": "csv"
+              }
+            },
+            "key": "Destination",
+            "fields": [
+              "Longitude",
+              "Latitude"
+            ]
+          },
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "font": "Arial",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#333333",
+        "align": "center",
+        "baseline": "bottom",
+        "dy": -10,
+        "clip": true
+      },
+      "encoding": {
+        "longitude": {
+          "field": "DestinationLongitudeNum",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "DestinationLatitudeNum",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "Destination",
+          "type": "nominal"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "../data/hort_fruit_exports.csv",
+        "format": {
+          "type": "csv"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.Fruit == FruitSelection"
+        },
+        {
+          "filter": "datum.Destination == 'Vietnam'"
+        },
+        {
+          "lookup": "Destination",
+          "from": {
+            "data": {
+              "url": "../data/country_locations.csv",
+              "format": {
+                "type": "csv"
+              }
+            },
+            "key": "Destination",
+            "fields": [
+              "Longitude",
+              "Latitude"
+            ]
+          },
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "font": "Arial",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#333333",
+        "align": "right",
+        "baseline": "bottom",
+        "dx": -9,
+        "dy": -8,
+        "clip": true
+      },
+      "encoding": {
+        "longitude": {
+          "field": "DestinationLongitudeNum",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "DestinationLatitudeNum",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "Destination",
+          "type": "nominal"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "../data/hort_fruit_exports.csv",
+        "format": {
+          "type": "csv"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.Fruit == FruitSelection"
+        },
+        {
+          "filter": "datum.Destination == 'United Arab Emirates'"
+        },
+        {
+          "lookup": "Destination",
+          "from": {
+            "data": {
+              "url": "../data/country_locations.csv",
+              "format": {
+                "type": "csv"
+              }
+            },
+            "key": "Destination",
+            "fields": [
+              "Longitude",
+              "Latitude"
+            ]
+          },
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "font": "Arial",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#333333",
+        "align": "center",
+        "baseline": "bottom",
+        "dy": -10,
+        "clip": true
+      },
+      "encoding": {
+        "longitude": {
+          "field": "DestinationLongitudeNum",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "DestinationLatitudeNum",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "Destination",
+          "type": "nominal"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "../data/hort_fruit_exports.csv",
+        "format": {
+          "type": "csv"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.Fruit == FruitSelection"
+        },
+        {
+          "filter": "datum.Destination == 'New Zealand'"
+        },
+        {
+          "lookup": "Destination",
+          "from": {
+            "data": {
+              "url": "../data/country_locations.csv",
+              "format": {
+                "type": "csv"
+              }
+            },
+            "key": "Destination",
+            "fields": [
+              "Longitude",
+              "Latitude"
+            ]
+          },
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "calculate": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "font": "Arial",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#333333",
+        "align": "center",
+        "baseline": "top",
+        "dy": 10,
+        "clip": true
+      },
+      "encoding": {
+        "longitude": {
+          "field": "DestinationLongitudeNum",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "DestinationLatitudeNum",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "Destination",
+          "type": "nominal"
+        }
+      }
+    }
+  ],
+  "config": {
+    "view": {
+      "stroke": null,
+      "fill": "#F0F7FA"
+    },
+    "legend": {
+      "labelFontSize": 12,
+      "titleFontSize": 15,
+      "titleOrient": "top",
+      "columnPadding": 18,
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    },
+    "font": "Arial",
+    "axis": {
+      "labelFont": "Arial",
+      "titleFont": "Arial",
+      "labelFontSize": 12,
+      "titleFontSize": 13
+    },
+    "header": {
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    }
+  }
+}

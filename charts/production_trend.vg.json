@@ -1,0 +1,163 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Australian Fruit Production, Years Ending June 2021 to 2025",
+    "fontSize": 20,
+    "anchor": "start",
+    "offset": 15,
+    "font": "Arial"
+  },
+  "data": {
+    "url": "../data/abs_fruit_production.csv",
+    "format": {
+      "type": "csv"
+    }
+  },
+  "transform": [
+    {
+      "fold": [
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "as": [
+        "Year",
+        "Production"
+      ]
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "line",
+        "strokeWidth": 2
+      },
+      "encoding": {
+        "x": {
+          "field": "Year",
+          "type": "ordinal",
+          "title": "Year ending June",
+          "sort": [
+            "2021",
+            "2022",
+            "2023",
+            "2024",
+            "2025"
+          ],
+          "axis": {
+            "labelAngle": 0,
+            "grid": false,
+            "titlePadding": 12
+          }
+        },
+        "y": {
+          "field": "Production",
+          "type": "quantitative",
+          "title": "Production (tonnes)",
+          "axis": {
+            "format": "~s",
+            "gridColor": "#e6e6e6",
+            "gridOpacity": 0.7,
+            "titlePadding": 12
+          }
+        },
+        "color": {
+          "field": "Fruit",
+          "type": "nominal",
+          "title": "Fruit",
+          "legend": {
+            "titleOrient": "top",
+            "orient": "right",
+            "direction": "vertical",
+            "columns": 1,
+            "symbolType": "circle",
+            "labelLimit": 120,
+            "titleLimit": 160,
+            "symbolFillColor": {
+              "expr": "scale('color', datum.value)"
+            },
+            "symbolStrokeColor": {
+              "expr": "scale('color', datum.value)"
+            }
+          },
+          "scale": {
+            "domain": [
+              "Apple",
+              "Avocado",
+              "Banana",
+              "Blueberry",
+              "Mandarin",
+              "Orange",
+              "Strawberry",
+              "Table grapes"
+            ],
+            "range": [
+              "#4c78a8",
+              "#f58518",
+              "#A59837",
+              "#72b7b2",
+              "#54a24b",
+              "#eeca3b",
+              "#b279a2",
+              "#ff9da6"
+            ]
+          }
+        },
+        "detail": {
+          "field": "Fruit"
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit:"
+          },
+          {
+            "field": "Year",
+            "type": "ordinal",
+            "title": "Year ending June:"
+          },
+          {
+            "field": "Production",
+            "type": "quantitative",
+            "title": "Production (tonnes):",
+            "format": ","
+          }
+        ]
+      }
+    }
+  ],
+  "width": 720,
+  "height": 420,
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 13,
+      "labelColor": "#444",
+      "titleColor": "#222",
+      "domainColor": "#999",
+      "tickColor": "#999",
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    },
+    "legend": {
+      "labelFontSize": 12,
+      "titleFontSize": 15,
+      "titleOrient": "top",
+      "columnPadding": 18,
+      "rowPadding": 6,
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    },
+    "font": "Arial",
+    "header": {
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    }
+  }
+}

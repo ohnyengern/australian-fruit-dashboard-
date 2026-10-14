@@ -1,0 +1,43 @@
+Fruit,Destination,ExportTonnes,Bend
+Apple,Papua New Guinea,681,3
+Apple,Hong Kong,291,3
+Apple,Thailand,160,-10
+Apple,Singapore,126,-10
+Apple,Malaysia,104,-6
+Apple,Others,377,0
+Avocado,Hong Kong,5714,-2
+Avocado,Singapore,3658,-10
+Avocado,Malaysia,3087,-6
+Avocado,United Arab Emirates,409,-18
+Avocado,Japan,403,8
+Avocado,Others,889,0
+Blueberry,Hong Kong,404,6
+Blueberry,Singapore,187,-8
+Blueberry,Indonesia,80,-12
+Blueberry,Thailand,48,0
+Blueberry,Malaysia,28,4
+Blueberry,Others,18,0
+Mandarin,China,15641,-5
+Mandarin,Thailand,12829,-15
+Mandarin,Indonesia,12722,-12
+Mandarin,Vietnam,7851,-8
+Mandarin,New Zealand,7131,12
+Mandarin,Others,38514,0
+Orange,China,39139,-5
+Orange,Japan,36731,9
+Orange,Hong Kong,26814,-2
+Orange,South Korea,10783,5
+Orange,Singapore,7705,-10
+Orange,Others,51776,0
+Strawberry,Thailand,938,-4
+Strawberry,Singapore,601,-9
+Strawberry,New Zealand,509,12
+Strawberry,Malaysia,413,4
+Strawberry,Hong Kong,85,6
+Strawberry,Others,129,0
+Table grapes,China,44841,-5
+Table grapes,Indonesia,28223,-13
+Table grapes,South Korea,9541,5
+Table grapes,Philippines,9510,1
+Table grapes,Japan,9063,9
+Table grapes,Others,39577,0

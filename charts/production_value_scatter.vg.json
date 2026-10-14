@@ -1,0 +1,310 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Does producing more mean earning more?",
+    "fontSize": 20,
+    "anchor": "start",
+    "offset": 15,
+    "font": "Arial"
+  },
+  "width": 720,
+  "height": 410,
+  "data": {
+    "url": "../data/fruit_production_value.csv",
+    "format": {
+      "type": "csv"
+    }
+  },
+  "transform": [
+    {
+      "calculate": "toNumber(datum.ProductionTonnes)",
+      "as": "ProductionTonnesNum"
+    },
+    {
+      "calculate": "toNumber(datum.ProductionValueM)",
+      "as": "ProductionValueMNum"
+    },
+    {
+      "calculate": "datum.Fruit == 'Blueberry' ? 28000 : datum.Fruit == 'Strawberry' ? 90010 : datum.Fruit == 'Avocado' ? 142000 : datum.Fruit == 'Table grapes' ? 260000 : datum.Fruit == 'Mandarin' ? 255000 : datum.Fruit == 'Apple' ? 310000 : datum.Fruit == 'Banana' ? 385000 : datum.Fruit == 'Orange' ? 555000 : datum.ProductionTonnesNum",
+      "as": "LabelX"
+    },
+    {
+      "calculate": "datum.Fruit == 'Blueberry' ? 560 : datum.Fruit == 'Strawberry' ? 505 : datum.Fruit == 'Avocado' ? 695 : datum.Fruit == 'Table grapes' ? 850 : datum.Fruit == 'Mandarin' ? 430 : datum.Fruit == 'Apple' ? 650 : datum.Fruit == 'Banana' ? 695 : datum.Fruit == 'Orange' ? 565 : datum.ProductionValueMNum",
+      "as": "LabelY"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 180,
+        "opacity": 0.9,
+        "stroke": "#ffffff",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "x": {
+          "field": "ProductionTonnesNum",
+          "type": "quantitative",
+          "title": "Production volume (tonnes)",
+          "scale": {
+            "domain": [
+              0,
+              600000
+            ]
+          },
+          "axis": {
+            "format": ",.0f",
+            "grid": true
+          }
+        },
+        "y": {
+          "field": "ProductionValueMNum",
+          "type": "quantitative",
+          "title": "Production value ($ million)",
+          "scale": {
+            "domain": [
+              0,
+              900
+            ]
+          },
+          "axis": {
+            "format": ",.0f",
+            "grid": true
+          }
+        },
+        "color": {
+          "field": "Fruit",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "Apple",
+              "Avocado",
+              "Banana",
+              "Blueberry",
+              "Mandarin",
+              "Orange",
+              "Strawberry",
+              "Table grapes"
+            ],
+            "range": [
+              "#4c78a8",
+              "#f58518",
+              "#A59837",
+              "#72b7b2",
+              "#54a24b",
+              "#eeca3b",
+              "#b279a2",
+              "#ff9da6"
+            ]
+          }
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit:"
+          },
+          {
+            "field": "ProductionTonnesNum",
+            "type": "quantitative",
+            "title": "Production volume (tonnes):",
+            "format": ",.0f"
+          },
+          {
+            "field": "ProductionValueMNum",
+            "type": "quantitative",
+            "title": "Production value ($m):",
+            "format": ",.1f"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "fontSize": 12,
+        "fontWeight": "normal",
+        "color": "#333333",
+        "align": "center",
+        "baseline": "middle",
+        "font": "Arial"
+      },
+      "encoding": {
+        "x": {
+          "field": "LabelX",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "LabelY",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "Fruit",
+          "type": "nominal"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "x": 212000,
+            "y": 860,
+            "x2": 228882,
+            "y2": 874.9
+          }
+        ]
+      },
+      "mark": {
+        "type": "rule",
+        "stroke": "#333333",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "x2": {
+          "field": "x2"
+        },
+        "y2": {
+          "field": "y2"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "x": 209000,
+            "y": 858,
+            "label": [
+              "Highest production value despite",
+              "a relatively smaller harvest"
+            ]
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "baseline": "middle",
+        "fontSize": 12,
+        "color": "#333333",
+        "font": "Arial"
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "x": 548000,
+            "y": 435,
+            "x2": 572540,
+            "y2": 541.8
+          }
+        ]
+      },
+      "mark": {
+        "type": "rule",
+        "stroke": "#333333",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "x2": {
+          "field": "x2"
+        },
+        "y2": {
+          "field": "y2"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "x": 455000,
+            "y": 420,
+            "label": [
+              "High production volume,",
+              "but relatively low",
+              "production value"
+            ]
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "fontSize": 12,
+        "color": "#333333",
+        "font": "Arial"
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label"
+        }
+      }
+    }
+  ],
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "font": "Arial",
+    "axis": {
+      "labelFont": "Arial",
+      "titleFont": "Arial",
+      "labelFontSize": 12,
+      "titleFontSize": 13
+    },
+    "legend": {
+      "labelFont": "Arial",
+      "titleFont": "Arial",
+      "labelFontSize": 12,
+      "titleFontSize": 15
+    },
+    "header": {
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    }
+  }
+}

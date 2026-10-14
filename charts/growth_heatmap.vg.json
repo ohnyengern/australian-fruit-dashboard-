@@ -1,0 +1,166 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "How has production changed from year to year?",
+    "fontSize": 20,
+    "anchor": "start",
+    "offset": 15,
+    "font": "Arial"
+  },
+  "data": {
+    "url": "../data/abs_fruit_production.csv",
+    "format": {
+      "type": "csv"
+    }
+  },
+  "transform": [
+    {
+      "fold": [
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "as": [
+        "Year",
+        "ProductionRaw"
+      ]
+    },
+    {
+      "calculate": "toNumber(datum.ProductionRaw)",
+      "as": "Production"
+    },
+    {
+      "calculate": "datum.Year == '2021' ? 1 : datum.Year == '2022' ? 2 : datum.Year == '2023' ? 3 : datum.Year == '2024' ? 4 : 5",
+      "as": "YearOrder"
+    },
+    {
+      "window": [
+        {
+          "op": "lag",
+          "field": "Production",
+          "as": "PreviousProduction"
+        }
+      ],
+      "sort": [
+        {
+          "field": "YearOrder",
+          "order": "ascending"
+        }
+      ],
+      "groupby": [
+        "Fruit"
+      ]
+    },
+    {
+      "filter": "datum.PreviousProduction != null"
+    },
+    {
+      "calculate": "((datum.Production - datum.PreviousProduction) / datum.PreviousProduction) * 100",
+      "as": "YoYGrowth"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "rect",
+        "stroke": "white",
+        "strokeWidth": 2
+      },
+      "encoding": {
+        "x": {
+          "field": "Year",
+          "type": "ordinal",
+          "title": "Year ending June",
+          "sort": [
+            "2022",
+            "2023",
+            "2024",
+            "2025"
+          ],
+          "axis": {
+            "labelAngle": 0,
+            "titleFontSize": 13,
+            "titlePadding": 12
+          }
+        },
+        "y": {
+          "field": "Fruit",
+          "type": "nominal",
+          "title": null
+        },
+        "color": {
+          "field": "YoYGrowth",
+          "type": "quantitative",
+          "title": "Annual change (%)",
+          "scale": {
+            "scheme": "redblue",
+            "domainMid": 0
+          },
+          "legend": {
+            "titleOrient": "top",
+            "orient": "right",
+            "direction": "vertical",
+            "gradientLength": 300,
+            "titleLimit": 180,
+            "labelLimit": 80
+          }
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit:"
+          },
+          {
+            "field": "Year",
+            "type": "ordinal",
+            "title": "Year ending June:"
+          },
+          {
+            "field": "Production",
+            "type": "quantitative",
+            "title": "Production (tonnes):",
+            "format": ","
+          },
+          {
+            "field": "YoYGrowth",
+            "type": "quantitative",
+            "title": "Change from previous year:",
+            "format": ".1f"
+          }
+        ]
+      }
+    }
+  ],
+  "width": 640,
+  "height": 360,
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 13,
+      "labelColor": "#444444",
+      "titleColor": "#222222",
+      "domain": false,
+      "ticks": false,
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    },
+    "legend": {
+      "labelFontSize": 12,
+      "titleFontSize": 15,
+      "titleOrient": "top",
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    },
+    "font": "Arial",
+    "header": {
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    }
+  }
+}
