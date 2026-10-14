@@ -54,7 +54,7 @@
     },
     {
       "data": {
-        "url": "../data/ne_110m_graticules_30.json",
+        "url": "data/ne_110m_graticules_30.json",
         "format": {
           "type": "topojson",
           "feature": "ne_110m_graticules_30"
@@ -71,7 +71,7 @@
     },
     {
       "data": {
-        "url": "../data/ne_110m_admin_0_countries.json",
+        "url": "data/ne_110m_admin_0_countries.json",
         "format": {
           "type": "topojson",
           "feature": "ne_110m_admin_0_countries"
@@ -87,7 +87,7 @@
     },
     {
       "data": {
-        "url": "../data/hort_fruit_exports.csv",
+        "url": "data/hort_fruit_exports.csv",
         "format": {
           "type": "csv"
         }
@@ -103,7 +103,7 @@
           "lookup": "Destination",
           "from": {
             "data": {
-              "url": "../data/country_locations.csv",
+              "url": "data/country_locations.csv",
               "format": {
                 "type": "csv"
               }
@@ -127,7 +127,7 @@
           "lookup": "Origin",
           "from": {
             "data": {
-              "url": "../data/country_locations.csv",
+              "url": "data/country_locations.csv",
               "format": {
                 "type": "csv"
               }
@@ -277,7 +277,7 @@
     },
     {
       "data": {
-        "url": "../data/hort_fruit_exports.csv",
+        "url": "data/hort_fruit_exports.csv",
         "format": {
           "type": "csv"
         }
@@ -293,7 +293,7 @@
           "lookup": "Destination",
           "from": {
             "data": {
-              "url": "../data/country_locations.csv",
+              "url": "data/country_locations.csv",
               "format": {
                 "type": "csv"
               }
@@ -357,7 +357,7 @@
     },
     {
       "data": {
-        "url": "../data/hort_fruit_exports.csv",
+        "url": "data/hort_fruit_exports.csv",
         "format": {
           "type": "csv"
         }
@@ -373,7 +373,7 @@
           "lookup": "Destination",
           "from": {
             "data": {
-              "url": "../data/country_locations.csv",
+              "url": "data/country_locations.csv",
               "format": {
                 "type": "csv"
               }
@@ -426,7 +426,7 @@
     },
     {
       "data": {
-        "url": "../data/hort_fruit_exports.csv",
+        "url": "data/hort_fruit_exports.csv",
         "format": {
           "type": "csv"
         }
@@ -442,7 +442,7 @@
           "lookup": "Destination",
           "from": {
             "data": {
-              "url": "../data/country_locations.csv",
+              "url": "data/country_locations.csv",
               "format": {
                 "type": "csv"
               }
@@ -496,7 +496,7 @@
     },
     {
       "data": {
-        "url": "../data/hort_fruit_exports.csv",
+        "url": "data/hort_fruit_exports.csv",
         "format": {
           "type": "csv"
         }
@@ -512,7 +512,7 @@
           "lookup": "Destination",
           "from": {
             "data": {
-              "url": "../data/country_locations.csv",
+              "url": "data/country_locations.csv",
               "format": {
                 "type": "csv"
               }
@@ -565,7 +565,7 @@
     },
     {
       "data": {
-        "url": "../data/hort_fruit_exports.csv",
+        "url": "data/hort_fruit_exports.csv",
         "format": {
           "type": "csv"
         }
@@ -581,7 +581,7 @@
           "lookup": "Destination",
           "from": {
             "data": {
-              "url": "../data/country_locations.csv",
+              "url": "data/country_locations.csv",
               "format": {
                 "type": "csv"
               }
@@ -634,7 +634,7 @@
     },
     {
       "data": {
-        "url": "../data/hort_fruit_exports.csv",
+        "url": "data/hort_fruit_exports.csv",
         "format": {
           "type": "csv"
         }
@@ -650,7 +650,7 @@
           "lookup": "Destination",
           "from": {
             "data": {
-              "url": "../data/country_locations.csv",
+              "url": "data/country_locations.csv",
               "format": {
                 "type": "csv"
               }
@@ -703,7 +703,7 @@
     },
     {
       "data": {
-        "url": "../data/hort_fruit_exports.csv",
+        "url": "data/hort_fruit_exports.csv",
         "format": {
           "type": "csv"
         }
@@ -719,7 +719,7 @@
           "lookup": "Destination",
           "from": {
             "data": {
-              "url": "../data/country_locations.csv",
+              "url": "data/country_locations.csv",
               "format": {
                 "type": "csv"
               }
@@ -772,7 +772,7 @@
     },
     {
       "data": {
-        "url": "../data/hort_fruit_exports.csv",
+        "url": "data/hort_fruit_exports.csv",
         "format": {
           "type": "csv"
         }
@@ -788,7 +788,7 @@
           "lookup": "Destination",
           "from": {
             "data": {
-              "url": "../data/country_locations.csv",
+              "url": "data/country_locations.csv",
               "format": {
                 "type": "csv"
               }
@@ -842,7 +842,7 @@
     },
     {
       "data": {
-        "url": "../data/hort_fruit_exports.csv",
+        "url": "data/hort_fruit_exports.csv",
         "format": {
           "type": "csv"
         }
@@ -858,7 +858,7 @@
           "lookup": "Destination",
           "from": {
             "data": {
-              "url": "../data/country_locations.csv",
+              "url": "data/country_locations.csv",
               "format": {
                 "type": "csv"
               }
@@ -911,7 +911,7 @@
     },
     {
       "data": {
-        "url": "../data/hort_fruit_exports.csv",
+        "url": "data/hort_fruit_exports.csv",
         "format": {
           "type": "csv"
         }
@@ -927,7 +927,7 @@
           "lookup": "Destination",
           "from": {
             "data": {
-              "url": "../data/country_locations.csv",
+              "url": "data/country_locations.csv",
               "format": {
                 "type": "csv"
               }

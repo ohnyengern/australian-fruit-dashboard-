@@ -10,7 +10,7 @@
   "width": 720,
   "height": 410,
   "data": {
-    "url": "../data/fruit_production_value.csv",
+    "url": "data/fruit_production_value.csv",
     "format": {
       "type": "csv"
     }

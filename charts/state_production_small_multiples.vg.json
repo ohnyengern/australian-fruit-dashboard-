@@ -9,7 +9,7 @@
     "font": "Arial"
   },
   "data": {
-    "url": "../data/fruit_state_year_small_multiples.csv",
+    "url": "data/fruit_state_year_small_multiples.csv",
     "format": {
       "type": "csv"
     }
@@ -51,7 +51,7 @@
       "lookup": "State",
       "from": {
         "data": {
-          "url": "../data/australia_states.json",
+          "url": "data/australia_states.json",
           "format": {
             "type": "topojson",
             "feature": "STE_2026_AUST_GDA2020"
