@@ -433,7 +433,7 @@
             "filter": "datum.Fruit == 'Orange' && datum.State == 'New South Wales'"
           },
           {
-            "calculate": "[\"New South Wales leads\",\"orange production due to\",\"ideal climates and\",\"Riverina water access.\"]",
+            "calculate": "[\"New South Wales leads\",\"orange production due to\",\"ideal climates and\",\"Riverina water access\"]",
             "as": "line"
           },
           {
@@ -442,7 +442,7 @@
             ]
           },
           {
-            "calculate": "indexof([\"New South Wales leads\",\"orange production due to\",\"ideal climates and\",\"Riverina water access.\"], datum.line)",
+            "calculate": "indexof([\"New South Wales leads\",\"orange production due to\",\"ideal climates and\",\"Riverina water access\"], datum.line)",
             "as": "i"
           },
           {
