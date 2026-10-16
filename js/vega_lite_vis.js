@@ -26,48 +26,6 @@ const embedOptions = {
   scaleFactor: 3
 };
 
-// Derived comparisons complement the marks rather than repeat point values.
-const chartInsights = {
-  "#production_lollipop": {
-    lines: ["The three largest fruits supply 64% of tonnage.", "Large crops carry more weight in the total."],
-    x: 0.48, y: 0.76,
-    calculation: "(572,540 + 368,701 + 295,691) / 1,943,939 = 63.6% of the eight selected fruits."
-  },
-  "#production_trend": {
-    lines: ["Oranges supplied 41% of the net increase", "across the eight selected fruits."],
-    x: 0.28, y: 0.22,
-    calculation: "Orange increase 98,843 tonnes / combined net increase 243,270 tonnes = 40.6%, 2021–2025."
-  },
-  "#production_rank_bump": {
-    lines: ["Avocados: 68% more production, unchanged rank."],
-    x: 0.24, y: 0.66,
-    calculation: "Avocado production rose from 78,085 to 131,385 tonnes (+68.3%), remaining sixth."
-  }
-};
-function addChartInsight(spec, target) {
-  const note = chartInsights[target];
-  if (!note) return spec;
-  const context = document.createElement("canvas").getContext("2d");
-  context.font = `${typography.label}px Arial`;
-  const boxWidth = Math.ceil(Math.max(...note.lines.map(line => context.measureText(line).width))) + 16;
-  const boxHeight = note.lines.length * (typography.label + 4) + 12;
-  note.minWidth = boxWidth + 80;
-  const visible = { signal: `width >= ${note.minWidth} * typographyScale ? 1 : 0` };
-  const x = `max(0, min(width * ${note.x}, width - ${boxWidth} * typographyScale))`;
-  const y = `height * ${note.y}`;
-  spec.marks.push({name:"insightBackground", type:"rect", encode:{update:{
-    opacity:visible, x:{signal:x}, y:{signal:y}, width:{signal:`${boxWidth} * typographyScale`},
-    height:{signal:`${boxHeight} * typographyScale`}, fill:{value:"#eeeeee"},
-    tooltip:{value:note.calculation}
-  }}}, {name:"insightText",type:"text",encode:{update:{
-    opacity:visible, x:{signal:`(${x}) + 8 * typographyScale`},y:{signal:`(${y}) + 6 * typographyScale`},
-    text:{value:note.lines},align:{value:"left"},baseline:{value:"top"},
-    lineHeight:{signal:`${typography.label + 4} * typographyScale`},fill:{value:"#333333"},
-    tooltip:{value:note.calculation}
-  }}});
-  return spec;
-}
-
 // CSS and Vega read the same typography tokens. Chart geometry can resize,
 // but text is measured in screen pixels rather than scaled with an SVG.
 const typographyStyle = getComputedStyle(document.documentElement);
@@ -320,15 +278,7 @@ async function embedChart(target, source, options) {
     : target === "#state_production_map" ? compileProductionMap(spec)
     : ["#production_value_scatter", "#export_value_waterfall"].includes(target) ? compileBoxedAnnotations(spec)
     : options.mode === "vega" ? spec : vegaLite.compile(spec).spec;
-  const result = await vegaEmbed(target, standardiseVegaTypography(addChartInsight(compiled, target)), { ...options, mode: "vega" });
-  let insightFallback;
-  if (chartInsights[target]) {
-    insightFallback = document.createElement("p");
-    insightFallback.className = "chart-insight-fallback";
-    insightFallback.hidden = true;
-    insightFallback.textContent = chartInsights[target].lines.join(" ");
-    chartElement.after(insightFallback);
-  }
+  const result = await vegaEmbed(target, standardiseVegaTypography(compiled), { ...options, mode: "vega" });
   let previousWidth;
   let previousScale;
   let pendingLayout = Promise.resolve();
@@ -346,9 +296,6 @@ async function embedChart(target, source, options) {
       if (target === "#state_production_map") result.view.signal("annotationScale", scale);
       await result.view.runAsync();
       fitChartSvg(svg);
-      if (insightFallback) {
-        insightFallback.hidden = result.view.width() * Math.abs(svg.getScreenCTM().a) >= chartInsights[target].minWidth;
-      }
     }).catch(console.error);
   };
   chartTypographyUpdates.set(chartElement, updateTypography);
@@ -522,33 +469,6 @@ embedChart(
   embedOptions
 ).then(result => {
   const chart = document.getElementById("export_flow_map");
-  // Expose destination dependence and the map's coverage, using all rows
-  // including the omitted "Others" group as the export-tonnage denominator.
-  fetch(new URL("data/hort_fruit_exports.csv", window.location.href), { cache: "no-store" })
-    .then(response => { if (!response.ok) throw new Error("Could not load destination summary"); return response.text(); })
-    .then(csv => {
-      const rows = vega.read(csv, { type: "csv" });
-      const note = document.querySelector(".flow-market-insight");
-      const updateNote = () => {
-        const fruit = result.view.signal("FruitSelection");
-        const selected = rows.filter(row => row.Fruit === fruit);
-        const total = selected.reduce((sum, row) => sum + Number(row.ExportTonnes), 0);
-        const named = selected.filter(row => row.Destination !== "Others")
-          .sort((a, b) => Number(b.ExportTonnes) - Number(a.ExportTonnes));
-        if (!total || !named.length) return;
-        const largest = named[0];
-        const coverage = Math.round(named.reduce((sum, row) => sum + Number(row.ExportTonnes), 0) / total * 100);
-        const lines = [
-          `${largest.Destination} takes ${Math.round(Number(largest.ExportTonnes) / total * 100)}% of ${fruit === "Table grapes" ? "table-grape" : fruit.toLowerCase()} export tonnage.`,
-          `Five named markets account for ${coverage}%; other destinations are omitted.`
-        ];
-        note.replaceChildren(...lines.map(line => {
-          const span = document.createElement("span"); span.className = "reading-line"; span.textContent = line; return span;
-        }));
-      };
-      result.view.addSignalListener("FruitSelection", updateNote);
-      updateNote();
-    }).catch(console.error);
   const bindings = chart.querySelector(".vega-bindings");
   if (bindings) document.getElementById("export-map-controls").appendChild(bindings);
   const legend = document.getElementById("export-volume-legend");
