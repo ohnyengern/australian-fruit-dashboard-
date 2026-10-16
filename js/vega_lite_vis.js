@@ -199,12 +199,15 @@ function compileBoxedAnnotations(spec) {
         const originY = `${centreY} - 8 * typographyScale`;
         update.x = { signal: originX };
         update.y = { signal: originY };
-        // Stop at the dot's edge, leaving the coloured marker unobscured.
+        // Reach slightly inside the coloured fill so the marker's white
+        // outline and antialiasing cannot leave a visible connector gap.
+        const point = spec.layer.find(layer => layer.mark?.type === "point").mark;
+        const radius = Math.max(0, Math.sqrt(point.size) / 2 - (point.strokeWidth || 0) / 2 - 0.25);
         const targetX = "scale('x', datum.x2)", targetY = "scale('y', datum.y2)";
         const dx = `((${targetX}) - (${originX}))`, dy = `((${targetY}) - (${originY}))`;
         const distance = `max(1, sqrt(pow(${dx}, 2) + pow(${dy}, 2)))`;
-        update.x2 = { signal: `(${targetX}) - ${dx} * 8 * typographyScale / ${distance}` };
-        update.y2 = { signal: `(${targetY}) - ${dy} * 8 * typographyScale / ${distance}` };
+        update.x2 = { signal: `(${targetX}) - ${dx} * ${radius} / ${distance}` };
+        update.y2 = { signal: `(${targetY}) - ${dy} * ${radius} / ${distance}` };
       }
     }
   });
