@@ -23,12 +23,368 @@ const embedOptions = {
   scaleFactor: 3
 };
 
+// CSS and Vega read the same typography tokens. Chart geometry can resize,
+// but text is measured in screen pixels rather than scaled with an SVG.
+const typographyStyle = getComputedStyle(document.documentElement);
+const typography = {
+  axisTitle: parseFloat(typographyStyle.getPropertyValue("--font-axis-title")),
+  label: parseFloat(typographyStyle.getPropertyValue("--font-chart-label")),
+  body: parseFloat(typographyStyle.getPropertyValue("--font-body"))
+};
+const chartTypographyUpdates = new WeakMap();
+function standardiseVegaTypography(spec) {
+  spec.signals ||= [];
+  spec.signals.push({ name: "typographyScale", value: 1 });
+  const size = value => ({ signal: `${value} * typographyScale` });
+  function visit(group) {
+    (group.axes || []).forEach(axis => {
+      axis.labelFontSize = size(typography.label);
+      axis.titleFontSize = size(typography.axisTitle);
+      axis.labelFont = axis.titleFont = "Arial";
+    });
+    (group.legends || []).forEach(legend => {
+      legend.labelFontSize = size(typography.label);
+      legend.titleFontSize = size(typography.body);
+      legend.labelFont = legend.titleFont = "Arial";
+    });
+    (group.marks || []).forEach(mark => {
+      if (mark.type === "text") {
+        mark.encode ||= {};
+        mark.encode.update ||= {};
+        // Production-map callouts scale their padding and box with the text.
+        if (!mark.encode.update.fontSize?.signal?.includes("annotationScale")) {
+          mark.encode.update.fontSize = size(typography.label);
+        }
+        mark.encode.update.font = { value: "Arial" };
+      }
+      visit(mark);
+    });
+  }
+  visit(spec);
+  return spec;
+}
+function addChartHeading(target, title) {
+  const chart = document.querySelector(target);
+  if (!title || chart.closest(".chart-column").querySelector(".map-title, .chart-title")) return;
+  const heading = document.createElement("h3");
+  heading.className = "chart-title";
+  heading.textContent = Array.isArray(title.text) ? title.text.join(" ") : title.text || title;
+  chart.before(heading);
+  mapHeadingObserver.observe(heading);
+}
+
+// Build a single filled arrow from a projected route. Its shaft uses the
+// same thickness scale as the legend; the head joins it without seams.
+function exportArrowPath(rows, thickness, xField, yField) {
+  const points = [...rows].sort((a, b) => a.PathOrder - b.PathOrder)
+    .map(row => [Number(row[xField]), Number(row[yField])]);
+  if (points.length < 3 || !points.flat().every(Number.isFinite)) return "";
+  const [start, control, end] = points;
+  const at = t => [
+    (1 - t) ** 2 * start[0] + 2 * (1 - t) * t * control[0] + t * t * end[0],
+    (1 - t) ** 2 * start[1] + 2 * (1 - t) * t * control[1] + t * t * end[1]
+  ];
+  const normal = t => {
+    const dx = 2 * (1 - t) * (control[0] - start[0]) + 2 * t * (end[0] - control[0]);
+    const dy = 2 * (1 - t) * (control[1] - start[1]) + 2 * t * (end[1] - control[1]);
+    const length = Math.hypot(dx, dy) || 1;
+    return [-dy / length, dx / length];
+  };
+  const headLength = Math.max(12, thickness * 2);
+  const headWidth = Math.max(8, thickness * 1.9);
+  let distance = 0;
+  let baseT = 0;
+  let previous = end;
+  for (let i = 199; i >= 0; i--) {
+    const point = at(i / 200);
+    const segment = Math.hypot(point[0] - previous[0], point[1] - previous[1]);
+    if (distance + segment >= headLength) {
+      baseT = (i + 1 - (headLength - distance) / segment) / 200;
+      break;
+    }
+    distance += segment;
+    previous = point;
+  }
+  const left = [], right = [];
+  for (let i = 0; i <= 120; i++) {
+    const t = baseT * i / 120;
+    const point = at(t), n = normal(t);
+    left.push([point[0] + n[0] * thickness / 2, point[1] + n[1] * thickness / 2]);
+    right.push([point[0] - n[0] * thickness / 2, point[1] - n[1] * thickness / 2]);
+  }
+  const base = at(baseT);
+  const dx = end[0] - base[0], dy = end[1] - base[1];
+  const length = Math.hypot(dx, dy) || 1;
+  const n = [-dy / length, dx / length];
+  const outline = [...left,
+    [base[0] + n[0] * headWidth / 2, base[1] + n[1] * headWidth / 2], end,
+    [base[0] - n[0] * headWidth / 2, base[1] - n[1] * headWidth / 2],
+    ...right.reverse()];
+  return outline.map((point, index) => `${index ? "L" : "M"}${point.map(value => value.toFixed(3)).join(",")}`).join("") + "Z";
+}
+
+function compileExportArrows(spec) {
+  vega.expressionFunction("exportArrowPath", exportArrowPath);
+  const compiled = vegaLite.compile(spec).spec;
+  const route = compiled.marks.find(mark => mark.type === "group" && mark.marks?.some(child => child.type === "line"));
+  const line = route.marks.find(mark => mark.type === "line");
+  const update = line.encode.update;
+  route.data = [{ name: "exportRoute", source: line.from.data, transform: [{ type: "filter", expr: "datum.PathOrder == 0" }] }];
+  route.marks = [{
+    name: "exportFlowArrow", type: "path", clip: true,
+    from: { data: "exportRoute" },
+    encode: { update: {
+      path: { signal: `exportArrowPath(data('${line.from.data}'), scale('strokeWidth', datum.ExportTonnesNum), '${update.x.field}', '${update.y.field}')` },
+      fill: { value: "#8F5601" }, opacity: { value: 0.8 },
+      tooltip: update.tooltip, description: update.description,
+      ariaRoleDescription: { value: "export flow arrow" }
+    } }
+  }];
+  return compiled;
+}
+
+// Size chart callouts to their text, using the same borderless grey as
+// the Sankey. Padding and line spacing follow the shared annotation size.
+function compileBoxedAnnotations(spec) {
+  const context = document.createElement("canvas").getContext("2d");
+  context.font = `${typography.label}px Arial`;
+  const boxes = new Map();
+  spec.layer = spec.layer.flatMap(layer => {
+    if (!layer.name?.endsWith("AnnotationText")) return [layer];
+    const datum = layer.data.values[0];
+    const box = {
+      x: datum.x, y: datum.y, fruit: datum.Fruit,
+      width: Math.ceil(Math.max(...datum.label.map(line => context.measureText(line).width))) + 16,
+      height: datum.label.length * (typography.label + 4) + 12,
+      rightAligned: layer.name.startsWith("grape")
+    };
+    boxes.set(layer.name.split("Annotation")[0], box);
+    return [{
+      name: layer.name.replace("Text", "Background"),
+      data: layer.data,
+      mark: { type: "rect", width: box.width, height: box.height, fill: "#eeeeee", stroke: null },
+      encoding: { x: layer.encoding.x, y: layer.encoding.y }
+    }, layer];
+  });
+  const compiled = vegaLite.compile(spec).spec;
+  compiled.marks.forEach(mark => {
+    if (!mark.name?.includes("Annotation")) return;
+    const box = boxes.get(mark.name.split("Annotation")[0]);
+    if (!box) return;
+    const update = mark.encode.update;
+    const centre = box.fruit ? `scale('x', ${JSON.stringify(box.fruit)}) + bandwidth('x') / 2` : `scale('x', ${box.x})`;
+    const left = `${centre}${box.fruit ? ` - ${box.width / 2} * typographyScale` : box.rightAligned ? ` - ${box.width} * typographyScale` : ""}`;
+    const top = `scale('y', ${box.y}) - ${box.height / 2} * typographyScale`;
+    if (mark.name.endsWith("Background_marks")) {
+      delete update.xc; delete update.yc;
+      update.x = { signal: left }; update.y = { signal: top };
+      update.width = { signal: `${box.width} * typographyScale` };
+      update.height = { signal: `${box.height} * typographyScale` };
+    } else if (mark.name.endsWith("Text_marks")) {
+      update.x = { signal: `(${left}) + 8 * typographyScale` };
+      update.y = { signal: `(${top}) + 6 * typographyScale` };
+      update.align = { value: "left" }; update.baseline = { value: "top" };
+      update.lineHeight = { signal: `${typography.label + 4} * typographyScale` };
+    } else if (mark.name.endsWith("Leader_marks")) {
+      if (box.fruit) {
+        update.y2 = { signal: `(${top}) + ${box.height} * typographyScale` };
+      } else {
+        update.x = { signal: `(${left}) + ${box.width} * typographyScale` };
+        update.y = { signal: `scale('y', ${box.y}) - 8 * typographyScale` };
+      }
+    }
+  });
+  return compiled;
+}
+
+function compileProductionMap(spec) {
+  const context = document.createElement("canvas").getContext("2d");
+  context.font = `${typography.label}px Arial`;
+  const boxes = new Map();
+  spec.layer.filter(layer => layer.name?.endsWith("AnnotationText")).forEach(layer => {
+    const lines = JSON.parse(layer.transform.find(transform => transform.as === "NoteLines").calculate);
+    boxes.set(layer.name.split("Annotation")[0], {
+      width: Math.ceil(Math.max(...lines.map(line => context.measureText(line).width))) + 16,
+      height: lines.length * (typography.label + 2) + 16
+    });
+  });
+  spec.layer.filter(layer => layer.name?.endsWith("AnnotationBackground")).forEach(layer => {
+    Object.assign(layer.mark, boxes.get(layer.name.split("Annotation")[0]));
+  });
+  const compiled = vegaLite.compile(spec).spec;
+  compiled.signals.push({ name: "annotationScale", value: 1 });
+  compiled.marks.forEach(mark => {
+    if (!mark.name?.includes("Annotation")) return;
+    const update = mark.encode.update;
+    const box = boxes.get(mark.name.split("Annotation")[0]);
+    // Geographic rectangles are centered by Vega-Lite. Anchor these callout
+    // boxes at their top-left so their text and connectors share that anchor.
+    if (mark.name.endsWith("AnnotationBackground_marks")) {
+      if (update.xc) { update.x = update.xc; delete update.xc; }
+      if (update.yc) { update.y = update.yc; delete update.yc; }
+      update.width = { signal: `${box.width} * annotationScale` };
+      update.height = { signal: `${box.height} * annotationScale` };
+    } else if (mark.name.endsWith("AnnotationText_marks")) {
+      update.fontSize = { signal: `${typography.label} * annotationScale` };
+      update.dx = { signal: "8 * annotationScale" };
+      update.dy = { signal: `(8 + datum.NoteLineIndex * ${typography.label + 2}) * annotationScale` };
+    } else if (mark.name.endsWith("AnnotationLeader_marks")) {
+      const offset = mark.name.startsWith("banana") ? 0 : box.width;
+      update.x = { signal: `datum['${update.x.field}'] + ${offset} * annotationScale` };
+      update.y = { signal: `datum['${update.y.field}'] + ${box.height / 2} * annotationScale` };
+    }
+  });
+  return compiled;
+}
+
+// Keep headings in HTML and render every chart with the shared typography.
+async function embedChart(target, source, options) {
+  let spec = source;
+  if (typeof source === "string") {
+    const response = await fetch(source);
+    if (!response.ok) throw new Error(`Could not load chart: ${source}`);
+    spec = await response.json();
+  }
+  // Match the full divider width. Vega fits labels and legends within this
+  // width, reserving only the space they actually need instead of wide gutters.
+  const chartElement = document.querySelector(target);
+  spec.width = spec.projection ? 1030 : chartElement.clientWidth;
+  spec.padding = 0;
+  spec.autosize = { type: "fit-x", contains: "padding" };
+  if (["#state_production_map", "#state_growth_choropleth"].includes(target)) {
+    // These map titles span the full card above the map/sidebar layout.
+    delete spec.title;
+    spec.width = 720;
+  }
+  if (target === "#export_flow_map") delete spec.title;
+  if (!spec.projection && options.mode !== "vega") {
+    spec.height = 400;
+    spec.config = {
+      ...spec.config,
+      // Match the original 720 × 400 plot's automatic tick density,
+      // independent of the wider rendered chart.
+      axisQuantitative: { tickCount: 10, ...spec.config?.axisQuantitative },
+      axisX: { tickCount: 18, ...spec.config?.axisX }
+    };
+  }
+  addChartHeading(target, spec.title);
+  delete spec.title;
+  const compiled = target === "#export_flow_map" ? compileExportArrows(spec)
+    : target === "#state_production_map" ? compileProductionMap(spec)
+    : ["#production_value_scatter", "#export_value_waterfall"].includes(target) ? compileBoxedAnnotations(spec)
+    : options.mode === "vega" ? spec : vegaLite.compile(spec).spec;
+  const result = await vegaEmbed(target, standardiseVegaTypography(compiled), { ...options, mode: "vega" });
+  let previousWidth;
+  let previousScale;
+  let pendingLayout = Promise.resolve();
+  const updateTypography = () => {
+    const svg = chartElement.querySelector("svg.marks");
+    if (!svg) return;
+    const width = chartElement.clientWidth;
+    const scale = 1 / Math.abs(svg.getScreenCTM().a);
+    if (width === previousWidth && Math.abs(scale - previousScale) < 0.0001) return;
+    previousWidth = width;
+    previousScale = scale;
+    pendingLayout = pendingLayout.then(async () => {
+      if (!spec.projection) result.view.width(width).resize();
+      result.view.signal("typographyScale", scale);
+      if (target === "#state_production_map") result.view.signal("annotationScale", scale);
+      await result.view.runAsync();
+      fitChartSvg(svg);
+    }).catch(console.error);
+  };
+  chartTypographyUpdates.set(chartElement, updateTypography);
+  const typographyObserver = new ResizeObserver(updateTypography);
+  typographyObserver.observe(chartElement);
+  typographyObserver.observe(chartElement.querySelector("svg.marks"));
+  requestAnimationFrame(updateTypography);
+  if (target === "#fruit_sankey") {
+    const context = document.createElement("canvas").getContext("2d");
+    const labels = result.view.data("destinations").flatMap(row => [row.Destination, `${Number(row.Tonnes).toLocaleString("en-US")} t`]);
+    const widths = labels.map(label => {
+      context.font = `${typography.label}px Arial`;
+      const metrics = context.measureText(label);
+      return metrics.actualBoundingBoxLeft + metrics.actualBoundingBoxRight;
+    });
+    context.font = `bold ${typography.label}px Arial`;
+    const heading = context.measureText("Destination / Use");
+    widths.push(heading.actualBoundingBoxLeft + heading.actualBoundingBoxRight);
+    await result.view.signal("destinationLabelWidth", Math.max(...widths)).runAsync();
+  }
+  return result;
+}
+
+// Preserve inline emphasis while limiting each rendered narrative line to ten
+// words. Breaks adapt to the actual column width rather than fixed word groups.
+const narrativeParagraphs = [...document.querySelectorAll(".explanation-column p")];
+narrativeParagraphs.forEach(paragraph => {
+  const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node => {
+    const fragment = document.createDocumentFragment();
+    for (const part of node.textContent.match(/\s+|\S+/g) || []) {
+      if (/^\s+$/.test(part) || !/[\p{L}\p{N}]/u.test(part)) fragment.append(document.createTextNode(part));
+      else {
+        const word = document.createElement("span");
+        word.className = "narrative-word";
+        word.textContent = part;
+        fragment.append(word);
+      }
+    }
+    node.replaceWith(fragment);
+  });
+});
+function limitNarrativeLines() {
+  narrativeParagraphs.forEach(paragraph => {
+    paragraph.querySelectorAll(".word-limit-break").forEach(br => br.remove());
+    const column = paragraph.closest(".explanation-column");
+    const style = getComputedStyle(column);
+    const columns = Number(style.columnCount) || 1;
+    const gap = parseFloat(style.columnGap) || 0;
+    const bounds = column.getBoundingClientRect();
+    const columnStep = (bounds.width + gap) / columns;
+    let previous;
+    let count = 0;
+    for (const word of paragraph.querySelectorAll(".narrative-word")) {
+      const rect = word.getBoundingClientRect();
+      const previousRect = previous?.getBoundingClientRect();
+      const sameLine = previousRect && Math.abs(rect.top - previousRect.top) < 1 &&
+        Math.floor((rect.left - bounds.left) / columnStep) === Math.floor((previousRect.left - bounds.left) / columnStep);
+      count = sameLine ? count + 1 : 1;
+      if (count > 10) {
+        const br = document.createElement("br");
+        br.className = "word-limit-break";
+        word.before(br);
+        count = 1;
+      }
+      previous = word;
+    }
+  });
+}
+const narrativeWidths = new WeakMap();
+let narrativeFrame;
+const narrativeObserver = new ResizeObserver(entries => {
+  let changed = false;
+  entries.forEach(({ target, contentRect }) => {
+    if (contentRect.width !== narrativeWidths.get(target)) changed = true;
+    narrativeWidths.set(target, contentRect.width);
+  });
+  if (!changed) return;
+  cancelAnimationFrame(narrativeFrame);
+  narrativeFrame = requestAnimationFrame(limitNarrativeLines);
+});
+document.querySelectorAll(".explanation-column").forEach(column => narrativeObserver.observe(column));
+document.fonts.ready.then(limitNarrativeLines);
+
+// Footer citations wrap naturally so full URLs remain on their own lines.
+
 // ======================================
 // Section 01
 // Current Production Snapshot
 // ======================================
 
-vegaEmbed(
+embedChart(
   "#production_lollipop",
   vg_1,
   embedOptions
@@ -39,25 +395,25 @@ vegaEmbed(
 // Production Over Time
 // ======================================
 
-vegaEmbed(
+embedChart(
   "#production_trend",
   vg_2,
   embedOptions
 ).catch(console.error);
 
-vegaEmbed(
+embedChart(
   "#growth_heatmap",
   vg_3,
   embedOptions
 ).catch(console.error);
 
-vegaEmbed(
+embedChart(
   "#growth_slopegraph",
   vg_4,
   embedOptions
 ).catch(console.error);
 
-vegaEmbed(
+embedChart(
   "#production_rank_bump",
   vg_6,
   embedOptions
@@ -68,18 +424,21 @@ vegaEmbed(
 // State and Territory Distribution
 // ======================================
 
-vegaEmbed(
+embedChart(
   "#state_growth_choropleth",
   vg_8,
   embedOptions
-).catch(console.error);
+).then(() => {
+  const bindings = document.querySelector("#state_growth_choropleth .vega-bindings");
+  if (bindings) document.getElementById("choropleth-map-controls").appendChild(bindings);
+}).catch(console.error);
 
 // ======================================
 // Section 04
 // Production vs Value
 // ======================================
 
-vegaEmbed(
+embedChart(
   "#production_value_scatter",
   vg_9,
   embedOptions
@@ -90,7 +449,7 @@ vegaEmbed(
 // Allocation and Exports
 // ======================================
 
-vegaEmbed(
+embedChart(
   "#fruit_sankey",
   vg_10,
   {
@@ -99,225 +458,152 @@ vegaEmbed(
   }
 ).catch(console.error);
 
-vegaEmbed(
+embedChart(
   "#export_flow_map",
   vg_11,
   embedOptions
-).catch(console.error);
+).then(result => {
+  const chart = document.getElementById("export_flow_map");
+  const bindings = chart.querySelector(".vega-bindings");
+  if (bindings) document.getElementById("export-map-controls").appendChild(bindings);
+  const legend = document.getElementById("export-volume-legend");
+  const scale = result.view.scale("strokeWidth");
+  const swatches = [];
+  [10000, 20000, 30000, 40000].forEach(volume => {
+    const item = document.createElement("div");
+    item.className = "export-volume-item";
+    const swatch = document.createElement("span");
+    swatch.className = "export-volume-swatch";
+    swatch.setAttribute("aria-hidden", "true");
+    const label = document.createElement("span");
+    label.textContent = volume.toLocaleString("en-US");
+    item.append(swatch, label);
+    legend.append(item);
+    swatches.push({ swatch, volume });
+  });
+  const sizeLegend = () => {
+    const ratio = chart.clientWidth / Number(chart.querySelector("svg.marks").getAttribute("width"));
+    swatches.forEach(({ swatch, volume }) => {
+      swatch.style.height = `${scale(volume) * ratio}px`;
+    });
+  };
+  new ResizeObserver(sizeLegend).observe(chart);
+  sizeLegend();
+}).catch(console.error);
 
-vegaEmbed(
+embedChart(
   "#export_value_waterfall",
   vg_12,
   embedOptions
 ).catch(console.error);
 
 // ======================================
-// Small Multiples
-//
-// 4 columns x 2 rows of fruit maps
-//
-// Bottom section:
-// Left: legend + existing year slider
-// Right: narrative text
+// State production: one map with fruit and year controls.
+// A fixed symbol scale makes production comparable across selections.
 // ======================================
 
-fetch(vg_14)
-  .then(response => {
-
-    if (!response.ok) {
-      throw new Error(
-        "Could not load small-multiples specification"
-      );
+embedChart("#state_production_map", vg_14, embedOptions)
+  .then(result => {
+    const bindings = document.querySelector("#state_production_map .vega-bindings");
+    if (bindings) {
+      document.getElementById("production-map-controls").appendChild(bindings);
     }
-
-    return response.json();
-
-  })
-  .then(spec => {
-
-    const chart = document.getElementById(
-      "state_production_small_multiples"
-    );
-
-    const yearControl = document.getElementById(
-      "small-multiples-year-control"
-    );
-
-    const row = chart.closest(".story-row");
-
-    // Disable the built-in Vega-Lite legend.
-    // The HTML legend is displayed below the maps.
-
-    spec.spec.layer[1].encoding.size.legend = null;
-
-    // Remember the selected year during window resizing.
-
-    let year = spec.params[0].value;
-
-    let rendering = false;
-    let rerenderRequested = false;
-
-    // ======================================
-    // Render the Small Multiples
-    // ======================================
-
-    async function renderMap() {
-
-      if (rendering) {
-        rerenderRequested = true;
-        return;
-      }
-
-      rendering = true;
-
-      try {
-
-        // Read the currently selected year.
-
-        const currentSlider = yearControl.querySelector(
-          'input[type="range"]'
-        );
-
-        if (currentSlider) {
-          year = Number(currentSlider.value);
-        }
-
-        // Calculate the width for 4 map columns.
-
-        spec.spec.width = Math.floor(
-          row.clientWidth / 4
-        );
-
-        // Preserve the selected year.
-
-        spec.params[0].value = year;
-
-        // Remove the previously relocated slider.
-
-        yearControl.replaceChildren();
-
-        // Render the Vega-Lite maps.
-
-        await vegaEmbed(
-          chart,
-          spec,
-          embedOptions
-        );
-
-        // Move Vega-Lite's working year slider
-        // into the bottom-left HTML column.
-
-        const bindings = chart.querySelector(
-          ".vega-bindings"
-        );
-
-        if (bindings) {
-          yearControl.appendChild(bindings);
-        }
-
-      } catch (error) {
-
-        console.error(error);
-
-      } finally {
-
-        rendering = false;
-
-        // Rerender if another resize happened
-        // while the map was rendering.
-
-        if (rerenderRequested) {
-          rerenderRequested = false;
-          renderMap();
-        }
-      }
-    }
-
-    // First render.
-
-    renderMap();
-
-    // ======================================
-    // Handle Window Resize / Browser Zoom
-    // ======================================
-
-    let resizeTimer;
-
-    window.addEventListener("resize", () => {
-
-      clearTimeout(resizeTimer);
-
-      resizeTimer = setTimeout(() => {
-        renderMap();
-      }, 200);
-
-    });
 
   })
   .catch(console.error);
 
 // ======================================
 // Responsive chart scaling
-// Vega renders fixed-size SVGs, so scale each one to fill its column using
-// its viewBox. Charts then fit the column exactly, with no empty space and no
-// overflow into the text beside them. (Small multiples are excluded.)
+// Give SVGs a viewBox so they fill the available width without distortion.
 // ======================================
 
-function standardizeChartTitle(svg) {
-  const naturalWidth = svg.viewBox.baseVal.width ||
-    parseFloat(svg.getAttribute("width"));
-  const renderedWidth = svg.getBoundingClientRect().width;
-
-  if (!naturalWidth || !renderedWidth) {
-    return;
-  }
-
-  svg.querySelectorAll(".role-title-text text").forEach(function (title) {
-    const isMapHeading = svg.closest(".small-multiples-row") &&
-      ["Apple", "Avocado", "Banana", "Blueberry", "Mandarin",
-        "Orange", "Strawberry", "Table grapes"].includes(title.textContent.trim());
-    const fontSize = (isMapHeading ? 16 : 20) * naturalWidth / renderedWidth;
-    title.style.fontSize = fontSize + "px";
-  });
-}
-
 const observedChartSvgs = new WeakSet();
-const chartTitleResizeObserver = new ResizeObserver(function (entries) {
-  entries.forEach(function (entry) {
-    standardizeChartTitle(entry.target);
+function trimMapInset(svg) {
+  if (!svg.closest("#state_production_map, #state_growth_choropleth")) return;
+  const height = Number(svg.getAttribute("height"));
+  const inverse = svg.getScreenCTM()?.inverse();
+  if (!inverse) return;
+  const edges = [];
+  svg.querySelectorAll(".role-mark").forEach(mark => {
+    const bounds = mark.getBBox();
+    if (!bounds.width || !bounds.height) return;
+    const matrix = inverse.multiply(mark.getScreenCTM());
+    edges.push(...[[bounds.x, bounds.y], [bounds.x + bounds.width, bounds.y + bounds.height]]
+      .map(([x, y]) => matrix.a * x + matrix.c * y + matrix.e));
+  });
+  if (!edges.length) return;
+  const left = Math.min(...edges);
+  const width = Math.max(...edges) - left;
+  svg.setAttribute("viewBox", `${left} 0 ${width} ${height}`);
+  svg.setAttribute("width", width);
+  svg.setAttribute("height", height);
+}
+const labelTransforms = new WeakMap();
+const textMeasureContext = document.createElement("canvas").getContext("2d");
+const mapHeadingObserver = new ResizeObserver(entries => {
+  entries.forEach(({ target }) => {
+    textMeasureContext.font = getComputedStyle(target).font;
+    const metrics = textMeasureContext.measureText(target.textContent);
+    target.style.transform = `translateX(${metrics.actualBoundingBoxLeft}px)`;
   });
 });
-
+document.querySelectorAll(".map-title, .chart-title").forEach(title => mapHeadingObserver.observe(title));
+function alignLabelInk(svg) {
+  const shell = svg.closest(".chart-shell").getBoundingClientRect();
+  const sankeyLeft = ".fruitLabels text, .fruitValues text, .fruitHeading text";
+  const sankeyRight = ".destinationLabels text, .destinationValues text, .destinationHeading text";
+  const destinationWidths = [...svg.querySelectorAll(sankeyRight)].map(label => {
+    textMeasureContext.font = getComputedStyle(label).font;
+    const metrics = textMeasureContext.measureText(label.textContent);
+    return (metrics.actualBoundingBoxLeft + metrics.actualBoundingBoxRight) * Math.abs(label.getScreenCTM().a);
+  });
+  const destinationLeft = shell.right - Math.max(0, ...destinationWidths);
+  svg.querySelectorAll(`.role-title-text text, .role-axis-title text, ${sankeyLeft}, ${sankeyRight}`).forEach(label => {
+    const isTitle = label.closest(".role-title-text");
+    const isSankey = label.matches(`${sankeyLeft}, ${sankeyRight}`);
+    const alignRight = label.matches(sankeyRight);
+    if (!isTitle && !isSankey && !label.getAttribute("transform")?.includes("rotate(-90)")) return;
+    const previous = labelTransforms.get(label);
+    const current = label.getAttribute("transform") || "";
+    const original = previous && current === previous.aligned ? previous.original : current;
+    label.setAttribute("transform", original);
+    const matrix = label.getScreenCTM();
+    if (!matrix) return;
+    textMeasureContext.font = getComputedStyle(label).font;
+    const metrics = textMeasureContext.measureText(label.querySelector("tspan")?.textContent || label.textContent);
+    const anchor = label.getAttribute("text-anchor");
+    const offset = anchor === "middle" ? -metrics.width / 2 : anchor === "end" ? -metrics.width : 0;
+    const left = offset - metrics.actualBoundingBoxLeft;
+    const right = offset + metrics.actualBoundingBoxRight;
+    const top = -metrics.actualBoundingBoxAscent;
+    const bottom = metrics.actualBoundingBoxDescent;
+    const inkEdges = [[left, top], [right, top], [left, bottom], [right, bottom]]
+      .map(([x, y]) => matrix.a * x + matrix.c * y + matrix.e);
+    const delta = (alignRight ? destinationLeft : shell.left) - Math.min(...inkEdges);
+    const determinant = matrix.a * matrix.d - matrix.b * matrix.c;
+    if (!determinant) return;
+    const aligned = `${original} translate(${matrix.d * delta / determinant},${-matrix.b * delta / determinant})`;
+    label.setAttribute("transform", aligned);
+    labelTransforms.set(label, { original, aligned });
+  });
+}
 function fitChartSvg(svg) {
-  if (!observedChartSvgs.has(svg)) {
-    observedChartSvgs.add(svg);
-    chartTitleResizeObserver.observe(svg);
-  }
-
-  if (svg.style.width || svg.closest(".small-multiples-row")) {
-    standardizeChartTitle(svg);
+  trimMapInset(svg);
+  requestAnimationFrame(() => chartTypographyUpdates.get(svg.closest(".chart-shell"))?.());
+  if (observedChartSvgs.has(svg)) {
+    alignLabelInk(svg);
     return;
   }
-
   const width = parseFloat(svg.getAttribute("width"));
   const height = parseFloat(svg.getAttribute("height"));
-
-  if (!width || !height) {
-    return;
-  }
-
+  if (!width || !height) return;
   if (!svg.hasAttribute("viewBox")) {
-    svg.setAttribute("viewBox", "0 0 " + width + " " + height);
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
   }
-
-  svg.style.width = "100%";
-  svg.style.maxWidth = "none";
-  svg.style.height = "auto";
-  standardizeChartTitle(svg);
+  svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
+  observedChartSvgs.add(svg);
+  alignLabelInk(svg);
 }
-
-new MutationObserver(function () {
-  document
-    .querySelectorAll(".chart-column .vega-embed svg.marks")
-    .forEach(fitChartSvg);
+new MutationObserver(() => {
+  document.querySelectorAll(".chart-column .vega-embed svg.marks").forEach(fitChartSvg);
 }).observe(document.body, { childList: true, subtree: true });

@@ -1,6 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "Four equal columns of faceted fruit-production maps, two rows, eight fruits.",
+  "description": "Proportional symbol map of state fruit production with fruit and year selectors.",
   "title": {
     "text": "Fruit Production Across Australian States",
     "fontSize": 20,
@@ -15,6 +15,24 @@
     }
   },
   "params": [
+    {
+      "name": "ProductionFruitSelection",
+      "value": "Apple",
+      "bind": {
+        "input": "select",
+        "options": [
+          "Apple",
+          "Avocado",
+          "Banana",
+          "Blueberry",
+          "Mandarin",
+          "Orange",
+          "Strawberry",
+          "Table grapes"
+        ],
+        "name": "Select fruit: "
+      }
+    },
     {
       "name": "YearSelection",
       "value": 2025,
@@ -48,6 +66,9 @@
       ]
     },
     {
+      "filter": "datum.Fruit == ProductionFruitSelection"
+    },
+    {
       "lookup": "State",
       "from": {
         "data": {
@@ -62,438 +83,9 @@
       "as": "geo"
     }
   ],
-  "facet": {
-    "field": "Fruit",
-    "type": "nominal",
-    "sort": [
-      "Apple",
-      "Avocado",
-      "Banana",
-      "Blueberry",
-      "Mandarin",
-      "Orange",
-      "Strawberry",
-      "Table grapes"
-    ],
-    "header": {
-      "title": null,
-      "labelFont": "Arial",
-      "labelFontSize": 12,
-      "labelFontWeight": "bold",
-      "labelColor": "#30251D",
-      "labelOrient": "top",
-      "labelAnchor": "start",
-      "labelPadding": 8
-    }
-  },
-  "columns": 4,
-  "spacing": {
-    "row": 60,
-    "column": 0
-  },
-  "spec": {
-    "width": 360,
-    "height": 210,
-    "projection": {
-      "type": "mercator"
-    },
-    "layer": [
-      {
-        "transform": [],
-        "mark": {
-          "type": "geoshape",
-          "fill": "#E6E6E6",
-          "stroke": "#FFFFFF",
-          "strokeWidth": 1
-        },
-        "encoding": {
-          "shape": {
-            "field": "geo",
-            "type": "geojson"
-          }
-        }
-      },
-      {
-        "transform": [
-          {
-            "filter": "isValid(datum.Production) && datum.Production > 0"
-          }
-        ],
-        "mark": {
-          "type": "circle",
-          "color": "#8F5601",
-          "opacity": 0.9,
-          "stroke": "#FFFFFF",
-          "strokeWidth": 0.5
-        },
-        "encoding": {
-          "longitude": {
-            "field": "Longitude",
-            "type": "quantitative"
-          },
-          "latitude": {
-            "field": "Latitude",
-            "type": "quantitative"
-          },
-          "size": {
-            "field": "Production",
-            "type": "quantitative",
-            "title": "Production (tonnes)",
-            "scale": {
-              "domain": [
-                0,
-                380000
-              ],
-              "range": [
-                0,
-                2600
-              ]
-            },
-            "legend": {
-              "title": "Production (tonnes)",
-              "orient": "bottom",
-              "direction": "horizontal",
-              "values": [
-                100000,
-                200000,
-                300000
-              ],
-              "format": ",.0f",
-              "symbolType": "circle",
-              "symbolFillColor": "#8F5601",
-              "symbolFillOpacity": 0.7,
-              "symbolStrokeColor": "#FFFFFF",
-              "symbolStrokeWidth": 0.8,
-              "labelFontSize": 12,
-              "titleFontSize": 15,
-              "titleOrient": "top",
-              "offset": 10
-            }
-          },
-          "tooltip": [
-            {
-              "field": "Fruit",
-              "type": "nominal",
-              "title": "Fruit"
-            },
-            {
-              "field": "State",
-              "type": "nominal",
-              "title": "State / territory"
-            },
-            {
-              "field": "YearEndingLabel",
-              "type": "nominal",
-              "title": "Year ending June"
-            },
-            {
-              "field": "Production",
-              "type": "quantitative",
-              "title": "Production (tonnes)",
-              "format": ",.0f"
-            }
-          ]
-        }
-      },
-      {
-        "transform": [
-          {
-            "filter": "datum.Fruit == 'Banana' && datum.State == 'Queensland'"
-          },
-          {
-            "calculate": "133.6",
-            "as": "lon"
-          },
-          {
-            "calculate": "-37.6",
-            "as": "lat"
-          },
-          {
-            "calculate": "143.1",
-            "as": "lon2"
-          },
-          {
-            "calculate": "-25.6",
-            "as": "lat2"
-          }
-        ],
-        "mark": {
-          "type": "rule",
-          "stroke": "#333333",
-          "strokeWidth": 1
-        },
-        "encoding": {
-          "longitude": {
-            "field": "lon",
-            "type": "quantitative"
-          },
-          "latitude": {
-            "field": "lat",
-            "type": "quantitative"
-          },
-          "longitude2": {
-            "field": "lon2"
-          },
-          "latitude2": {
-            "field": "lat2"
-          }
-        }
-      },
-      {
-        "transform": [
-          {
-            "filter": "datum.Fruit == 'Banana' && datum.State == 'Queensland'"
-          },
-          {
-            "calculate": "[\"Far North Queensland\",\"dominates banana\",\"production due to its\",\"tropical climate and\",\"high rainfall\"]",
-            "as": "line"
-          },
-          {
-            "flatten": [
-              "line"
-            ]
-          },
-          {
-            "calculate": "indexof([\"Far North Queensland\",\"dominates banana\",\"production due to its\",\"tropical climate and\",\"high rainfall\"], datum.line)",
-            "as": "i"
-          },
-          {
-            "calculate": "113.5",
-            "as": "tlon"
-          },
-          {
-            "calculate": "-37.8 - 1.9*datum.i",
-            "as": "tlat"
-          }
-        ],
-        "mark": {
-          "type": "text",
-          "align": "left",
-          "baseline": "top",
-          "fontSize": 12,
-          "fontWeight": "normal",
-          "color": "#333333",
-          "font": "Arial"
-        },
-        "encoding": {
-          "longitude": {
-            "field": "tlon",
-            "type": "quantitative"
-          },
-          "latitude": {
-            "field": "tlat",
-            "type": "quantitative"
-          },
-          "text": {
-            "field": "line"
-          }
-        }
-      },
-      {
-        "transform": [
-          {
-            "filter": "datum.Fruit == 'Apple' && datum.State == 'Victoria'"
-          },
-          {
-            "calculate": "130.8",
-            "as": "lon"
-          },
-          {
-            "calculate": "-39.0",
-            "as": "lat"
-          },
-          {
-            "calculate": "142.6",
-            "as": "lon2"
-          },
-          {
-            "calculate": "-37.5",
-            "as": "lat2"
-          }
-        ],
-        "mark": {
-          "type": "rule",
-          "stroke": "#333333",
-          "strokeWidth": 1
-        },
-        "encoding": {
-          "longitude": {
-            "field": "lon",
-            "type": "quantitative"
-          },
-          "latitude": {
-            "field": "lat",
-            "type": "quantitative"
-          },
-          "longitude2": {
-            "field": "lon2"
-          },
-          "latitude2": {
-            "field": "lat2"
-          }
-        }
-      },
-      {
-        "transform": [
-          {
-            "filter": "datum.Fruit == 'Apple' && datum.State == 'Victoria'"
-          },
-          {
-            "calculate": "[\"Cooler southern regions\",\"drive major apple\",\"production\"]",
-            "as": "line"
-          },
-          {
-            "flatten": [
-              "line"
-            ]
-          },
-          {
-            "calculate": "indexof([\"Cooler southern regions\",\"drive major apple\",\"production\"], datum.line)",
-            "as": "i"
-          },
-          {
-            "calculate": "116.2",
-            "as": "tlon"
-          },
-          {
-            "calculate": "-39.0 - 1.9*datum.i",
-            "as": "tlat"
-          }
-        ],
-        "mark": {
-          "type": "text",
-          "align": "left",
-          "baseline": "top",
-          "fontSize": 12,
-          "fontWeight": "normal",
-          "color": "#333333",
-          "font": "Arial"
-        },
-        "encoding": {
-          "longitude": {
-            "field": "tlon",
-            "type": "quantitative"
-          },
-          "latitude": {
-            "field": "tlat",
-            "type": "quantitative"
-          },
-          "text": {
-            "field": "line"
-          }
-        }
-      },
-      {
-        "transform": [
-          {
-            "filter": "datum.Fruit == 'Orange' && datum.State == 'New South Wales'"
-          },
-          {
-            "calculate": "136.4",
-            "as": "lon"
-          },
-          {
-            "calculate": "-37.4",
-            "as": "lat"
-          },
-          {
-            "calculate": "142.9",
-            "as": "lon2"
-          },
-          {
-            "calculate": "-32.9",
-            "as": "lat2"
-          }
-        ],
-        "mark": {
-          "type": "rule",
-          "stroke": "#333333",
-          "strokeWidth": 1
-        },
-        "encoding": {
-          "longitude": {
-            "field": "lon",
-            "type": "quantitative"
-          },
-          "latitude": {
-            "field": "lat",
-            "type": "quantitative"
-          },
-          "longitude2": {
-            "field": "lon2"
-          },
-          "latitude2": {
-            "field": "lat2"
-          }
-        }
-      },
-      {
-        "transform": [
-          {
-            "filter": "datum.Fruit == 'Orange' && datum.State == 'New South Wales'"
-          },
-          {
-            "calculate": "[\"New South Wales leads\",\"orange production due to\",\"ideal climates and\",\"Riverina water access\"]",
-            "as": "line"
-          },
-          {
-            "flatten": [
-              "line"
-            ]
-          },
-          {
-            "calculate": "indexof([\"New South Wales leads\",\"orange production due to\",\"ideal climates and\",\"Riverina water access\"], datum.line)",
-            "as": "i"
-          },
-          {
-            "calculate": "113.5",
-            "as": "tlon"
-          },
-          {
-            "calculate": "-37.8 - 1.9*datum.i",
-            "as": "tlat"
-          }
-        ],
-        "mark": {
-          "type": "text",
-          "align": "left",
-          "baseline": "top",
-          "fontSize": 12,
-          "fontWeight": "normal",
-          "color": "#333333",
-          "font": "Arial"
-        },
-        "encoding": {
-          "longitude": {
-            "field": "tlon",
-            "type": "quantitative"
-          },
-          "latitude": {
-            "field": "tlat",
-            "type": "quantitative"
-          },
-          "text": {
-            "field": "line"
-          }
-        }
-      }
-    ]
-  },
-  "resolve": {
-    "scale": {
-      "size": "shared"
-    }
-  },
   "config": {
     "view": {
       "stroke": null
-    },
-    "facet": {
-      "spacing": 0
-    },
-    "header": {
-      "labelFont": "Arial",
-      "titleFont": "Arial"
     },
     "font": "Arial",
     "axis": {
@@ -508,5 +100,471 @@
       "labelFontSize": 12,
       "titleFontSize": 15
     }
-  }
+  },
+  "width": 720,
+  "height": 460,
+  "projection": {
+    "type": "mercator"
+  },
+  "layer": [
+    {
+      "transform": [],
+      "mark": {
+        "type": "geoshape",
+        "fill": "#E6E6E6",
+        "stroke": "#FFFFFF",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "shape": {
+          "field": "geo",
+          "type": "geojson"
+        }
+      }
+    },
+    {
+      "name": "appleAnnotationLeader",
+      "transform": [
+        {
+          "filter": "datum.Fruit == 'Apple' && datum.State == 'Victoria'"
+        },
+        {
+          "calculate": "132",
+          "as": "NoteLongitude"
+        },
+        {
+          "calculate": "-40",
+          "as": "NoteLatitude"
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "stroke": "#61564f",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "longitude": {
+          "field": "NoteLongitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "NoteLatitude",
+          "type": "quantitative"
+        },
+        "longitude2": {
+          "field": "Longitude"
+        },
+        "latitude2": {
+          "field": "Latitude"
+        }
+      }
+    },
+    {
+      "name": "bananaAnnotationLeader",
+      "transform": [
+        {
+          "filter": "datum.Fruit == 'Banana' && datum.State == 'Queensland'"
+        },
+        {
+          "calculate": "150",
+          "as": "NoteLongitude"
+        },
+        {
+          "calculate": "-17",
+          "as": "NoteLatitude"
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "stroke": "#61564f",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "longitude": {
+          "field": "NoteLongitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "NoteLatitude",
+          "type": "quantitative"
+        },
+        "longitude2": {
+          "field": "Longitude"
+        },
+        "latitude2": {
+          "field": "Latitude"
+        }
+      }
+    },
+    {
+      "name": "orangeAnnotationLeader",
+      "transform": [
+        {
+          "filter": "datum.Fruit == 'Orange' && datum.State == 'New South Wales'"
+        },
+        {
+          "calculate": "128",
+          "as": "NoteLongitude"
+        },
+        {
+          "calculate": "-40.5",
+          "as": "NoteLatitude"
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "stroke": "#61564f",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "longitude": {
+          "field": "NoteLongitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "NoteLatitude",
+          "type": "quantitative"
+        },
+        "longitude2": {
+          "field": "Longitude"
+        },
+        "latitude2": {
+          "field": "Latitude"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "isValid(datum.Production) && datum.Production > 0"
+        }
+      ],
+      "mark": {
+        "type": "circle",
+        "color": "#8F5601",
+        "opacity": 0.9,
+        "stroke": "#FFFFFF",
+        "strokeWidth": 0.5
+      },
+      "encoding": {
+        "longitude": {
+          "field": "Longitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "Latitude",
+          "type": "quantitative"
+        },
+        "size": {
+          "field": "Production",
+          "type": "quantitative",
+          "title": "Production (tonnes)",
+          "scale": {
+            "domain": [
+              0,
+              380000
+            ],
+            "range": [
+              0,
+              2600
+            ]
+          },
+          "legend": null
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit"
+          },
+          {
+            "field": "State",
+            "type": "nominal",
+            "title": "State / territory"
+          },
+          {
+            "field": "YearEndingLabel",
+            "type": "nominal",
+            "title": "Year ending June"
+          },
+          {
+            "field": "Production",
+            "type": "quantitative",
+            "title": "Production (tonnes)",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "name": "appleAnnotationBackground",
+      "transform": [
+        {
+          "filter": "datum.Fruit == 'Apple' && datum.State == 'Victoria'"
+        },
+        {
+          "calculate": "132",
+          "as": "NoteLongitude"
+        },
+        {
+          "calculate": "-40",
+          "as": "NoteLatitude"
+        }
+      ],
+      "mark": {
+        "type": "rect",
+        "width": 228,
+        "height": 72,
+        "fill": "#FFF2D6",
+        "stroke": null
+      },
+      "encoding": {
+        "longitude": {
+          "field": "NoteLongitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "NoteLatitude",
+          "type": "quantitative"
+        }
+      }
+    },
+    {
+      "name": "appleAnnotationText",
+      "transform": [
+        {
+          "filter": "datum.Fruit == 'Apple' && datum.State == 'Victoria'"
+        },
+        {
+          "calculate": "132",
+          "as": "NoteLongitude"
+        },
+        {
+          "calculate": "-40",
+          "as": "NoteLatitude"
+        },
+        {
+          "calculate": "[\"Cooler southern regions\", \"support major apple\", \"production.\"]",
+          "as": "NoteLines"
+        },
+        {
+          "flatten": [
+            "NoteLines"
+          ],
+          "as": [
+            "NoteLine"
+          ]
+        },
+        {
+          "calculate": "indexof([\"Cooler southern regions\", \"support major apple\", \"production.\"], datum.NoteLine)",
+          "as": "NoteLineIndex"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "top",
+        "dx": 12,
+        "dy": {
+          "expr": "12 + datum.NoteLineIndex * 16"
+        },
+        "font": "Arial",
+        "fontSize": 12,
+        "color": "#333333"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "NoteLongitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "NoteLatitude",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "NoteLine"
+        }
+      }
+    },
+    {
+      "name": "bananaAnnotationBackground",
+      "transform": [
+        {
+          "filter": "datum.Fruit == 'Banana' && datum.State == 'Queensland'"
+        },
+        {
+          "calculate": "150",
+          "as": "NoteLongitude"
+        },
+        {
+          "calculate": "-17",
+          "as": "NoteLatitude"
+        }
+      ],
+      "mark": {
+        "type": "rect",
+        "width": 228,
+        "height": 72,
+        "fill": "#FFF2D6",
+        "stroke": null
+      },
+      "encoding": {
+        "longitude": {
+          "field": "NoteLongitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "NoteLatitude",
+          "type": "quantitative"
+        }
+      }
+    },
+    {
+      "name": "bananaAnnotationText",
+      "transform": [
+        {
+          "filter": "datum.Fruit == 'Banana' && datum.State == 'Queensland'"
+        },
+        {
+          "calculate": "150",
+          "as": "NoteLongitude"
+        },
+        {
+          "calculate": "-17",
+          "as": "NoteLatitude"
+        },
+        {
+          "calculate": "[\"Queensland dominates banana\", \"production, supported by\", \"tropical climates and rainfall.\"]",
+          "as": "NoteLines"
+        },
+        {
+          "flatten": [
+            "NoteLines"
+          ],
+          "as": [
+            "NoteLine"
+          ]
+        },
+        {
+          "calculate": "indexof([\"Queensland dominates banana\", \"production, supported by\", \"tropical climates and rainfall.\"], datum.NoteLine)",
+          "as": "NoteLineIndex"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "top",
+        "dx": 12,
+        "dy": {
+          "expr": "12 + datum.NoteLineIndex * 16"
+        },
+        "font": "Arial",
+        "fontSize": 12,
+        "color": "#333333"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "NoteLongitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "NoteLatitude",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "NoteLine"
+        }
+      }
+    },
+    {
+      "name": "orangeAnnotationBackground",
+      "transform": [
+        {
+          "filter": "datum.Fruit == 'Orange' && datum.State == 'New South Wales'"
+        },
+        {
+          "calculate": "128",
+          "as": "NoteLongitude"
+        },
+        {
+          "calculate": "-40.5",
+          "as": "NoteLatitude"
+        }
+      ],
+      "mark": {
+        "type": "rect",
+        "width": 228,
+        "height": 72,
+        "fill": "#FFF2D6",
+        "stroke": null
+      },
+      "encoding": {
+        "longitude": {
+          "field": "NoteLongitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "NoteLatitude",
+          "type": "quantitative"
+        }
+      }
+    },
+    {
+      "name": "orangeAnnotationText",
+      "transform": [
+        {
+          "filter": "datum.Fruit == 'Orange' && datum.State == 'New South Wales'"
+        },
+        {
+          "calculate": "128",
+          "as": "NoteLongitude"
+        },
+        {
+          "calculate": "-40.5",
+          "as": "NoteLatitude"
+        },
+        {
+          "calculate": "[\"New South Wales leads\", \"orange production, supported\", \"by Riverina water access.\"]",
+          "as": "NoteLines"
+        },
+        {
+          "flatten": [
+            "NoteLines"
+          ],
+          "as": [
+            "NoteLine"
+          ]
+        },
+        {
+          "calculate": "indexof([\"New South Wales leads\", \"orange production, supported\", \"by Riverina water access.\"], datum.NoteLine)",
+          "as": "NoteLineIndex"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "top",
+        "dx": 12,
+        "dy": {
+          "expr": "12 + datum.NoteLineIndex * 16"
+        },
+        "font": "Arial",
+        "fontSize": 12,
+        "color": "#333333"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "NoteLongitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "NoteLatitude",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "NoteLine"
+        }
+      }
+    }
+  ]
 }

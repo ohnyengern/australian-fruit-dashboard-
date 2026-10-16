@@ -8,8 +8,8 @@
     "offset": 15,
     "font": "Arial"
   },
-  "width": 720,
-  "height": 520,
+  "width": 1030,
+  "height": 794,
   "params": [
     {
       "name": "FruitSelection",
@@ -32,13 +32,13 @@
   "projection": {
     "type": "equirectangular",
     "center": [
-      115,
-      4
+      112.5,
+      3
     ],
-    "scale": 270,
+    "scale": 437.1455770257392,
     "translate": [
-      353,
-      260
+      515,
+      397
     ]
   },
   "layer": [
@@ -49,7 +49,8 @@
       "mark": {
         "type": "geoshape",
         "fill": "#F0F7FA",
-        "stroke": null
+        "stroke": null,
+        "clip": true
       }
     },
     {
@@ -148,7 +149,7 @@
           "as": "ExportTonnesNum"
         },
         {
-          "calculate": "toNumber(datum.Bend)",
+          "calculate": "datum.Fruit == 'Orange' && datum.Destination == 'China' ? -16 : datum.Fruit == 'Orange' && datum.Destination == 'Hong Kong' ? 0 : toNumber(datum.Bend)",
           "as": "BendNum"
         },
         {
@@ -199,7 +200,7 @@
         "type": "line",
         "interpolate": "basis",
         "opacity": 0.8,
-        "strokeCap": "round",
+        "strokeCap": "butt",
         "clip": true
       },
       "encoding": {
@@ -224,39 +225,28 @@
           "type": "quantitative",
           "title": "Export volume (tonnes)",
           "scale": {
-            "type": "sqrt",
+            "type": "linear",
             "domain": [
               0,
               45000
             ],
             "range": [
               0.7,
-              10
+              12
             ]
           },
-          "legend": {
-            "titleOrient": "top",
-            "orient": "right",
-            "direction": "vertical",
-            "title": "Export volume (tonnes)",
-            "format": ",.0f",
-            "values": [
-              0,
-              10000,
-              20000,
-              30000,
-              40000
-            ],
-            "labelLimit": 90,
-            "titleLimit": 180,
-            "offset": 18
-          }
+          "legend": null
         },
         "tooltip": [
           {
             "field": "Fruit",
             "type": "nominal",
             "title": "Fruit:"
+          },
+          {
+            "field": "Origin",
+            "type": "nominal",
+            "title": "Origin:"
           },
           {
             "field": "Destination",
@@ -273,86 +263,6 @@
         "color": {
           "value": "#8F5601"
         }
-      }
-    },
-    {
-      "data": {
-        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/hort_fruit_exports.csv",
-        "format": {
-          "type": "csv"
-        }
-      },
-      "transform": [
-        {
-          "filter": "datum.Fruit == FruitSelection"
-        },
-        {
-          "filter": "datum.Destination != 'Others'"
-        },
-        {
-          "lookup": "Destination",
-          "from": {
-            "data": {
-              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/country_locations.csv",
-              "format": {
-                "type": "csv"
-              }
-            },
-            "key": "Destination",
-            "fields": [
-              "Longitude",
-              "Latitude"
-            ]
-          },
-          "as": [
-            "DestinationLongitude",
-            "DestinationLatitude"
-          ]
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLongitude)",
-          "as": "DestinationLongitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLatitude)",
-          "as": "DestinationLatitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.ExportTonnes)",
-          "as": "ExportTonnesNum"
-        }
-      ],
-      "mark": {
-        "type": "circle",
-        "size": 55,
-        "color": "#8F5601",
-        "stroke": "#FFFFFF",
-        "strokeWidth": 1.2,
-        "opacity": 1,
-        "clip": true
-      },
-      "encoding": {
-        "longitude": {
-          "field": "DestinationLongitudeNum",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "DestinationLatitudeNum",
-          "type": "quantitative"
-        },
-        "tooltip": [
-          {
-            "field": "Destination",
-            "type": "nominal",
-            "title": "Destination:"
-          },
-          {
-            "field": "ExportTonnesNum",
-            "type": "quantitative",
-            "title": "Export volume (tonnes):",
-            "format": ",.0f"
-          }
-        ]
       }
     },
     {
@@ -406,7 +316,7 @@
         "color": "#333333",
         "align": "left",
         "baseline": "middle",
-        "dx": 9,
+        "dx": 8,
         "clip": true
       },
       "encoding": {
@@ -475,8 +385,8 @@
         "color": "#333333",
         "align": "right",
         "baseline": "bottom",
-        "dx": -7,
-        "dy": -10,
+        "dx": -8,
+        "dy": -8,
         "clip": true
       },
       "encoding": {
@@ -545,7 +455,7 @@
         "color": "#333333",
         "align": "right",
         "baseline": "middle",
-        "dx": -9,
+        "dx": -8,
         "clip": true
       },
       "encoding": {
@@ -614,7 +524,7 @@
         "color": "#333333",
         "align": "right",
         "baseline": "middle",
-        "dx": -9,
+        "dx": -8,
         "clip": true
       },
       "encoding": {
@@ -683,7 +593,7 @@
         "color": "#333333",
         "align": "center",
         "baseline": "bottom",
-        "dy": -10,
+        "dy": -8,
         "clip": true
       },
       "encoding": {
@@ -752,7 +662,7 @@
         "color": "#333333",
         "align": "center",
         "baseline": "bottom",
-        "dy": -10,
+        "dy": -8,
         "clip": true
       },
       "encoding": {
@@ -820,9 +730,9 @@
         "fontWeight": "bold",
         "color": "#333333",
         "align": "right",
-        "baseline": "bottom",
-        "dx": -9,
-        "dy": -8,
+        "baseline": "middle",
+        "dx": -8,
+        "dy": 0,
         "clip": true
       },
       "encoding": {
@@ -891,7 +801,7 @@
         "color": "#333333",
         "align": "center",
         "baseline": "bottom",
-        "dy": -10,
+        "dy": -8,
         "clip": true
       },
       "encoding": {
@@ -960,7 +870,7 @@
         "color": "#333333",
         "align": "center",
         "baseline": "top",
-        "dy": 10,
+        "dy": 8,
         "clip": true
       },
       "encoding": {
@@ -975,6 +885,82 @@
         "text": {
           "field": "Destination",
           "type": "nominal"
+        }
+      }
+    },
+    {
+      "name": "exportOrigin",
+      "data": {
+        "values": [
+          {
+            "Origin": "Australia",
+            "Longitude": 134.54588060379,
+            "Latitude": -24.5710555076599,
+            "Label": "Australia (origin)"
+          }
+        ]
+      },
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 130,
+        "color": "#30251d",
+        "stroke": "white",
+        "strokeWidth": 1.6,
+        "opacity": 1
+      },
+      "encoding": {
+        "longitude": {
+          "field": "Longitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "Latitude",
+          "type": "quantitative"
+        },
+        "tooltip": [
+          {
+            "field": "Origin",
+            "type": "nominal",
+            "title": "Country-level export origin"
+          }
+        ]
+      }
+    },
+    {
+      "name": "exportOriginLabel",
+      "data": {
+        "values": [
+          {
+            "Origin": "Australia",
+            "Longitude": 134.54588060379,
+            "Latitude": -24.5710555076599,
+            "Label": "Australia (origin)"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "font": "Arial",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#30251d",
+        "align": "right",
+        "baseline": "top",
+        "dy": 16,
+        "dx": -16
+      },
+      "encoding": {
+        "longitude": {
+          "field": "Longitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "Latitude",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "Label"
         }
       }
     }

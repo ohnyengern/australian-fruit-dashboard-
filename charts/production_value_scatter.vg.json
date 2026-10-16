@@ -178,14 +178,15 @@
         "y2": {
           "field": "y2"
         }
-      }
+      },
+      "name": "grapeAnnotationLeader"
     },
     {
       "data": {
         "values": [
           {
-            "x": 209000,
-            "y": 858,
+            "x": 212000,
+            "y": 830,
             "label": [
               "Highest production value despite",
               "a relatively smaller harvest"
@@ -213,7 +214,8 @@
         "text": {
           "field": "label"
         }
-      }
+      },
+      "name": "grapeAnnotationText"
     },
     {
       "data": {
@@ -246,7 +248,8 @@
         "y2": {
           "field": "y2"
         }
-      }
+      },
+      "name": "orangeAnnotationLeader"
     },
     {
       "data": {
@@ -282,7 +285,8 @@
         "text": {
           "field": "label"
         }
-      }
+      },
+      "name": "orangeAnnotationText"
     }
   ],
   "config": {

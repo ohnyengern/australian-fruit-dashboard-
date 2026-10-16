@@ -205,20 +205,19 @@
         "y2": {
           "field": "y2"
         }
-      }
+      },
+      "name": "bananaAnnotationLeader"
     },
     {
       "data": {
         "values": [
           {
             "Fruit": "Banana",
-            "y": 36,
-            "line": "No fresh banana exports"
-          },
-          {
-            "Fruit": "Banana",
-            "y": 31,
-            "line": "recorded in either year"
+            "y": 35,
+            "label": [
+              "No fresh banana exports",
+              "recorded in either year"
+            ]
           }
         ]
       },
@@ -240,9 +239,10 @@
           "type": "quantitative"
         },
         "text": {
-          "field": "line"
+          "field": "label"
         }
-      }
+      },
+      "name": "bananaAnnotationText"
     }
   ],
   "config": {

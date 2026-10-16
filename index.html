@@ -32,7 +32,8 @@
       </h2>
     </div>
 
-    <section class="story-row">
+    <div class="story-grid">
+    <section class="story-row story-wide">
       <div class="chart-column">
         <div
           class="chart-shell"
@@ -60,6 +61,7 @@
         </p>
       </aside>
     </section>
+    </div>
 
     <!-- SECTION 02 -->
 
@@ -70,6 +72,7 @@
       </h2>
     </div>
 
+    <div class="story-grid">
     <section class="story-row">
       <div class="chart-column">
         <div
@@ -137,38 +140,6 @@
       <div class="chart-column">
         <div
           class="chart-shell"
-          id="growth_slopegraph"
-          role="group"
-          aria-label="Changes in production between 2021 and 2025"
-        ></div>
-      </div>
-
-      <aside class="explanation-column">
-        <p>
-          Australia's fruit production expanded unevenly between 2021
-          and 2025, changing the relative importance of different
-          crops.
-          <span class="fruit-highlight fruit-avocado">Avocados</span>
-          <strong>recorded the fastest percentage growth</strong>,
-          while
-          <span class="fruit-highlight fruit-orange">oranges</span>
-          contributed the largest increase in production volume.
-          <span class="fruit-highlight fruit-mandarin">Mandarins</span>
-          also gained ground, overtaking
-          <span class="fruit-highlight fruit-table-grapes">table grapes</span>
-          despite starting 32,000 tonnes behind in 2021. Meanwhile,
-          <span class="fruit-highlight fruit-banana">bananas</span>
-          remained a major crop despite declining production, showing
-          that high production volume does not necessarily translate
-          into continued growth.
-        </p>
-      </aside>
-    </section>
-
-    <section class="story-row">
-      <div class="chart-column">
-        <div
-          class="chart-shell"
           id="production_rank_bump"
           role="group"
           aria-label="Changes in fruit production rankings"
@@ -197,6 +168,39 @@
       </aside>
     </section>
 
+    <section class="story-row">
+      <div class="chart-column">
+        <div
+          class="chart-shell"
+          id="growth_slopegraph"
+          role="group"
+          aria-label="Changes in production between 2021 and 2025"
+        ></div>
+      </div>
+
+      <aside class="explanation-column">
+        <p>
+          Australia's fruit production expanded unevenly between 2021
+          and 2025, changing the relative importance of different
+          crops.
+          <span class="fruit-highlight fruit-avocado">Avocados</span>
+          <strong>recorded the fastest percentage growth</strong>,
+          while
+          <span class="fruit-highlight fruit-orange">oranges</span>
+          contributed the largest increase in production volume.
+          <span class="fruit-highlight fruit-mandarin">Mandarins</span>
+          also gained ground, overtaking
+          <span class="fruit-highlight fruit-table-grapes">table grapes</span>
+          despite starting 32,000 tonnes behind in 2021. Meanwhile,
+          <span class="fruit-highlight fruit-banana">bananas</span>
+          remained a major crop despite declining production, showing
+          that high production volume does not necessarily translate
+          into continued growth.
+        </p>
+      </aside>
+    </section>
+    </div>
+
     <!-- SECTION 03 -->
 
     <div class="section-header">
@@ -206,25 +210,18 @@
       </h2>
     </div>
 
-    <!-- Full-width 4-column, 2-row faceted map -->
+    <!-- Proportional symbol map with fruit and year selectors -->
 
-    <section
-      class="story-row small-multiples-row"
-      aria-label="State production patterns across eight fruits"
-    >
+    <div class="story-grid">
+    <section class="story-row story-wide" aria-label="State production patterns across eight fruits">
       <div class="chart-column">
-        <div
-          class="chart-shell"
-          id="state_production_small_multiples"
-          role="group"
-          aria-label="Eight fruit production maps arranged in four columns"
-        ></div>
-
-        <!-- Two-column area below the maps -->
-        <div class="small-multiples-bottom">
-
-          <!-- LEFT: Legend and year slider -->
-          <div class="small-multiples-controls">
+        <h3 class="map-title">Fruit Production Across Australian States</h3>
+        <div class="map-layout">
+          <div class="chart-shell" id="state_production_map" role="group"
+            aria-label="State fruit production proportional symbol map"></div>
+          <aside class="map-sidebar" aria-label="Production map controls and legend">
+            <div id="production-map-controls" class="map-controls"></div>
+            <div class="production-map-legend">
             <h3>Production (tonnes)</h3>
 
             <div
@@ -247,12 +244,11 @@
               </div>
             </div>
 
-            <!-- The existing Vega-Lite slider is moved here -->
-            <div id="small-multiples-year-control"></div>
-          </div>
-
-          <!-- RIGHT: Explanatory narrative -->
-          <div class="small-multiples-narrative">
+            </div>
+          </aside>
+        </div>
+      </div>
+      <aside class="explanation-column production-map-narrative">
             <p>
               <strong>
                 Fruit production is not evenly distributed across
@@ -272,17 +268,15 @@
               distribution of fruit production varies according to
               the growing requirements of each crop.
             </p>
-          </div>
-
-        </div>
-      </div>
+      </aside>
     </section>
 
     <!-- Regional growth map -->
 
-    <section class="story-row">
+    <section class="story-row story-wide">
       <div class="chart-column">
-        <div class="choropleth-layout">
+        <h3 class="map-title">Where is fruit production growing or declining?</h3>
+        <div class="map-layout">
           <div
             class="chart-shell"
             id="state_growth_choropleth"
@@ -290,6 +284,8 @@
             aria-label="State and territory production growth"
           ></div>
 
+          <aside class="map-sidebar" aria-label="Growth map controls and legend">
+            <div id="choropleth-map-controls" class="map-controls"></div>
           <div
             class="choropleth-legend"
             aria-label="Production change percentage classes"
@@ -321,12 +317,13 @@
                 <span style="background: #7a7a7a;"></span>
                 <p>No production data</p>
               </div>
-              <div class="choropleth-special-item">
+              <div class="choropleth-special-item choropleth-special-item-undefined">
                 <span style="background: #e0e0e0;"></span>
                 <p>Undefined production change due to zero initial production</p>
               </div>
             </div>
           </div>
+          </aside>
         </div>
       </div>
 
@@ -355,6 +352,7 @@
         </p>
       </aside>
     </section>
+    </div>
 
     <!-- SECTION 04 -->
 
@@ -365,7 +363,8 @@
       </h2>
     </div>
 
-    <section class="story-row">
+    <div class="story-grid">
+    <section class="story-row story-wide">
       <div class="chart-column">
         <div
           class="chart-shell"
@@ -394,6 +393,7 @@
         </p>
       </aside>
     </section>
+    </div>
 
     <!-- SECTION 05 -->
 
@@ -404,7 +404,8 @@
       </h2>
     </div>
 
-    <section class="story-row">
+    <div class="story-grid">
+    <section class="story-row story-wide">
       <div class="chart-column">
         <div
           class="chart-shell"
@@ -430,14 +431,23 @@
       </aside>
     </section>
 
-    <section class="story-row">
+    <section class="story-row story-wide">
       <div class="chart-column">
-        <div
-          class="chart-shell"
-          id="export_flow_map"
-          role="group"
-          aria-label="Australian fresh-fruit export destinations"
-        ></div>
+        <h3 class="map-title">Major Fresh-Fruit Export Destinations, Year Ending June 2025</h3>
+        <div class="export-flow-layout">
+          <div class="chart-shell" id="export_flow_map" role="group"
+            aria-label="Australian fresh-fruit export destinations"></div>
+          <p class="flow-map-note">
+            Map shows Australia, Asia, Oceania and the Middle East.
+          </p>
+          <aside class="export-map-tools" aria-label="Export map controls and legend">
+            <div id="export-map-controls" class="map-controls"></div>
+            <div class="export-map-legend">
+              <h3>Export volume (tonnes)</h3>
+              <div id="export-volume-legend" aria-label="Line thickness represents export volume"></div>
+            </div>
+          </aside>
+        </div>
       </div>
 
       <aside class="explanation-column">
@@ -462,7 +472,7 @@
       </aside>
     </section>
 
-    <section class="story-row">
+    <section class="story-row story-wide">
       <div class="chart-column">
         <div
           class="chart-shell"
@@ -497,6 +507,7 @@
         </p>
       </aside>
     </section>
+    </div>
 
     <!-- FOOTER -->
 
@@ -516,30 +527,22 @@
           <li>
             <strong>Hort Innovation - </strong>
             Australian Horticulture Statistics Handbook 2024-25
-            <a href="https://www.horticulture.com.au/about-hort-innovation/what-we-do/data-and-insights/australian-horticulture-statistics-handbook">
-              https://www.horticulture.com.au/about-hort-innovation/what-we-do/data-and-insights/australian-horticulture-statistics-handbook
-            </a>
+            <a href="https://www.horticulture.com.au/about-hort-innovation/what-we-do/data-and-insights/australian-horticulture-statistics-handbook">https://www.horticulture.com.au/about-hort-innovation/what-we-do/data-and-insights/australian-horticulture-statistics-handbook</a>
           </li>
           <li>
             <strong>Australian Bureau of Statistics (ABS) - </strong>
             Australian Agriculture: Horticulture
-            <a href="https://www.abs.gov.au/statistics/industry/agriculture/australian-agriculture-horticulture/2024-25">
-              https://www.abs.gov.au/statistics/industry/agriculture/australian-agriculture-horticulture/2024-25
-            </a>
+            <a href="https://www.abs.gov.au/statistics/industry/agriculture/australian-agriculture-horticulture/2024-25">https://www.abs.gov.au/statistics/industry/agriculture/australian-agriculture-horticulture/2024-25</a>
           </li>
           <li>
             <strong>Australian Bureau of Statistics (ABS) - </strong>
             Digital Boundary Files
-            <a href="https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs/edition-4-july-2026-june-2031/access-and-downloads/digital-boundary-files">
-              https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs/edition-4-july-2026-june-2031/access-and-downloads/digital-boundary-files
-            </a>
+            <a href="https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs/edition-4-july-2026-june-2031/access-and-downloads/digital-boundary-files">https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs/edition-4-july-2026-june-2031/access-and-downloads/digital-boundary-files</a>
           </li>
           <li>
             <strong>Natural Earth - </strong>
             1:110m Cultural Vectors
-            <a href="https://www.naturalearthdata.com/downloads/110m-cultural-vectors/">
-              https://www.naturalearthdata.com/downloads/110m-cultural-vectors/
-            </a>
+            <a href="https://www.naturalearthdata.com/downloads/110m-cultural-vectors/">https://www.naturalearthdata.com/downloads/110m-cultural-vectors/</a>
           </li>
         </ul>
       </div>

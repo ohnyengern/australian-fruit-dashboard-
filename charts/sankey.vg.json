@@ -10,7 +10,7 @@
     "color": "#222"
   },
   "width": 800,
-  "height": 525,
+  "height": 690,
   "padding": 5,
   "autosize": "pad",
   "background": "white",
@@ -20,8 +20,12 @@
       "value": 105
     },
     {
+      "name": "destinationLabelWidth",
+      "value": 145
+    },
+    {
       "name": "targetX",
-      "update": "width - 185"
+      "update": "width - destinationLabelWidth - 24"
     },
     {
       "name": "hoverFruit",
@@ -36,6 +40,14 @@
           "update": "null"
         }
       ]
+    },
+    {
+      "name": "fruitGap",
+      "value": 34
+    },
+    {
+      "name": "destinationGap",
+      "update": "fruitGap * 7 / 2"
     }
   ],
   "data": [
@@ -103,7 +115,7 @@
         },
         {
           "type": "formula",
-          "expr": "35 + scale('size', datum.Start) + datum.FruitOrder * 27",
+          "expr": "35 + scale('size', datum.Start) + datum.FruitOrder * fruitGap",
           "as": "Top"
         },
         {
@@ -146,7 +158,7 @@
         },
         {
           "type": "formula",
-          "expr": "35 + scale('size', datum.Start) + datum.DestinationOrder * 55",
+          "expr": "35 + scale('size', datum.Start) + datum.DestinationOrder * destinationGap",
           "as": "Top"
         },
         {
@@ -247,19 +259,15 @@
       "values": [
         {
           "i": 0,
-          "t": "Spans all three markets,"
+          "t": "Oranges serve all three markets,"
         },
         {
           "i": 1,
-          "t": "contributing heavily to"
+          "t": "contributing heavily to processing,"
         },
         {
           "i": 2,
-          "t": "Australia's fruit processing,"
-        },
-        {
-          "i": 3,
-          "t": "such as juice production"
+          "t": "such as juice production."
         }
       ]
     }
@@ -397,13 +405,13 @@
       "encode": {
         "update": {
           "x": {
-            "signal": "sourceX - 12"
+            "value": 0
           },
           "y": {
-            "signal": "datum.Top + datum.Height / 2 - 8"
+            "signal": "datum.Top + datum.Height / 2 + (-8) + (datum.Fruit == 'Strawberry' ? -4 : datum.Fruit == 'Blueberry' ? 6 : 0)"
           },
           "align": {
-            "value": "right"
+            "value": "left"
           },
           "baseline": {
             "value": "middle"
@@ -428,13 +436,13 @@
       "encode": {
         "update": {
           "x": {
-            "signal": "sourceX - 12"
+            "value": 0
           },
           "y": {
-            "signal": "datum.Top + datum.Height / 2 + 12"
+            "signal": "datum.Top + datum.Height / 2 + (12) + (datum.Fruit == 'Strawberry' ? -4 : datum.Fruit == 'Blueberry' ? 6 : 0)"
           },
           "align": {
-            "value": "right"
+            "value": "left"
           },
           "baseline": {
             "value": "middle"
@@ -449,7 +457,8 @@
             "value": "Arial"
           }
         }
-      }
+      },
+      "name": "fruitValues"
     },
     {
       "type": "text",
@@ -459,7 +468,7 @@
       "encode": {
         "update": {
           "x": {
-            "signal": "targetX + 24"
+            "signal": "width - destinationLabelWidth"
           },
           "y": {
             "signal": "datum.Top + datum.Height / 2 - 8"
@@ -480,7 +489,8 @@
             "value": "Arial"
           }
         }
-      }
+      },
+      "name": "destinationLabels"
     },
     {
       "type": "text",
@@ -490,7 +500,7 @@
       "encode": {
         "update": {
           "x": {
-            "signal": "targetX + 24"
+            "signal": "width - destinationLabelWidth"
           },
           "y": {
             "signal": "datum.Top + datum.Height / 2 + 12"
@@ -511,20 +521,21 @@
             "value": "Arial"
           }
         }
-      }
+      },
+      "name": "destinationValues"
     },
     {
       "type": "text",
       "encode": {
         "update": {
           "x": {
-            "signal": "sourceX - 12"
+            "value": 0
           },
           "y": {
             "value": 15
           },
           "align": {
-            "value": "right"
+            "value": "left"
           },
           "fontSize": {
             "value": 12
@@ -539,14 +550,15 @@
             "value": "Arial"
           }
         }
-      }
+      },
+      "name": "fruitHeading"
     },
     {
       "type": "text",
       "encode": {
         "update": {
           "x": {
-            "signal": "targetX + 24"
+            "signal": "width - destinationLabelWidth"
           },
           "y": {
             "value": 15
@@ -567,29 +579,54 @@
             "value": "Arial"
           }
         }
-      }
+      },
+      "name": "destinationHeading"
     },
     {
       "type": "rule",
       "encode": {
         "update": {
           "x": {
-            "value": 190
+            "signal": "sourceX + 28"
           },
           "y": {
-            "value": 500
+            "value": 558
           },
           "x2": {
-            "value": 505
+            "signal": "sourceX + 62"
           },
           "y2": {
-            "value": 500
+            "value": 610
           },
           "stroke": {
             "value": "#333333"
           },
           "strokeWidth": {
             "value": 1
+          }
+        }
+      },
+      "name": "annotationLeader"
+    },
+    {
+      "name": "annotationBackground",
+      "type": "rect",
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX"
+          },
+          "y": {
+            "value": 610
+          },
+          "width": {
+            "value": 250
+          },
+          "height": {
+            "value": 60
+          },
+          "fill": {
+            "value": "#eeeeee"
           }
         }
       }
@@ -602,13 +639,13 @@
       "encode": {
         "update": {
           "x": {
-            "value": 515
+            "signal": "sourceX + 125"
           },
           "y": {
-            "signal": "468 + datum.i * 14"
+            "signal": "624 + datum.i * 16"
           },
           "align": {
-            "value": "left"
+            "value": "center"
           },
           "baseline": {
             "value": "middle"
@@ -626,7 +663,8 @@
             "value": "Arial"
           }
         }
-      }
+      },
+      "name": "processingAnnotation"
     }
   ],
   "config": {
