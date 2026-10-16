@@ -1,3 +1,6 @@
+// Refresh chart definitions on each page load so published title edits appear.
+const chartLoadVersion = Date.now().toString(36);
+
 
 var vg_1 = "charts/production_lollipop.vg.json";
 var vg_2 = "charts/production_trend.vg.json";
@@ -241,7 +244,9 @@ function compileProductionMap(spec) {
 async function embedChart(target, source, options) {
   let spec = source;
   if (typeof source === "string") {
-    const response = await fetch(source);
+    const chartUrl = new URL(source, window.location.href);
+    chartUrl.searchParams.set("v", chartLoadVersion);
+    const response = await fetch(chartUrl, { cache: "no-store" });
     if (!response.ok) throw new Error(`Could not load chart: ${source}`);
     spec = await response.json();
   }
