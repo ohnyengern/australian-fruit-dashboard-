@@ -176,8 +176,11 @@ function compileBoxedAnnotations(spec) {
     if (!box) return;
     const update = mark.encode.update;
     const centre = box.fruit ? `scale('x', ${JSON.stringify(box.fruit)}) + bandwidth('x') / 2` : `scale('x', ${box.x})`;
-    const left = `${centre}${box.fruit ? ` - ${box.width / 2} * typographyScale` : box.rightAligned ? ` - ${box.width} * typographyScale` : ""}`;
-    const top = `scale('y', ${box.y}) - ${box.height / 2} * typographyScale`;
+    const desiredLeft = `${centre}${box.fruit ? ` - ${box.width / 2} * typographyScale` : box.rightAligned ? ` - ${box.width} * typographyScale` : ""}`;
+    const left = box.fruit ? desiredLeft : `max(0, min((${desiredLeft}), width - ${box.width} * typographyScale))`;
+    const centreY = mark.name.startsWith("orangeAnnotation")
+      ? `scale('y', width < 450 ? 260 : ${box.y})` : `scale('y', ${box.y})`;
+    const top = `${centreY} - ${box.height / 2} * typographyScale`;
     if (mark.name.endsWith("Background_marks")) {
       delete update.xc; delete update.yc;
       update.x = { signal: left }; update.y = { signal: top };
@@ -192,8 +195,16 @@ function compileBoxedAnnotations(spec) {
       if (box.fruit) {
         update.y2 = { signal: `(${top}) + ${box.height} * typographyScale` };
       } else {
-        update.x = { signal: `(${left}) + ${box.width} * typographyScale` };
-        update.y = { signal: `scale('y', ${box.y}) - 8 * typographyScale` };
+        const originX = `(${left}) + ${box.width} * typographyScale`;
+        const originY = `${centreY} - 8 * typographyScale`;
+        update.x = { signal: originX };
+        update.y = { signal: originY };
+        // Stop at the dot's edge, leaving the coloured marker unobscured.
+        const targetX = "scale('x', datum.x2)", targetY = "scale('y', datum.y2)";
+        const dx = `((${targetX}) - (${originX}))`, dy = `((${targetY}) - (${originY}))`;
+        const distance = `max(1, sqrt(pow(${dx}, 2) + pow(${dy}, 2)))`;
+        update.x2 = { signal: `(${targetX}) - ${dx} * 8 * typographyScale / ${distance}` };
+        update.y2 = { signal: `(${targetY}) - ${dy} * 8 * typographyScale / ${distance}` };
       }
     }
   });

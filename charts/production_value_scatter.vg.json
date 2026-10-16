@@ -23,14 +23,6 @@
     {
       "calculate": "toNumber(datum.ProductionValueM)",
       "as": "ProductionValueMNum"
-    },
-    {
-      "calculate": "datum.Fruit == 'Blueberry' ? 28000 : datum.Fruit == 'Strawberry' ? 90010 : datum.Fruit == 'Avocado' ? 142000 : datum.Fruit == 'Table grapes' ? 260000 : datum.Fruit == 'Mandarin' ? 255000 : datum.Fruit == 'Apple' ? 310000 : datum.Fruit == 'Banana' ? 385000 : datum.Fruit == 'Orange' ? 555000 : datum.ProductionTonnesNum",
-      "as": "LabelX"
-    },
-    {
-      "calculate": "datum.Fruit == 'Blueberry' ? 560 : datum.Fruit == 'Strawberry' ? 505 : datum.Fruit == 'Avocado' ? 695 : datum.Fruit == 'Table grapes' ? 850 : datum.Fruit == 'Mandarin' ? 430 : datum.Fruit == 'Apple' ? 650 : datum.Fruit == 'Banana' ? 695 : datum.Fruit == 'Orange' ? 565 : datum.ProductionValueMNum",
-      "as": "LabelY"
     }
   ],
   "layer": [
@@ -128,24 +120,35 @@
         "fontSize": 12,
         "fontWeight": "normal",
         "color": "#333333",
-        "align": "center",
-        "baseline": "middle",
-        "font": "Arial"
+        "align": {
+          "expr": "datum.Fruit == 'Orange' ? 'right' : datum.Fruit == 'Blueberry' || datum.Fruit == 'Strawberry' ? (width < 650 ? 'left' : 'center') : 'left'"
+        },
+        "baseline": {
+          "expr": "datum.Fruit == 'Blueberry' || datum.Fruit == 'Orange' ? 'bottom' : datum.Fruit == 'Strawberry' ? 'top' : 'middle'"
+        },
+        "font": "Arial",
+        "dx": {
+          "expr": "datum.Fruit == 'Orange' ? -14 : datum.Fruit == 'Blueberry' || datum.Fruit == 'Strawberry' ? 0 : 14"
+        },
+        "dy": {
+          "expr": "datum.Fruit == 'Blueberry' || datum.Fruit == 'Orange' ? -13 : datum.Fruit == 'Strawberry' ? 13 : 0"
+        }
       },
       "encoding": {
         "x": {
-          "field": "LabelX",
+          "field": "ProductionTonnesNum",
           "type": "quantitative"
         },
         "y": {
-          "field": "LabelY",
+          "field": "ProductionValueMNum",
           "type": "quantitative"
         },
         "text": {
           "field": "Fruit",
           "type": "nominal"
         }
-      }
+      },
+      "name": "fruitPointLabels"
     },
     {
       "data": {
@@ -185,8 +188,8 @@
       "data": {
         "values": [
           {
-            "x": 212000,
-            "y": 830,
+            "x": 210000,
+            "y": 800,
             "label": [
               "Highest production value despite",
               "a relatively smaller harvest"
@@ -255,7 +258,7 @@
       "data": {
         "values": [
           {
-            "x": 455000,
+            "x": 465000,
             "y": 420,
             "label": [
               "High production volume,",
