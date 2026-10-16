@@ -200,6 +200,36 @@ function compileBoxedAnnotations(spec) {
   return compiled;
 }
 
+// Keep the heatmap explanation in a reserved white band. The connector
+// runs through the narrow gutter beside the cells, not across other years.
+function compileHeatmapAnnotation(spec) {
+  const note = spec.usermeta.annotation;
+  const context = document.createElement("canvas").getContext("2d");
+  context.font = `${typography.label}px Arial`;
+  const boxWidth = Math.ceil(Math.max(...note.lines.map(line => context.measureText(line).width))) + 16;
+  const boxHeight = note.lines.length * (typography.label + 4) + 12;
+  spec.padding = { top: 12, left: 0, right: 0, bottom: 0 };
+  const compiled = vegaLite.compile(spec).spec;
+  const top = -(boxHeight + 24);
+  const left = `max(0, min(width * 0.25, width - ${boxWidth}))`;
+  const cx = `scale('x', '2022') + bandwidth('x') / 2`;
+  const cy = `scale('y', 'Avocado') + bandwidth('y') / 2`;
+  compiled.marks.push({ name: "avocadoGrowthConnector", type: "path", encode: { update: {
+    path: { signal: `'M' + ((${left}) + 16) + ',${top + boxHeight} L-3,${top + boxHeight} L-3,' + (${cy}) + ' L' + (${cx}) + ',' + (${cy})` },
+    fill: { value: null }, stroke: { value: "#61564f" }, strokeWidth: { value: 1.2 },
+    description: { value: "Connector to the Avocado 2022 growth cell" }
+  }}}, { name: "avocadoGrowthBox", type: "rect", encode: { update: {
+    x: { signal: left }, y: { value: top }, width: { value: boxWidth }, height: { value: boxHeight },
+    fill: { value: "#eeeeee" }, stroke: { value: null }, tooltip: { value: note.text }
+  }}}, { name: "avocadoGrowthText", type: "text", encode: { update: {
+    x: { signal: `(${left}) + 8` }, y: { value: top + 6 }, text: { value: note.lines },
+    align: { value: "left" }, baseline: { value: "top" },
+    lineHeight: { value: typography.label + 4 }, fill: { value: "#333333" },
+    href: { value: note.source }, tooltip: { value: "Context: Rabobank, July 2022. Click to read the source." }
+  }}});
+  return compiled;
+}
+
 function compileProductionMap(spec) {
   const context = document.createElement("canvas").getContext("2d");
   context.font = `${typography.label}px Arial`;
@@ -276,6 +306,7 @@ async function embedChart(target, source, options) {
   delete spec.title;
   const compiled = target === "#export_flow_map" ? compileExportArrows(spec)
     : target === "#state_production_map" ? compileProductionMap(spec)
+    : target === "#growth_heatmap" ? compileHeatmapAnnotation(spec)
     : ["#production_value_scatter", "#export_value_waterfall"].includes(target) ? compileBoxedAnnotations(spec)
     : options.mode === "vega" ? spec : vegaLite.compile(spec).spec;
   const result = await vegaEmbed(target, standardiseVegaTypography(compiled), { ...options, mode: "vega" });

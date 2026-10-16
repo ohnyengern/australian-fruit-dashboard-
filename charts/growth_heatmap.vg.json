@@ -88,7 +88,10 @@
         "y": {
           "field": "Fruit",
           "type": "nominal",
-          "title": null
+          "title": null,
+          "axis": {
+            "labelPadding": 8
+          }
         },
         "color": {
           "field": "YoYGrowth",
@@ -161,6 +164,21 @@
     "header": {
       "labelFont": "Arial",
       "titleFont": "Arial"
+    }
+  },
+  "usermeta": {
+    "annotation": {
+      "text": "Avocado production surged as newly planted trees matured and produced more fruit.",
+      "lines": [
+        "Avocado production surged as",
+        "newly planted trees matured",
+        "and produced more fruit."
+      ],
+      "target": {
+        "Fruit": "Avocado",
+        "Year": "2022"
+      },
+      "source": "https://www.rabobank.com.au/news/media-releases/2022/220725-an-avo-lanche-of-avocados-australia-needs-to-consume-and-export-more-avocados"
     }
   }
 }
