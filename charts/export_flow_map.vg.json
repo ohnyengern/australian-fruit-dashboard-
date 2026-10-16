@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Major Fresh-Fruit Export Destinations, Year Ending June 2025",
+    "text": "Major Destinations of Australian Fresh-Fruit Exports in 2025",
     "fontSize": 20,
     "fontWeight": "bold",
     "anchor": "start",
