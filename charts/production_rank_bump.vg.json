@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "How have production rankings changed over time?",
+    "text": "Changes in fruit production rankings, 2021\u20132025",
     "fontSize": 20,
     "anchor": "start",
     "offset": 15,

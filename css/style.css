@@ -26,6 +26,7 @@ html, body { margin: 0; background: var(--page-bg); }
 body { color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
 .container { width: min(calc(100% - 2 * var(--page-margin)), 1120px); margin-inline: auto; }
 .page-header { padding-top: 64px; text-align: center; }
+.page-intro { margin: 20px auto 0; color: var(--muted); font-size: var(--font-body); line-height: 1.7; }
 h1 { margin: 0; font: bold clamp(32px, 3.5vw, 56px)/1.14 Georgia, serif; letter-spacing: -.035em; text-transform: uppercase; }
 .section-header { display: flex; align-items: center; gap: 16px; padding: 14px 20px; margin: 56px var(--container-margin-right) 24px var(--container-margin-left); background: var(--section-bg); }
 .section-number { display: grid; place-items: center; flex: 0 0 42px; height: 42px; border-radius: 50%; background: var(--accent); color: white; font-size: 18px; font-weight: 700; }
@@ -50,7 +51,7 @@ h1 { margin: 0; font: bold clamp(32px, 3.5vw, 56px)/1.14 Georgia, serif; letter-
 .explanation-column { border-top: 1px solid var(--rule); padding-top: 20px; }
 .explanation-column p, .production-map-narrative p { margin: 0 0 16px; color: #424242; font-size: var(--font-body); line-height: 1.7; overflow-wrap: anywhere; text-align: left; }
 .explanation-column p:last-child, .production-map-narrative p:last-child { margin-bottom: 0; }
-.story-row > .explanation-column { column-count: 2; column-gap: 44px; }
+.story-row > .explanation-column { column-count: 2; column-gap: 44px; column-fill: balance; }
 .reading-line { display: block; }
 .fruit-highlight { font-weight: 700; }
 .fruit-apple { color: #4c78a8; }
@@ -121,6 +122,8 @@ h1 { margin: 0; font: bold clamp(32px, 3.5vw, 56px)/1.14 Georgia, serif; letter-
 .production-map-narrative { min-width: 0; }
 .export-flow-layout { display: grid; gap: 20px; min-width: 0; }
 .flow-map-note { margin: 0; color: var(--muted); font-size: var(--font-chart-label); line-height: 1.6; }
+.chart-insight-fallback { margin: 16px 0 0; padding: 8px; background: #eeeeee; font-size: var(--font-chart-label); line-height: 1.4; color: #333333; }
+.flow-market-insight { width: fit-content; max-width: 100%; margin: 0; padding: 8px; background: #eeeeee; font-size: var(--font-chart-label); line-height: 1.4; color: #333333; }
 .export-map-tools { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; align-items: center; }
 .export-map-tools .map-controls { max-width: 220px; }
 .export-map-legend { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }

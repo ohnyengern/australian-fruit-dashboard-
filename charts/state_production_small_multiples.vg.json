@@ -2,7 +2,7 @@
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "description": "Proportional symbol map of state fruit production with fruit and year selectors.",
   "title": {
-    "text": "Fruit Production Across Australian States",
+    "text": "Fruit production across Australian states",
     "fontSize": 20,
     "anchor": "start",
     "offset": 15,
@@ -344,7 +344,7 @@
           "as": "NoteLatitude"
         },
         {
-          "calculate": "[\"Cooler southern regions\", \"support major apple\", \"production.\"]",
+          "calculate": "[\"Victoria supplies less than half\", \"the apple harvest; other states\", \"together supply the majority.\"]",
           "as": "NoteLines"
         },
         {
@@ -356,7 +356,7 @@
           ]
         },
         {
-          "calculate": "indexof([\"Cooler southern regions\", \"support major apple\", \"production.\"], datum.NoteLine)",
+          "calculate": "indexof([\"Victoria supplies less than half\", \"the apple harvest; other states\", \"together supply the majority.\"], datum.NoteLine)",
           "as": "NoteLineIndex"
         }
       ],
@@ -434,7 +434,7 @@
           "as": "NoteLatitude"
         },
         {
-          "calculate": "[\"Queensland dominates banana\", \"production, supported by\", \"tropical climates and rainfall.\"]",
+          "calculate": "[\"About 94% of bananas come\", \"from Queensland, concentrating\", \"supply within a single state.\"]",
           "as": "NoteLines"
         },
         {
@@ -446,7 +446,7 @@
           ]
         },
         {
-          "calculate": "indexof([\"Queensland dominates banana\", \"production, supported by\", \"tropical climates and rainfall.\"], datum.NoteLine)",
+          "calculate": "indexof([\"About 94% of bananas come\", \"from Queensland, concentrating\", \"supply within a single state.\"], datum.NoteLine)",
           "as": "NoteLineIndex"
         }
       ],
@@ -524,7 +524,7 @@
           "as": "NoteLatitude"
         },
         {
-          "calculate": "[\"New South Wales leads\", \"orange production, supported\", \"by Riverina water access.\"]",
+          "calculate": "[\"Over half of oranges come\", \"from New South Wales, making\", \"national supply regionally concentrated.\"]",
           "as": "NoteLines"
         },
         {
@@ -536,7 +536,7 @@
           ]
         },
         {
-          "calculate": "indexof([\"New South Wales leads\", \"orange production, supported\", \"by Riverina water access.\"], datum.NoteLine)",
+          "calculate": "indexof([\"Over half of oranges come\", \"from New South Wales, making\", \"national supply regionally concentrated.\"], datum.NoteLine)",
           "as": "NoteLineIndex"
         }
       ],

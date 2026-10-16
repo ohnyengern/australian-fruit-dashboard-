@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Does producing more mean earning more?",
+    "text": "Does a larger harvest mean greater production value?",
     "fontSize": 20,
     "anchor": "start",
     "offset": 15,
@@ -188,8 +188,8 @@
             "x": 212000,
             "y": 830,
             "label": [
-              "Highest production value despite",
-              "a relatively smaller harvest"
+              "About four times oranges\u2019 value per tonne,",
+              "despite a much smaller harvest."
             ]
           }
         ]
@@ -258,9 +258,8 @@
             "x": 455000,
             "y": 420,
             "label": [
-              "High production volume,",
-              "but relatively low",
-              "production value"
+              "29% of harvest weight,",
+              "but only 11% of production value."
             ]
           }
         ]

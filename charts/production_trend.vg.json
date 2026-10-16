@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Australian Fruit Production Trends from 2021 to 2025",
+    "text": "Australian fruit production trends, 2021\u20132025",
     "fontSize": 20,
     "anchor": "start",
     "offset": 15,

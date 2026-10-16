@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "How has production changed from year to year?",
+    "text": "Annual changes in fruit production, 2022\u20132025",
     "fontSize": 20,
     "anchor": "start",
     "offset": 15,
@@ -59,6 +59,10 @@
     {
       "calculate": "((datum.Production - datum.PreviousProduction) / datum.PreviousProduction) * 100",
       "as": "YoYGrowth"
+    },
+    {
+      "calculate": "datum.YoYGrowth < 0 ? -datum.YoYGrowth / (100 + datum.YoYGrowth) * 100 : null",
+      "as": "RecoveryNeededPct"
     }
   ],
   "layer": [
@@ -128,6 +132,12 @@
             "field": "YoYGrowth",
             "type": "quantitative",
             "title": "Change from previous year:",
+            "format": ".1f"
+          },
+          {
+            "field": "RecoveryNeededPct",
+            "type": "quantitative",
+            "title": "Growth needed after this fall to recover (%)",
             "format": ".1f"
           }
         ]

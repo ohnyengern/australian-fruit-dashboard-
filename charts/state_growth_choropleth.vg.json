@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Where is fruit production growing or declining?",
+    "text": "Where did fruit production grow or decline, 2021\u20132025?",
     "fontSize": 20,
     "anchor": "start",
     "offset": 15,
@@ -120,6 +120,10 @@
           "as": [
             "geometry"
           ]
+        },
+        {
+          "calculate": "datum.EndProductionNum - datum.StartProductionNum",
+          "as": "ChangeTonnes"
         }
       ],
       "mark": {
@@ -188,6 +192,12 @@
             "field": "GrowthLabel",
             "type": "nominal",
             "title": "Production change:"
+          },
+          {
+            "field": "ChangeTonnes",
+            "type": "quantitative",
+            "title": "Additional or lost production (tonnes):",
+            "format": "+,.0f"
           }
         ]
       }
