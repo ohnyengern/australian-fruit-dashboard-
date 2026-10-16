@@ -201,7 +201,7 @@ function compileBoxedAnnotations(spec) {
 }
 
 // Keep the heatmap explanation in a reserved white band. The connector
-// runs through the narrow gutter beside the cells, not across other years.
+// drops vertically from the box to the selected growth cell.
 function compileHeatmapAnnotation(spec) {
   const note = spec.usermeta.annotation;
   const context = document.createElement("canvas").getContext("2d");
@@ -211,11 +211,11 @@ function compileHeatmapAnnotation(spec) {
   spec.padding = { top: 12, left: 0, right: 0, bottom: 0 };
   const compiled = vegaLite.compile(spec).spec;
   const top = -(boxHeight + 24);
-  const left = `max(0, min(width * 0.25, width - ${boxWidth}))`;
   const cx = `scale('x', '2022') + bandwidth('x') / 2`;
+  const left = `max(0, (${cx}) - ${boxWidth / 2})`;
   const cy = `scale('y', 'Avocado') + bandwidth('y') / 2`;
   compiled.marks.push({ name: "avocadoGrowthConnector", type: "path", encode: { update: {
-    path: { signal: `'M' + ((${left}) + 16) + ',${top + boxHeight} L-3,${top + boxHeight} L-3,' + (${cy}) + ' L' + (${cx}) + ',' + (${cy})` },
+    path: { signal: `'M' + (${cx}) + ',${top + boxHeight} L' + (${cx}) + ',' + (${cy})` },
     fill: { value: null }, stroke: { value: "#61564f" }, strokeWidth: { value: 1.2 },
     description: { value: "Connector to the Avocado 2022 growth cell" }
   }}}, { name: "avocadoGrowthBox", type: "rect", encode: { update: {
