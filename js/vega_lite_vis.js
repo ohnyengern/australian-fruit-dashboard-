@@ -214,9 +214,15 @@ function compileHeatmapAnnotation(spec) {
   const cx = `scale('x', '2022') + bandwidth('x') / 2`;
   const left = `max(0, (${cx}) - ${boxWidth / 2})`;
   const cy = `scale('y', 'Avocado') + bandwidth('y') / 2`;
-  compiled.marks.push({ name: "avocadoGrowthConnector", type: "path", encode: { update: {
-    path: { signal: `'M' + (${cx}) + ',${top + boxHeight} L' + (${cx}) + ',' + (${cy})` },
-    fill: { value: null }, stroke: { value: "#61564f" }, strokeWidth: { value: 1.2 },
+  const connectorPath = { signal: `'M' + (${cx}) + ',${top + boxHeight} L' + (${cx}) + ',' + (${cy})` };
+  // A white outline keeps the single vertical connector distinct from
+  // both pale and dark cells without changing the heatmap's colour scale.
+  compiled.marks.push({ name: "avocadoGrowthConnectorOutline", type: "path", aria: false, encode: { update: {
+    path: connectorPath, fill: { value: null }, stroke: { value: "#ffffff" },
+    strokeWidth: { value: 4 }, strokeCap: { value: "round" }
+  }}}, { name: "avocadoGrowthConnector", type: "path", encode: { update: {
+    path: connectorPath,
+    fill: { value: null }, stroke: { value: "#333333" }, strokeWidth: { value: 1.5 }, strokeCap: { value: "round" },
     description: { value: "Connector to the Avocado 2022 growth cell" }
   }}}, { name: "avocadoGrowthBox", type: "rect", encode: { update: {
     x: { signal: left }, y: { value: top }, width: { value: boxWidth }, height: { value: boxHeight },
