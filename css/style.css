@@ -160,3 +160,10 @@ h1 { margin: 0; font: bold clamp(32px, 3.5vw, 56px)/1.14 Georgia, serif; letter-
   .choropleth-legend { padding-top: 0; max-width: 280px; }
 
 }
+
+/* Keep the opening comparison in two complete, similarly sized passages. */
+.story-row > .balanced-story { column-count: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px; }
+.balanced-story p { margin: 0; }
+@media (max-width: 600px) {
+  .story-row > .balanced-story { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
