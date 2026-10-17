@@ -36,6 +36,26 @@
     {
       "calculate": "datum.ChangePct >= 0 ? 'Increase' : 'Decrease'",
       "as": "Direction"
+    },
+    {
+      "calculate": "format(datum.Value2021, ',.0f') + ' Australian dollars'",
+      "as": "Average2021Tooltip"
+    },
+    {
+      "calculate": "format(datum.Value2025, ',.0f') + ' Australian dollars'",
+      "as": "Average2025Tooltip"
+    },
+    {
+      "calculate": "(datum.ChangePct >= 0 ? 'Increase of ' : 'Decrease of ') + format(abs(datum.ChangePct), '.1f') + ' percent'",
+      "as": "ChangeTooltip"
+    },
+    {
+      "calculate": "format(toNumber(datum.ExportTonnes2021), ',.0f') + ' tonnes'",
+      "as": "Volume2021Tooltip"
+    },
+    {
+      "calculate": "format(toNumber(datum.ExportTonnes2025), ',.0f') + ' tonnes'",
+      "as": "Volume2025Tooltip"
     }
   ],
   "encoding": {
@@ -150,34 +170,29 @@
             "title": "Fruit:"
           },
           {
-            "field": "Value2021",
-            "type": "quantitative",
-            "title": "2021 average (A$/tonne):",
-            "format": ",.0f"
+            "field": "Average2021Tooltip",
+            "type": "nominal",
+            "title": "Average export value per tonne in the year ending June 2021:"
           },
           {
-            "field": "Value2025",
-            "type": "quantitative",
-            "title": "2025 average (A$/tonne):",
-            "format": ",.0f"
+            "field": "Average2025Tooltip",
+            "type": "nominal",
+            "title": "Average export value per tonne in the year ending June 2025:"
           },
           {
-            "field": "ChangePct",
-            "type": "quantitative",
-            "title": "Change (%):",
-            "format": "+.1f"
+            "field": "ChangeTooltip",
+            "type": "nominal",
+            "title": "Change in average export value per tonne:"
           },
           {
-            "field": "ExportTonnes2021",
-            "type": "quantitative",
-            "title": "2021 fresh exports (tonnes):",
-            "format": ",.0f"
+            "field": "Volume2021Tooltip",
+            "type": "nominal",
+            "title": "Fresh export volume in the year ending June 2021:"
           },
           {
-            "field": "ExportTonnes2025",
-            "type": "quantitative",
-            "title": "2025 fresh exports (tonnes):",
-            "format": ",.0f"
+            "field": "Volume2025Tooltip",
+            "type": "nominal",
+            "title": "Fresh export volume in the year ending June 2025:"
           }
         ]
       }
