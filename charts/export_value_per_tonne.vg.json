@@ -1,0 +1,206 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Change in average export value per tonne, 2021\u20132025",
+    "anchor": "start"
+  },
+  "width": 800,
+  "height": 400,
+  "data": {
+    "url": "data/export_value_per_tonne.csv",
+    "format": {
+      "type": "csv"
+    }
+  },
+  "usermeta": {
+    "source": "Australian Horticulture Statistics Handbook 2024/25, fresh-fruit five-year comparison tables",
+    "method": "Nominal fresh export value (A$ million \u00d7 1,000,000) divided by fresh export tonnes. Percentage change compares years ending June 2021 and 2025. Rounded source values yield approximate results. Bananas excluded: no recorded fresh exports."
+  },
+  "transform": [
+    {
+      "calculate": "toNumber(datum.ExportValue2021M) * 1000000 / toNumber(datum.ExportTonnes2021)",
+      "as": "Value2021"
+    },
+    {
+      "calculate": "toNumber(datum.ExportValue2025M) * 1000000 / toNumber(datum.ExportTonnes2025)",
+      "as": "Value2025"
+    },
+    {
+      "calculate": "(datum.Value2025 / datum.Value2021 - 1) * 100",
+      "as": "ChangePct"
+    },
+    {
+      "calculate": "format(datum.ChangePct, '+.1f') + '%'",
+      "as": "ChangeLabel"
+    }
+  ],
+  "encoding": {
+    "y": {
+      "field": "Fruit",
+      "type": "nominal",
+      "sort": {
+        "field": "ChangePct",
+        "order": "descending"
+      },
+      "title": null,
+      "axis": {
+        "labelPadding": 8,
+        "ticks": false,
+        "domain": false,
+        "labelLimit": 100
+      }
+    },
+    "x": {
+      "field": "ChangePct",
+      "type": "quantitative",
+      "title": "Change in average export value per tonne (%)",
+      "scale": {
+        "domain": [
+          -30,
+          115
+        ],
+        "nice": false
+      },
+      "axis": {
+        "values": [
+          -20,
+          0,
+          20,
+          40,
+          60,
+          80,
+          100
+        ],
+        "labelExpr": "datum.value + '%'",
+        "titlePadding": 12
+      }
+    }
+  },
+  "layer": [
+    {
+      "data": {
+        "values": [
+          {}
+        ]
+      },
+      "mark": {
+        "type": "rule",
+        "color": "#777",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "x": {
+          "datum": 0,
+          "type": "quantitative"
+        },
+        "y": {
+          "value": 0
+        },
+        "y2": {
+          "value": 400
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "bar",
+        "height": 22
+      },
+      "encoding": {
+        "color": {
+          "field": "Fruit",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "Apple",
+              "Avocado",
+              "Blueberry",
+              "Mandarin",
+              "Orange",
+              "Strawberry",
+              "Table grapes"
+            ],
+            "range": [
+              "#4c78a8",
+              "#f58518",
+              "#72b7b2",
+              "#54a24b",
+              "#eeca3b",
+              "#b279a2",
+              "#ff9da6"
+            ]
+          }
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit"
+          },
+          {
+            "field": "Value2021",
+            "type": "quantitative",
+            "title": "2021 average (A$/tonne)",
+            "format": ",.0f"
+          },
+          {
+            "field": "Value2025",
+            "type": "quantitative",
+            "title": "2025 average (A$/tonne)",
+            "format": ",.0f"
+          },
+          {
+            "field": "ChangePct",
+            "type": "quantitative",
+            "title": "Change (%)",
+            "format": "+.1f"
+          },
+          {
+            "field": "ExportTonnes2021",
+            "type": "quantitative",
+            "title": "2021 fresh exports (tonnes)",
+            "format": ",.0f"
+          },
+          {
+            "field": "ExportTonnes2025",
+            "type": "quantitative",
+            "title": "2025 fresh exports (tonnes)",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": {
+          "expr": "datum.ChangePct < 0 ? 'right' : 'left'"
+        },
+        "dx": {
+          "expr": "datum.ChangePct < 0 ? -7 : 7"
+        },
+        "baseline": "middle",
+        "color": "#333"
+      },
+      "encoding": {
+        "text": {
+          "field": "ChangeLabel"
+        }
+      }
+    }
+  ],
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "font": "Arial",
+    "axis": {
+      "gridColor": "#e6e6e6",
+      "labelColor": "#444",
+      "titleColor": "#222",
+      "domainColor": "#999",
+      "tickColor": "#999"
+    }
+  }
+}

@@ -553,6 +553,8 @@ embedChart(
   embedOptions
 ).catch(console.error);
 
+embedChart("#export_value_per_tonne", "charts/export_value_per_tonne.vg.json", embedOptions).catch(console.error);
+
 // ======================================
 // State production: one map with fruit and year controls.
 // A fixed symbol scale makes production comparable across selections.
