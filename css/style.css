@@ -1,8 +1,6 @@
 @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 600; font-display: swap; src: url("../assets/fonts/fraunces-600.ttf") format("truetype"); }
 @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 700; font-display: swap; src: url("../assets/fonts/fraunces-700.ttf") format("truetype"); }
-@font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 400; font-display: swap; src: url("../assets/fonts/source-sans-3-400.ttf") format("truetype"); }
-@font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 600; font-display: swap; src: url("../assets/fonts/source-sans-3-600.ttf") format("truetype"); }
-@font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 700; font-display: swap; src: url("../assets/fonts/source-sans-3-700.ttf") format("truetype"); }
+@font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 200 900; font-display: swap; src: url("../assets/fonts/source-sans-3-variable.ttf") format("truetype"); }
 /* Australian Fruit Production — centered reading layout */
 :root {
   color-scheme: light;
@@ -59,9 +57,9 @@ h1 { margin: 0; font: 700 clamp(40px, 4.5vw, 72px)/1.14 var(--font-heading-famil
 .explanation-column p:last-child, .production-map-narrative p:last-child { margin-bottom: 0; }
 .story-row > .explanation-column { column-count: 2; column-gap: 44px; }
 .reading-line { display: block; }
-.fruit-highlight { font-weight: 600; }
+.fruit-highlight { font-weight: 650; }
 .fruit-apple { color: #4c78a8; }
-.fruit-orange { color: #966E00; }
+.fruit-orange { color: #C04B00; }
 .fruit-strawberry { color: #b279a2; }
 .fruit-blueberry { color: #4f8f8a; }
 .fruit-mandarin { color: #54a24b; }
@@ -197,4 +195,4 @@ body { font-variant-numeric: lining-nums; }
 
 .vega-bind-name { font-size: var(--font-body); }
 
-.explanation-column strong, .production-map-narrative strong { font-weight: 600; }
+.explanation-column strong, .production-map-narrative strong { font-weight: 650; }

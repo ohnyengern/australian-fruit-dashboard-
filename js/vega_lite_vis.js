@@ -37,6 +37,7 @@ const typography = {
 const chartFontsReady = Promise.all([
   document.fonts.load('400 13px "Source Sans 3"'),
   document.fonts.load('600 13px "Source Sans 3"'),
+  document.fonts.load('650 17px "Source Sans 3"'),
   document.fonts.load('700 13px "Source Sans 3"'),
   document.fonts.load('600 25px "Fraunces"'),
   document.fonts.load('700 56px "Fraunces"')

@@ -269,7 +269,7 @@
           },
           "condition": {
             "test": "datum.Fruit === 'Orange'",
-            "value": "#966E00"
+            "value": "#C04B00"
           }
         }
       }
