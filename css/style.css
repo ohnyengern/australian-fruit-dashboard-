@@ -59,7 +59,7 @@ h1 { margin: 0; font: 700 clamp(40px, 4.5vw, 72px)/1.14 var(--font-heading-famil
 .explanation-column p:last-child, .production-map-narrative p:last-child { margin-bottom: 0; }
 .story-row > .explanation-column { column-count: 2; column-gap: 44px; }
 .reading-line { display: block; }
-.fruit-highlight { font-weight: 700; }
+.fruit-highlight { font-weight: 600; }
 .fruit-apple { color: #4c78a8; }
 .fruit-orange { color: #966E00; }
 .fruit-strawberry { color: #b279a2; }
@@ -196,3 +196,5 @@ body { font-variant-numeric: lining-nums; }
 #growth_heatmap .chart-wrapper { min-width: 480px; flex-shrink: 0; }
 
 .vega-bind-name { font-size: var(--font-body); }
+
+.explanation-column strong, .production-map-narrative strong { font-weight: 600; }
