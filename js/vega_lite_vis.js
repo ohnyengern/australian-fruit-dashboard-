@@ -33,6 +33,14 @@ const typography = {
   label: parseFloat(typographyStyle.getPropertyValue("--font-chart-label")),
   body: parseFloat(typographyStyle.getPropertyValue("--font-body"))
 };
+// Wait for real font metrics before measuring labels and annotation boxes.
+const chartFontsReady = Promise.all([
+  document.fonts.load('400 13px "Source Sans 3"'),
+  document.fonts.load('600 13px "Source Sans 3"'),
+  document.fonts.load('700 13px "Source Sans 3"'),
+  document.fonts.load('600 25px "Fraunces"'),
+  document.fonts.load('700 56px "Fraunces"')
+]);
 const chartTypographyUpdates = new WeakMap();
 function standardiseVegaTypography(spec) {
   spec.signals ||= [];
@@ -42,12 +50,12 @@ function standardiseVegaTypography(spec) {
     (group.axes || []).forEach(axis => {
       axis.labelFontSize = size(typography.label);
       axis.titleFontSize = size(typography.axisTitle);
-      axis.labelFont = axis.titleFont = "Arial";
+      axis.labelFont = axis.titleFont = "'Source Sans 3'";
     });
     (group.legends || []).forEach(legend => {
       legend.labelFontSize = size(typography.label);
       legend.titleFontSize = size(typography.body);
-      legend.labelFont = legend.titleFont = "Arial";
+      legend.labelFont = legend.titleFont = "'Source Sans 3'";
     });
     (group.marks || []).forEach(mark => {
       if (mark.type === "text") {
@@ -57,7 +65,7 @@ function standardiseVegaTypography(spec) {
         if (!mark.encode.update.fontSize?.signal?.includes("annotationScale")) {
           mark.encode.update.fontSize = size(typography.label);
         }
-        mark.encode.update.font = { value: "Arial" };
+        mark.encode.update.font = { value: "'Source Sans 3'" };
       }
       visit(mark);
     });
@@ -149,7 +157,7 @@ function compileExportArrows(spec) {
 // the Sankey. Padding and line spacing follow the shared annotation size.
 function compileBoxedAnnotations(spec) {
   const context = document.createElement("canvas").getContext("2d");
-  context.font = `${typography.label}px Arial`;
+  context.font = `${typography.label}px "Source Sans 3"`;
   const boxes = new Map();
   spec.layer = spec.layer.flatMap(layer => {
     if (!layer.name?.endsWith("AnnotationText")) return [layer];
@@ -218,7 +226,7 @@ function compileBoxedAnnotations(spec) {
 function compileHeatmapAnnotation(spec) {
   const note = spec.usermeta.annotation;
   const context = document.createElement("canvas").getContext("2d");
-  context.font = `${typography.label}px Arial`;
+  context.font = `${typography.label}px "Source Sans 3"`;
   const boxWidth = Math.ceil(Math.max(...note.lines.map(line => context.measureText(line).width))) + 16;
   const boxHeight = note.lines.length * (typography.label + 4) + 12;
   spec.padding = { top: 12, left: 0, right: 0, bottom: 0 };
@@ -251,7 +259,7 @@ function compileHeatmapAnnotation(spec) {
 
 function compileProductionMap(spec) {
   const context = document.createElement("canvas").getContext("2d");
-  context.font = `${typography.label}px Arial`;
+  context.font = `${typography.label}px "Source Sans 3"`;
   const boxes = new Map();
   spec.layer.filter(layer => layer.name?.endsWith("AnnotationText")).forEach(layer => {
     const lines = JSON.parse(layer.transform.find(transform => transform.as === "NoteLines").calculate);
@@ -291,6 +299,7 @@ function compileProductionMap(spec) {
 
 // Keep headings in HTML and render every chart with the shared typography.
 async function embedChart(target, source, options) {
+  await chartFontsReady;
   let spec = source;
   if (typeof source === "string") {
     const chartUrl = new URL(source, window.location.href);
@@ -387,11 +396,11 @@ async function embedChart(target, source, options) {
     const context = document.createElement("canvas").getContext("2d");
     const labels = result.view.data("destinations").flatMap(row => [row.Destination, `${Number(row.Tonnes).toLocaleString("en-US")} t`]);
     const widths = labels.map(label => {
-      context.font = `${typography.label}px Arial`;
+      context.font = `${typography.label}px "Source Sans 3"`;
       const metrics = context.measureText(label);
       return metrics.actualBoundingBoxLeft + metrics.actualBoundingBoxRight;
     });
-    context.font = `bold ${typography.label}px Arial`;
+    context.font = `bold ${typography.label}px "Source Sans 3"`;
     const heading = context.measureText("Destination / Use");
     widths.push(heading.actualBoundingBoxLeft + heading.actualBoundingBoxRight);
     await result.view.signal("destinationLabelWidth", Math.max(...widths)).runAsync();
@@ -623,18 +632,22 @@ const labelTransforms = new WeakMap();
 const textMeasureContext = document.createElement("canvas").getContext("2d");
 const mapHeadingObserver = new ResizeObserver(entries => {
   entries.forEach(({ target }) => {
-    textMeasureContext.font = getComputedStyle(target).font;
+    textMeasureContext.font = elementCanvasFont(target);
     const metrics = textMeasureContext.measureText(target.textContent);
     target.style.transform = `translateX(${metrics.actualBoundingBoxLeft}px)`;
   });
 });
 document.querySelectorAll(".map-title, .chart-title").forEach(title => mapHeadingObserver.observe(title));
+function elementCanvasFont(element) {
+  const style = getComputedStyle(element);
+  return `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+}
 function alignLabelInk(svg) {
   const shell = svg.closest(".chart-shell").getBoundingClientRect();
   const sankeyLeft = ".fruitLabels text, .fruitValues text, .fruitHeading text";
   const sankeyRight = ".destinationLabels text, .destinationValues text, .destinationHeading text";
   const destinationWidths = [...svg.querySelectorAll(sankeyRight)].map(label => {
-    textMeasureContext.font = getComputedStyle(label).font;
+    textMeasureContext.font = elementCanvasFont(label);
     const metrics = textMeasureContext.measureText(label.textContent);
     return (metrics.actualBoundingBoxLeft + metrics.actualBoundingBoxRight) * Math.abs(label.getScreenCTM().a);
   });
@@ -650,7 +663,7 @@ function alignLabelInk(svg) {
     label.setAttribute("transform", original);
     const matrix = label.getScreenCTM();
     if (!matrix) return;
-    textMeasureContext.font = getComputedStyle(label).font;
+    textMeasureContext.font = elementCanvasFont(label);
     const metrics = textMeasureContext.measureText(label.querySelector("tspan")?.textContent || label.textContent);
     const anchor = label.getAttribute("text-anchor");
     const offset = anchor === "middle" ? -metrics.width / 2 : anchor === "end" ? -metrics.width : 0;
