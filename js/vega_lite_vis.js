@@ -346,7 +346,11 @@ async function embedChart(target, source, options) {
       row.append(item);
     });
     legend.append(row);
-    chartElement.after(legend);
+    if (target === "#export_value_per_tonne") {
+      chartElement.parentElement.querySelector(".export-unit-footer").append(legend);
+    } else {
+      chartElement.after(legend);
+    }
     colour.legend = null;
   }
   const compiled = target === "#export_flow_map" ? compileExportArrows(spec)

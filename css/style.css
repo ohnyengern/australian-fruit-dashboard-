@@ -174,3 +174,8 @@ h1 { margin: 0; font: bold clamp(32px, 3.5vw, 56px)/1.14 Georgia, serif; letter-
 .inline-chart-legend-item { display: inline-flex; align-items: center; gap: 8px; font-size: var(--font-chart-label); }
 .inline-chart-swatch { display: inline-block; width: 12px; height: 12px; flex: 0 0 12px; }
 .inline-chart-swatch.circle { border-radius: 50%; }
+
+.export-unit-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 28px; margin-top: 28px; }
+.export-unit-footer > .flow-map-note { flex: 1 1 320px; }
+.export-unit-footer > .inline-chart-legend { flex: 0 1 auto; width: auto; max-width: 100%; margin: 0 0 0 auto; }
+.export-unit-footer .inline-chart-legend-row { padding-bottom: 0; }
