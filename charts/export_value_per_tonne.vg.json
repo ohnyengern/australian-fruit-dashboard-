@@ -128,7 +128,7 @@
             ],
             "range": [
               "#006B4F",
-              "#FFD500"
+              "#B00058"
             ]
           },
           "legend": {
@@ -148,36 +148,36 @@
           {
             "field": "Fruit",
             "type": "nominal",
-            "title": "Fruit"
+            "title": "Fruit:"
           },
           {
             "field": "Value2021",
             "type": "quantitative",
-            "title": "2021 average (A$/tonne)",
+            "title": "2021 average (A$/tonne):",
             "format": ",.0f"
           },
           {
             "field": "Value2025",
             "type": "quantitative",
-            "title": "2025 average (A$/tonne)",
+            "title": "2025 average (A$/tonne):",
             "format": ",.0f"
           },
           {
             "field": "ChangePct",
             "type": "quantitative",
-            "title": "Change (%)",
+            "title": "Change (%):",
             "format": "+.1f"
           },
           {
             "field": "ExportTonnes2021",
             "type": "quantitative",
-            "title": "2021 fresh exports (tonnes)",
+            "title": "2021 fresh exports (tonnes):",
             "format": ",.0f"
           },
           {
             "field": "ExportTonnes2025",
             "type": "quantitative",
-            "title": "2025 fresh exports (tonnes)",
+            "title": "2025 fresh exports (tonnes):",
             "format": ",.0f"
           }
         ]
