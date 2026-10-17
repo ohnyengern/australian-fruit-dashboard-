@@ -112,11 +112,7 @@
     {
       "mark": {
         "type": "bar",
-        "height": 22,
-        "stroke": {
-          "expr": "datum.Direction === 'Decrease' ? '#806A00' : '#006B4F'"
-        },
-        "strokeWidth": 1
+        "height": 22
       },
       "encoding": {
         "color": {
@@ -142,8 +138,7 @@
             "titleOrient": "top",
             "titleLimit": 180,
             "titlePadding": 10,
-            "symbolStrokeColor": "#665500",
-            "symbolStrokeWidth": 0.7,
+            "symbolStrokeWidth": 0,
             "direction": "horizontal"
           }
         },
