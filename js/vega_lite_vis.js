@@ -429,33 +429,64 @@ narrativeParagraphs.forEach(paragraph => {
     node.replaceWith(fragment);
   });
 });
+// Choose paragraph-wide line breaks instead of cutting each natural line
+// after its tenth word. Balance the ragged edge without stretching spaces.
+const narrativeMeasureContext = document.createElement("canvas").getContext("2d");
 function limitNarrativeLines() {
   narrativeParagraphs.forEach(paragraph => {
     paragraph.querySelectorAll(".word-limit-break").forEach(br => br.remove());
+    const words = [...paragraph.querySelectorAll(".narrative-word")];
+    if (!words.length) return;
     const column = paragraph.closest(".explanation-column");
     const style = getComputedStyle(column);
     const columns = Number(style.columnCount) || 1;
     const gap = parseFloat(style.columnGap) || 0;
-    const bounds = column.getBoundingClientRect();
-    const columnStep = (bounds.width + gap) / columns;
-    let previous;
-    let count = 0;
-    for (const word of paragraph.querySelectorAll(".narrative-word")) {
-      const rect = word.getBoundingClientRect();
-      const previousRect = previous?.getBoundingClientRect();
-      const sameLine = previousRect && Math.abs(rect.top - previousRect.top) < 1 &&
-        Math.floor((rect.left - bounds.left) / columnStep) === Math.floor((previousRect.left - bounds.left) / columnStep);
-      count = sameLine ? count + 1 : 1;
-      if (count > 10) {
+    const columnWidth = (column.clientWidth - gap * (columns - 1)) / columns;
+    const available = Math.min(paragraph.clientWidth, columnWidth) - 1;
+    const widths = [], spaces = [], starts = [0];
+    words.forEach((word, index) => {
+      narrativeMeasureContext.font = elementCanvasFont(word);
+      widths.push(narrativeMeasureContext.measureText(word.textContent).width);
+      spaces.push(narrativeMeasureContext.measureText(" ").width);
+      starts.push(starts[index] + widths[index] + spaces[index]);
+    });
+    const lineWidth = (start, end) => starts[end] - starts[start] - spaces[end - 1];
+    const costs = Array(words.length + 1).fill(Infinity);
+    const nextBreak = Array(words.length).fill(-1);
+    costs[words.length] = 0;
+    for (let start = words.length - 1; start >= 0; start--) {
+      for (let end = start + 1; end <= Math.min(start + 10, words.length); end++) {
+        const used = lineWidth(start, end);
+        if (used > available && end > start + 1) break;
+        // Keep names such as "table grapes" together.
+        if (end < words.length) {
+          const highlight = words[end - 1].closest(".fruit-highlight");
+          if (highlight && highlight === words[end].closest(".fruit-highlight")) continue;
+        }
+        const remainingSpace = Math.max(0, available - used);
+        let cost = remainingSpace ** 2 + costs[end];
+        if (end === words.length && end - start < 3 && words.length > 10) {
+          cost += available ** 2; // Avoid isolated one- or two-word endings.
+        }
+        if (end < words.length && /^(a|an|the|and|or|to|of|in|for|with)$/i.test(words[end - 1].textContent)) {
+          cost += available * 10;
+        }
+        if (cost < costs[start]) { costs[start] = cost; nextBreak[start] = end; }
+      }
+    }
+    // Fall back to bounded chunks if an exceptionally long name cannot fit.
+    for (let start = 0; start < words.length;) {
+      const end = nextBreak[start] > start ? nextBreak[start] : Math.min(start + 10, words.length);
+      if (end < words.length) {
         const br = document.createElement("br");
         br.className = "word-limit-break";
-        word.before(br);
-        count = 1;
+        words[end].before(br);
       }
-      previous = word;
+      start = end;
     }
   });
 }
+
 const narrativeWidths = new WeakMap();
 let narrativeFrame;
 const narrativeObserver = new ResizeObserver(entries => {

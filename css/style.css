@@ -81,7 +81,7 @@ h1 { margin: 0; font: 700 clamp(32px, 3.5vw, 56px)/1.14 var(--font-heading-famil
 .chart-column .vega-embed summary svg { width: 16px; height: 16px; }
 .vega-bindings { margin-top: 12px; max-width: 100%; font-size: var(--font-control); line-height: 1.55; }
 .vega-bindings select, .vega-bindings input { max-width: 100%; font: inherit; }
-.chart-title, .map-title { margin: 0 0 24px; font-size: var(--font-chart-title); line-height: 1.3; color: #000; }
+.chart-title, .map-title { font-family: var(--font-heading-family); font-weight: 600; margin: 0 0 24px; font-size: var(--font-chart-title); line-height: 1.3; color: #000; }
 .map-layout { display: grid; grid-template-columns: minmax(0, 1fr) 200px; align-items: start; gap: 32px; }
 .map-sidebar { --map-sidebar-gap: 28px; display: grid; gap: var(--map-sidebar-gap); min-width: 0; padding: 0; text-align: left; justify-items: stretch; }
 .map-controls .vega-bindings { display: grid; gap: 20px; margin: 0; }
