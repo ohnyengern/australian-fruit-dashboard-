@@ -1,8 +1,8 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "Change in nominal fresh-export value for each selected fruit. Source: Hort Innovation Handbook 2025, five-year tables. Published banana dashes represented as nil exports.",
+  "description": "Change in nominal fresh-export value for each selected fruit. Source: Hort Innovation Handbook 2024–25, five-year tables. Published banana dashes represented as nil exports.",
   "title": {
-    "text": "Change in Australian Fresh Fruit Export Value from 2021 to 2025",
+    "text": "Change in Australian Fresh Fruit Export Value from 2020–21 to 2024–25",
     "fontSize": 20,
     "anchor": "start",
     "offset": 18,

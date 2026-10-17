@@ -175,13 +175,13 @@
           {
             "field": "StartProductionNum",
             "type": "quantitative",
-            "title": "Year ending June 2021 production (tonnes):",
+            "title": "2020–21 production (tonnes):",
             "format": ",.0f"
           },
           {
             "field": "EndProductionNum",
             "type": "quantitative",
-            "title": "Year ending June 2025 production (tonnes):",
+            "title": "2024–25 production (tonnes):",
             "format": ",.0f"
           },
           {
@@ -263,13 +263,13 @@
           {
             "field": "StartProductionNum",
             "type": "quantitative",
-            "title": "Year ending June 2021 production (tonnes):",
+            "title": "2020–21 production (tonnes):",
             "format": ",.0f"
           },
           {
             "field": "EndProductionNum",
             "type": "quantitative",
-            "title": "Year ending June 2025 production (tonnes):",
+            "title": "2024–25 production (tonnes):",
             "format": ",.0f"
           },
           {
@@ -302,6 +302,102 @@
     "header": {
       "labelFont": "Arial",
       "titleFont": "Arial"
+    }
+  },
+  "usermeta": {
+    "stateLabels": [
+      {
+        "name": "Western Australia",
+        "lines": [
+          "Western",
+          "Australia"
+        ],
+        "longitude": 121.5,
+        "latitude": -25.5
+      },
+      {
+        "name": "Northern Territory",
+        "lines": [
+          "Northern",
+          "Territory"
+        ],
+        "longitude": 133.5,
+        "latitude": -19.5
+      },
+      {
+        "name": "South Australia",
+        "lines": [
+          "South Australia"
+        ],
+        "longitude": 135.5,
+        "latitude": -30.4
+      },
+      {
+        "name": "Queensland",
+        "lines": [
+          "Queensland"
+        ],
+        "longitude": 144.5,
+        "latitude": -23.2
+      },
+      {
+        "name": "New South Wales",
+        "lines": [
+          "New South Wales"
+        ],
+        "longitude": 146.7,
+        "latitude": -32.5
+      },
+      {
+        "name": "Australian Capital Territory",
+        "lines": [
+          "Australian",
+          "Capital Territory"
+        ],
+        "longitude": 151.5,
+        "latitude": -35.28,
+        "anchorLongitude": 149.13,
+        "anchorLatitude": -35.28
+      },
+      {
+        "name": "Victoria",
+        "lines": [
+          "Victoria"
+        ],
+        "longitude": 144.5,
+        "latitude": -36.7
+      },
+      {
+        "name": "Tasmania",
+        "lines": [
+          "Tasmania"
+        ],
+        "longitude": 146.6,
+        "latitude": -41.9
+      }
+    ],
+    "orchardAnnotation": {
+      "text": "Maturing young orchards in Western Australia and South Australia generated a record harvest surge",
+      "lines": [
+        "Maturing young orchards in",
+        "Western Australia and South Australia",
+        "generated a record harvest surge"
+      ],
+      "longitude": 126,
+      "latitude": -38.2,
+      "targets": [
+        {
+          "name": "Western Australia",
+          "longitude": 124,
+          "latitude": -33.422389681302015
+        },
+        {
+          "name": "South Australia",
+          "longitude": 134,
+          "latitude": -32.48146097516446
+        }
+      ],
+      "connectorLongitude": 128.5
     }
   }
 }

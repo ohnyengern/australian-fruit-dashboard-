@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Australian Fruit Production Trends from 2021 to 2025",
+    "text": "Australian fruit production from 2020–21 to 2024–25",
     "fontSize": 20,
     "anchor": "start",
     "offset": 15,
@@ -26,6 +26,10 @@
         "Year",
         "Production"
       ]
+    },
+    {
+      "calculate": "format(toNumber(datum.Year) - 1, '.0f') + '–' + substring(toString(datum.Year), 2)",
+      "as": "FinancialYear"
     }
   ],
   "layer": [
@@ -36,15 +40,15 @@
       },
       "encoding": {
         "x": {
-          "field": "Year",
+          "field": "FinancialYear",
           "type": "ordinal",
-          "title": "Year ending June",
+          "title": "Year",
           "sort": [
-            "2021",
-            "2022",
-            "2023",
-            "2024",
-            "2025"
+            "2020–21",
+            "2021–22",
+            "2022–23",
+            "2023–24",
+            "2024–25"
           ],
           "axis": {
             "labelAngle": 0,
@@ -104,7 +108,7 @@
               "#54a24b",
               "#E0A900",
               "#b279a2",
-              "#ff9da6"
+              "#E04488"
             ]
           }
         },
@@ -118,9 +122,9 @@
             "title": "Fruit:"
           },
           {
-            "field": "Year",
-            "type": "ordinal",
-            "title": "Year ending June:"
+            "field": "FinancialYear",
+            "type": "nominal",
+            "title": "Year:"
           },
           {
             "field": "Production",

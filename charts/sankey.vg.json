@@ -1,8 +1,8 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v5.json",
-  "description": "Australian-grown fruit allocation, year ending June 2025. Domestic fresh is production minus fresh exports minus processing. Imports excluded.",
+  "description": "Australian-grown fruit allocation, 2024–25. Domestic fresh is production minus fresh exports minus processing. Imports excluded.",
   "title": {
-    "text": "Where Australian Fruit Goes in the Year Ending June 2025",
+    "text": "Where Australian fruit goes in 2024–25",
     "font": "Arial",
     "fontSize": 20,
     "anchor": "start",
@@ -267,7 +267,7 @@
         },
         {
           "i": 2,
-          "t": "such as juice production."
+          "t": "such as juice production"
         }
       ]
     }
@@ -308,7 +308,7 @@
         "#54a24b",
         "#E0A900",
         "#b279a2",
-        "#ff9da6"
+        "#E04488"
       ]
     }
   ],

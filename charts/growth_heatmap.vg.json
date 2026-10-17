@@ -59,6 +59,10 @@
     {
       "calculate": "((datum.Production - datum.PreviousProduction) / datum.PreviousProduction) * 100",
       "as": "YoYGrowth"
+    },
+    {
+      "calculate": "format(toNumber(datum.Year) - 1, '.0f') + '–' + substring(toString(datum.Year), 2)",
+      "as": "FinancialYear"
     }
   ],
   "layer": [
@@ -70,14 +74,14 @@
       },
       "encoding": {
         "x": {
-          "field": "Year",
+          "field": "FinancialYear",
           "type": "ordinal",
-          "title": "Year ending June",
+          "title": "Year",
           "sort": [
-            "2022",
-            "2023",
-            "2024",
-            "2025"
+            "2021–22",
+            "2022–23",
+            "2023–24",
+            "2024–25"
           ],
           "axis": {
             "labelAngle": 0,
@@ -117,9 +121,9 @@
             "title": "Fruit:"
           },
           {
-            "field": "Year",
-            "type": "ordinal",
-            "title": "Year ending June:"
+            "field": "FinancialYear",
+            "type": "nominal",
+            "title": "Year:"
           },
           {
             "field": "Production",
@@ -168,11 +172,11 @@
   },
   "usermeta": {
     "annotation": {
-      "text": "Avocado production surged as newly planted trees matured and produced more fruit.",
+      "text": "Avocado production surged as newly planted trees matured and produced more fruit",
       "lines": [
         "Avocado production surged as",
         "newly planted trees matured",
-        "and produced more fruit."
+        "and produced more fruit"
       ],
       "target": {
         "Fruit": "Avocado",

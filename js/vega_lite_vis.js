@@ -31,7 +31,19 @@ const typographyStyle = getComputedStyle(document.documentElement);
 const typography = {
   axisTitle: parseFloat(typographyStyle.getPropertyValue("--font-axis-title")),
   label: parseFloat(typographyStyle.getPropertyValue("--font-chart-label")),
-  body: parseFloat(typographyStyle.getPropertyValue("--font-body"))
+  body: parseFloat(typographyStyle.getPropertyValue("--font-body")),
+  legendTitle: parseFloat(typographyStyle.getPropertyValue("--font-legend-title")),
+  legendItem: parseFloat(typographyStyle.getPropertyValue("--font-legend-item")),
+  annotation: parseFloat(typographyStyle.getPropertyValue("--font-annotation")),
+  annotationLineHeight: parseFloat(typographyStyle.getPropertyValue("--annotation-line-height")),
+  labelLineHeight: parseFloat(typographyStyle.getPropertyValue("--line-chart-label")),
+  paddingX: parseFloat(typographyStyle.getPropertyValue("--annotation-padding-x")),
+  paddingY: parseFloat(typographyStyle.getPropertyValue("--annotation-padding-y")),
+  axisTitleGap: parseFloat(typographyStyle.getPropertyValue("--axis-title-gap")),
+  axisLabelGap: parseFloat(typographyStyle.getPropertyValue("--axis-label-gap")),
+  legendTitleGap: parseFloat(typographyStyle.getPropertyValue("--legend-title-gap")),
+  legendRowGap: parseFloat(typographyStyle.getPropertyValue("--legend-row-gap")),
+  legendSymbolGap: parseFloat(typographyStyle.getPropertyValue("--legend-symbol-gap"))
 };
 // Wait for real font metrics before measuring labels and annotation boxes.
 const chartFontsReady = Promise.all([
@@ -47,6 +59,20 @@ function standardiseVegaTypography(spec) {
   spec.signals ||= [];
   spec.signals.push({ name: "typographyScale", value: 1 });
   const size = value => ({ signal: `${value} * typographyScale` });
+  const sankeyLines = spec.data?.find?.(data => data.name === "annotationLines")?.values;
+  if (sankeyLines) {
+    const context = document.createElement("canvas").getContext("2d");
+    context.font = `${typography.annotation}px "Source Sans 3"`;
+    const width = Math.ceil(Math.max(...sankeyLines.map(line => context.measureText(line.t).width))) + 2 * typography.paddingX;
+    const height = sankeyLines.length * typography.annotationLineHeight + 2 * typography.paddingY;
+    const box = spec.marks.find(mark => mark.name === "annotationBackground").encode.update;
+    box.width = size(width); box.height = size(height);
+    const text = spec.marks.find(mark => mark.name === "processingAnnotation").encode.update;
+    text.x = { signal: `sourceX + ${typography.paddingX} * typographyScale` };
+    text.y = { signal: `610 + (${typography.paddingY} + datum.i * ${typography.annotationLineHeight}) * typographyScale` };
+    text.align = { value: "left" }; text.baseline = { value: "top" };
+    spec.height = Math.max(spec.height, 610 + height + 12);
+  }
   function visit(group) {
     (group.axes || []).forEach(axis => {
       axis.labelFontSize = size(typography.label);
@@ -54,13 +80,20 @@ function standardiseVegaTypography(spec) {
       axis.labelFont = axis.titleFont = "'Source Sans 3'";
       axis.labelOverlap = "greedy";
       axis.labelSeparation = 8;
+      axis.labelFontWeight = 400;
+      axis.titleFontWeight = 650;
+      axis.titlePadding = size(typography.axisTitleGap);
+      axis.labelPadding = size(typography.axisLabelGap);
     });
     (group.legends || []).forEach(legend => {
-      legend.labelFontSize = size(typography.label);
-      legend.titleFontSize = size(typography.body);
+      legend.labelFontSize = size(typography.legendItem);
+      legend.titleFontSize = size(typography.legendTitle);
       legend.labelFont = legend.titleFont = "'Source Sans 3'";
       legend.labelFontWeight = 400;
       legend.titleFontWeight = 650;
+      legend.titlePadding = size(typography.legendTitleGap);
+      legend.labelOffset = size(typography.legendSymbolGap);
+      legend.rowPadding = size(typography.legendRowGap);
     });
     (group.marks || []).forEach(mark => {
       if (mark.type === "text") {
@@ -71,6 +104,14 @@ function standardiseVegaTypography(spec) {
           mark.encode.update.fontSize = size(typography.label);
         }
         mark.encode.update.font = { value: "'Source Sans 3'" };
+        mark.encode.update.lineHeight = size(typography.labelLineHeight);
+        if (/annotation|avocadoGrowthText/i.test(mark.name || "")) {
+          if (!mark.encode.update.fontSize?.signal?.includes("annotationScale")) {
+            mark.encode.update.fontSize = size(typography.annotation);
+          }
+          mark.encode.update.fontWeight = { value: 400 };
+          mark.encode.update.lineHeight = size(typography.annotationLineHeight);
+        }
       }
       visit(mark);
     });
@@ -162,15 +203,15 @@ function compileExportArrows(spec) {
 // the Sankey. Padding and line spacing follow the shared annotation size.
 function compileBoxedAnnotations(spec) {
   const context = document.createElement("canvas").getContext("2d");
-  context.font = `${typography.label}px "Source Sans 3"`;
+  context.font = `${typography.annotation}px "Source Sans 3"`;
   const boxes = new Map();
   spec.layer = spec.layer.flatMap(layer => {
     if (!layer.name?.endsWith("AnnotationText")) return [layer];
     const datum = layer.data.values[0];
     const box = {
       x: datum.x, y: datum.y, fruit: datum.Fruit,
-      width: Math.ceil(Math.max(...datum.label.map(line => context.measureText(line).width))) + 16,
-      height: datum.label.length * (typography.label + 4) + 12,
+      width: Math.ceil(Math.max(...datum.label.map(line => context.measureText(line).width))) + 2 * typography.paddingX,
+      height: datum.label.length * typography.annotationLineHeight + 2 * typography.paddingY,
       rightAligned: layer.name.startsWith("grape")
     };
     boxes.set(layer.name.split("Annotation")[0], box);
@@ -192,24 +233,30 @@ function compileBoxedAnnotations(spec) {
     const left = box.fruit ? desiredLeft : `max(0, min((${desiredLeft}), width - ${box.width} * typographyScale))`;
     const centreY = mark.name.startsWith("orangeAnnotation")
       ? `scale('y', width < 450 ? 260 : ${box.y})` : `scale('y', ${box.y})`;
-    const top = `${centreY} - ${box.height / 2} * typographyScale`;
+    const top = `max(0, min((${centreY}) - ${box.height / 2} * typographyScale, height - ${box.height} * typographyScale))`;
     if (mark.name.endsWith("Background_marks")) {
       delete update.xc; delete update.yc;
       update.x = { signal: left }; update.y = { signal: top };
       update.width = { signal: `${box.width} * typographyScale` };
       update.height = { signal: `${box.height} * typographyScale` };
     } else if (mark.name.endsWith("Text_marks")) {
-      update.x = { signal: `(${left}) + 8 * typographyScale` };
-      update.y = { signal: `(${top}) + 6 * typographyScale` };
+      update.x = { signal: `(${left}) + ${typography.paddingX} * typographyScale` };
+      update.y = { signal: `(${top}) + ${typography.paddingY} * typographyScale` };
       update.align = { value: "left" }; update.baseline = { value: "top" };
-      update.lineHeight = { signal: `${typography.label + 4} * typographyScale` };
+      update.lineHeight = { signal: `${typography.annotationLineHeight} * typographyScale` };
     } else if (mark.name.endsWith("Leader_marks")) {
       if (box.fruit) {
         update.y2 = { signal: `(${top}) + ${box.height} * typographyScale` };
       } else {
-        const originX = `(${left}) + ${box.width} * typographyScale`;
-        const originY = mark.name.startsWith("grapeAnnotation")
-          ? "scale('y', datum.y2)" : `${centreY} - 8 * typographyScale`;
+        // Start at the box boundary along the direction to the point.
+        // This keeps the visible leader outside the annotation rectangle.
+        const boxCentreX = `((${left}) + ${box.width / 2} * typographyScale)`;
+        const boxCentreY = `((${top}) + ${box.height / 2} * typographyScale)`;
+        const directionX = `(scale('x', datum.x2) - ${boxCentreX})`;
+        const directionY = `(scale('y', datum.y2) - ${boxCentreY})`;
+        const edgeRatio = `1 / max(abs(${directionX}) / (${box.width / 2} * typographyScale), abs(${directionY}) / (${box.height / 2} * typographyScale), 0.000001)`;
+        const originX = `${boxCentreX} + ${directionX} * (${edgeRatio})`;
+        const originY = `${boxCentreY} + ${directionY} * (${edgeRatio})`;
         update.x = { signal: originX };
         update.y = { signal: originY };
         // Reach slightly inside the coloured fill so the marker's white
@@ -232,16 +279,16 @@ function compileBoxedAnnotations(spec) {
 function compileHeatmapAnnotation(spec) {
   const note = spec.usermeta.annotation;
   const context = document.createElement("canvas").getContext("2d");
-  context.font = `${typography.label}px "Source Sans 3"`;
-  const boxWidth = Math.ceil(Math.max(...note.lines.map(line => context.measureText(line).width))) + 16;
-  const boxHeight = note.lines.length * (typography.label + 4) + 12;
+  context.font = `${typography.annotation}px "Source Sans 3"`;
+  const boxWidth = Math.ceil(Math.max(...note.lines.map(line => context.measureText(line).width))) + 2 * typography.paddingX;
+  const boxHeight = note.lines.length * typography.annotationLineHeight + 2 * typography.paddingY;
   spec.padding = { top: 12, left: 0, right: 0, bottom: 0 };
   const compiled = vegaLite.compile(spec).spec;
-  const top = -(boxHeight + 24);
-  const cx = `scale('x', '2022') + bandwidth('x') / 2`;
-  const left = `max(0, (${cx}) - ${boxWidth / 2})`;
+  const top = `-(${boxHeight} + 24) * typographyScale`;
+  const cx = `scale('x', '${financialYearLabel(note.target.Year)}') + bandwidth('x') / 2`;
+  const left = `max(0, (${cx}) - ${boxWidth / 2} * typographyScale)`;
   const cy = `scale('y', 'Avocado') + bandwidth('y') / 2`;
-  const connectorPath = { signal: `'M' + (${cx}) + ',${top + boxHeight} L' + (${cx}) + ',' + (${cy})` };
+  const connectorPath = { signal: `'M' + (${cx}) + ',' + ((${top}) + ${boxHeight} * typographyScale) + ' L' + (${cx}) + ',' + (${cy})` };
   // A white outline keeps the single vertical connector distinct from
   // both pale and dark cells without changing the heatmap's colour scale.
   compiled.marks.push({ name: "avocadoGrowthConnectorOutline", type: "path", aria: false, encode: { update: {
@@ -250,28 +297,28 @@ function compileHeatmapAnnotation(spec) {
   }}}, { name: "avocadoGrowthConnector", type: "path", encode: { update: {
     path: connectorPath,
     fill: { value: null }, stroke: { value: "#333333" }, strokeWidth: { value: 1.5 }, strokeCap: { value: "round" },
-    description: { value: "Connector to the Avocado 2022 growth cell" }
+    description: { value: "Connector to the Avocado 2021–22 growth cell" }
   }}}, { name: "avocadoGrowthBox", type: "rect", encode: { update: {
-    x: { signal: left }, y: { value: top }, width: { value: boxWidth }, height: { value: boxHeight },
+    x: { signal: left }, y: { signal: top }, width: { signal: `${boxWidth} * typographyScale` }, height: { signal: `${boxHeight} * typographyScale` },
     fill: { value: "#eeeeee" }, stroke: { value: null }, tooltip: { value: note.text }
   }}}, { name: "avocadoGrowthText", type: "text", encode: { update: {
-    x: { signal: `(${left}) + 8` }, y: { value: top + 6 }, text: { value: note.lines },
+    x: { signal: `(${left}) + ${typography.paddingX} * typographyScale` }, y: { signal: `(${top}) + ${typography.paddingY} * typographyScale` }, text: { value: note.lines },
     align: { value: "left" }, baseline: { value: "top" },
-    lineHeight: { value: typography.label + 4 }, fill: { value: "#333333" },
-    href: { value: note.source }, tooltip: { value: "Context: Rabobank, July 2022. Click to read the source." }
+    lineHeight: { value: typography.annotationLineHeight }, fill: { value: "#333333" },
+    href: { value: note.source }, tooltip: { value: "Context: Rabobank, July 2022 — click to read the source" }
   }}});
   return compiled;
 }
 
 function compileProductionMap(spec) {
   const context = document.createElement("canvas").getContext("2d");
-  context.font = `${typography.label}px "Source Sans 3"`;
+  context.font = `${typography.annotation}px "Source Sans 3"`;
   const boxes = new Map();
   spec.layer.filter(layer => layer.name?.endsWith("AnnotationText")).forEach(layer => {
     const lines = JSON.parse(layer.transform.find(transform => transform.as === "NoteLines").calculate);
     boxes.set(layer.name.split("Annotation")[0], {
-      width: Math.ceil(Math.max(...lines.map(line => context.measureText(line).width))) + 16,
-      height: lines.length * (typography.label + 2) + 16
+      width: Math.ceil(Math.max(...lines.map(line => context.measureText(line).width))) + 2 * typography.paddingX,
+      height: lines.length * typography.annotationLineHeight + 2 * typography.paddingY
     });
   });
   spec.layer.filter(layer => layer.name?.endsWith("AnnotationBackground")).forEach(layer => {
@@ -291,16 +338,251 @@ function compileProductionMap(spec) {
       update.width = { signal: `${box.width} * annotationScale` };
       update.height = { signal: `${box.height} * annotationScale` };
     } else if (mark.name.endsWith("AnnotationText_marks")) {
-      update.fontSize = { signal: `${typography.label} * annotationScale` };
-      update.dx = { signal: "8 * annotationScale" };
-      update.dy = { signal: `(8 + datum.NoteLineIndex * ${typography.label + 2}) * annotationScale` };
+      update.fontSize = { signal: `${typography.annotation} * annotationScale` };
+      update.dx = { signal: `${typography.paddingX} * annotationScale` };
+      update.dy = { signal: `(${typography.paddingY} + datum.NoteLineIndex * ${typography.annotationLineHeight}) * annotationScale` };
     } else if (mark.name.endsWith("AnnotationLeader_marks")) {
       const offset = mark.name.startsWith("banana") ? 0 : box.width;
       update.x = { signal: `datum['${update.x.field}'] + ${offset} * annotationScale` };
       update.y = { signal: `datum['${update.y.field}'] + ${box.height / 2} * annotationScale` };
     }
   });
+  return addStateMapLabels(compiled, spec);
+}
+
+function addStateMapLabels(compiled, spec, outline = false) {
+  // Labels are geographic context, independent of the fruit/year filters.
+  const labels = spec.usermeta?.stateLabels || [];
+  const projection = compiled.projections[0].name;
+  const project = (lon, lat, axis) => `scale('${projection}', [datum.${lon}, datum.${lat}])[${axis}]`;
+  compiled.data.push({ name: "productionStateLabels", values: labels });
+  compiled.data.push({ name: "productionStateLabelConnectors", source: "productionStateLabels",
+    transform: [{ type: "filter", expr: "isValid(datum.anchorLongitude)" }] });
+  compiled.marks.push({
+    name: "productionStateLabelConnectors_marks", type: "rule", aria: false,
+    from: { data: "productionStateLabelConnectors" },
+    encode: { update: {
+      x: { signal: project("anchorLongitude", "anchorLatitude", 0) },
+      y: { signal: project("anchorLongitude", "anchorLatitude", 1) },
+      x2: { signal: `${project("longitude", "latitude", 0)} - 7 * typographyScale` },
+      y2: { signal: project("longitude", "latitude", 1) },
+      stroke: { value: "#777777" }, strokeWidth: { value: 1 }
+    } }
+  }, {
+    name: "productionStateNames", type: "text", from: { data: "productionStateLabels" },
+    encode: { update: {
+      x: { signal: project("longitude", "latitude", 0) },
+      y: { signal: `${project("longitude", "latitude", 1)} - (datum.lines.length - 1) * ${typography.labelLineHeight / 2} * typographyScale` },
+      text: { field: "lines" }, description: { field: "name" },
+      align: { signal: "isValid(datum.anchorLongitude) ? 'left' : 'center'" },
+      baseline: { value: "middle" }, fontWeight: { value: 400 },
+      lineHeight: { signal: `${typography.labelLineHeight} * typographyScale` }, fill: { value: "#333333" }
+    } }
+  });
+  if (outline) {
+    const label = compiled.marks[compiled.marks.length - 1];
+    const growthMark = compiled.marks.find(mark => mark.encode?.update?.fill?.scale);
+    const zeroMark = compiled.marks.find(mark => mark.encode?.update?.fill?.value === "#e0e0e0");
+    const labelData = compiled.data.find(data => data.name === "productionStateLabels");
+    const colourScale = growthMark.encode.update.fill.scale;
+    // Read the displayed region colour from the same filtered data as the map.
+    labelData.transform = [
+      { type: "lookup", from: growthMark.from.data, key: "State", fields: ["name"], values: ["GrowthClass"], as: ["labelGrowthClass"] },
+      { type: "lookup", from: zeroMark.from.data, key: "State", fields: ["name"], values: ["State"], as: ["zeroState"] },
+      { type: "formula", as: "labelBackground", expr: `isValid(datum.anchorLongitude) ? '#ffffff' : isValid(datum.labelGrowthClass) ? scale('${colourScale}', datum.labelGrowthClass) : isValid(datum.zeroState) ? '#e0e0e0' : '#7a7a7a'` }
+    ];
+    label.encode.update.fill = { signal: "datum.labelBackground === '#54278f' || datum.labelBackground === '#7a7a7a' ? '#ffffff' : '#222222'" };
+    // A subtle halo in the region colour protects solid lettering at borders.
+    const halo = structuredClone(label);
+    halo.name = "stateNameHalos";
+    halo.aria = false;
+    Object.assign(halo.encode.update, {
+      fill: { field: "labelBackground" }, stroke: { field: "labelBackground" },
+      strokeWidth: { signal: "1.25 * typographyScale" }, strokeJoin: { value: "round" }
+    });
+    compiled.marks.splice(compiled.marks.length - 1, 0, halo);
+  }
   return compiled;
+}
+
+// Keep the orchard explanation in the ocean below the mainland.
+function compileChoroplethMap(spec) {
+  const compiled = addStateMapLabels(vegaLite.compile(spec).spec, spec, true);
+  const note = spec.usermeta.orchardAnnotation;
+  const context = document.createElement("canvas").getContext("2d");
+  context.font = `${typography.annotation}px "Source Sans 3"`;
+  const width = Math.ceil(Math.max(...note.lines.map(line => context.measureText(line).width))) + 2 * typography.paddingX;
+  const height = note.lines.length * typography.annotationLineHeight + 2 * typography.paddingY;
+  const projection = compiled.projections[0].name;
+  const x = `scale('${projection}', [${note.longitude}, ${note.latitude}])[0] - ${width / 2} * typographyScale`;
+  const y = `scale('${projection}', [${note.longitude}, ${note.latitude}])[1]`;
+  const visible = [{ type: "filter", expr: "FruitSelection === 'Avocado'" }];
+  compiled.data.push({ name: "orchardNote", values: [{}], transform: visible });
+  compiled.data.push({ name: "orchardTargets", values: note.targets, transform: visible });
+  const marks = [{
+    name: "orchardAnnotationLeaders", type: "rule", from: { data: "orchardTargets" },
+    encode: { update: {
+      x: { signal: `scale('${projection}', [${note.connectorLongitude ?? note.longitude}, ${note.latitude}])[0]` },
+      y: { signal: y },
+      x2: { signal: `scale('${projection}', [datum.longitude, datum.latitude])[0]` },
+      y2: { signal: `scale('${projection}', [datum.longitude, datum.latitude])[1]` },
+      stroke: { value: "#777777" }, strokeWidth: { value: 1 }, strokeCap: { value: "round" },
+      description: { signal: "'Orchard annotation connector to ' + datum.name" }
+    } }
+  }, {
+    name: "orchardAnnotationBackground", type: "rect", from: { data: "orchardNote" },
+    encode: { update: {
+      x: { signal: x }, y: { signal: y },
+      width: { signal: `${width} * typographyScale` }, height: { signal: `${height} * typographyScale` },
+      fill: { value: "#eeeeee" }, cornerRadius: { signal: "3 * typographyScale" }, tooltip: { value: note.text }
+    } }
+  }, {
+    name: "orchardAnnotationText", type: "text", from: { data: "orchardNote" },
+    encode: { update: {
+      x: { signal: `(${x}) + ${typography.paddingX} * typographyScale` }, y: { signal: `(${y}) + ${typography.paddingY} * typographyScale` },
+      text: { value: note.lines }, align: { value: "left" }, baseline: { value: "top" },
+      lineHeight: { signal: `${typography.annotationLineHeight} * typographyScale` },
+      fontWeight: { value: 400 }, fill: { value: "#333333" }, description: { value: note.text }
+    } }
+  }];
+  // Connectors sit below state labels so they cannot obscure the lettering.
+  const index = compiled.marks.findIndex(mark => mark.name === "productionStateLabelConnectors_marks");
+  compiled.marks.splice(index, 0, ...marks);
+  return compiled;
+}
+
+// Keep numeric year keys for filtering; display ABS financial-year labels.
+function financialYearLabel(year) {
+  const end = Number(year);
+  return `${end - 1}–${String(end).slice(-2)}`;
+}
+function styleFinancialYearControls(root) {
+  root.querySelectorAll('.vega-bind input[type="range"]').forEach(input => {
+    const label = input.closest("label");
+    const value = [...label.querySelectorAll("span")].find(span => !span.classList.contains("vega-bind-name"));
+    if (!value) return;
+    value.classList.add("financial-year-value");
+    const update = () => {
+      const text = financialYearLabel(input.value);
+      value.textContent = text;
+      input.setAttribute("aria-valuetext", text);
+    };
+    input.addEventListener("input", update);
+    input.addEventListener("change", update);
+    update();
+  });
+}
+
+// Use page typography for both the selected fruit and the open options.
+let fruitMenuCount = 0;
+function styleFruitMenus(root) {
+  root.querySelectorAll(".vega-bindings select").forEach(select => {
+    if (select.classList.contains("fruit-native-select")) return;
+    const wrapper = document.createElement("span");
+    wrapper.className = "fruit-dropdown";
+    select.before(wrapper);
+    wrapper.append(select);
+    select.classList.add("fruit-native-select");
+    select.tabIndex = -1;
+    select.setAttribute("aria-hidden", "true");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "fruit-dropdown-button";
+    button.setAttribute("role", "combobox");
+    button.setAttribute("aria-label", "Select fruit");
+    button.setAttribute("aria-haspopup", "listbox");
+    button.setAttribute("aria-expanded", "false");
+    wrapper.append(button);
+    const menu = document.createElement("div");
+    menu.id = `fruit-options-${++fruitMenuCount}`;
+    menu.className = "fruit-dropdown-options";
+    menu.setAttribute("role", "listbox");
+    menu.setAttribute("aria-label", "Fruit options");
+    menu.hidden = true;
+    button.setAttribute("aria-controls", menu.id);
+    document.body.append(menu);
+    let active = select.selectedIndex;
+    const choices = [...select.options].map((option, index) => {
+      const item = document.createElement("div");
+      item.id = `${menu.id}-${index}`;
+      item.className = "fruit-dropdown-option";
+      item.setAttribute("role", "option");
+      item.textContent = option.textContent;
+      item.addEventListener("pointerdown", event => event.preventDefault());
+      item.addEventListener("click", () => choose(index));
+      menu.append(item);
+      return item;
+    });
+    function refresh() {
+      button.textContent = select.options[select.selectedIndex].textContent;
+      choices.forEach((item, index) => {
+        item.setAttribute("aria-selected", String(index === select.selectedIndex));
+        item.classList.toggle("active", index === active);
+      });
+      if (!menu.hidden) button.setAttribute("aria-activedescendant", choices[active].id);
+    }
+    function position() {
+      if (menu.hidden) return;
+      const r = button.getBoundingClientRect();
+      menu.style.width = `${Math.min(Math.max(r.width, 170), innerWidth - 24)}px`;
+      menu.style.left = `${Math.max(12, Math.min(r.left, innerWidth - menu.offsetWidth - 12))}px`;
+      const below = innerHeight - r.bottom - 12;
+      const above = r.top - 12;
+      const upward = below < Math.min(300, menu.scrollHeight) && above > below;
+      menu.style.maxHeight = `${Math.max(60, Math.min(300, upward ? above : below))}px`;
+      const top = upward ? r.top - menu.offsetHeight - 4 : r.bottom + 4;
+      menu.style.top = `${Math.max(12, Math.min(top, innerHeight - menu.offsetHeight - 12))}px`;
+    }
+    function close() {
+      menu.hidden = true;
+      button.setAttribute("aria-expanded", "false");
+      button.removeAttribute("aria-activedescendant");
+    }
+    function open() {
+      active = select.selectedIndex;
+      menu.hidden = false;
+      button.setAttribute("aria-expanded", "true");
+      refresh(); position();
+      choices[active].scrollIntoView({ block: "nearest" });
+    }
+    function choose(index) {
+      select.selectedIndex = index;
+      select.dispatchEvent(new Event("input", { bubbles: true }));
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+      active = index;
+      refresh(); close();
+      button.focus({ preventScroll: true });
+    }
+    button.addEventListener("click", event => {
+      event.preventDefault();
+      menu.hidden ? open() : close();
+    });
+    button.addEventListener("keydown", event => {
+      const key = event.key;
+      if (["ArrowDown", "ArrowUp", "Home", "End", "Enter", " "].includes(key)) {
+        event.preventDefault();
+        if (menu.hidden) { open(); return; }
+        if (key === "Enter" || key === " ") { choose(active); return; }
+        active = key === "Home" ? 0 : key === "End" ? choices.length - 1
+          : Math.max(0, Math.min(choices.length - 1, active + (key === "ArrowDown" ? 1 : -1)));
+        refresh(); choices[active].scrollIntoView({ block: "nearest" });
+      } else if (key === "Escape") {
+        event.preventDefault(); close();
+      } else if (key === "Tab") close();
+      else if (key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        const match = [...select.options].findIndex(option => option.text.toLowerCase().startsWith(key.toLowerCase()));
+        if (match >= 0) { event.preventDefault(); if (menu.hidden) open(); active = match; refresh(); choices[active].scrollIntoView({ block: "nearest" }); }
+      }
+    });
+    select.addEventListener("input", refresh);
+    select.addEventListener("change", refresh);
+    document.addEventListener("pointerdown", event => {
+      if (!wrapper.contains(event.target) && !menu.contains(event.target)) close();
+    });
+    window.addEventListener("resize", position);
+    document.addEventListener("scroll", position, true);
+    refresh();
+  });
 }
 
 // Keep headings in HTML and render every chart with the shared typography.
@@ -317,7 +599,7 @@ async function embedChart(target, source, options) {
   // Match the full divider width. Vega fits labels and legends within this
   // width, reserving only the space they actually need instead of wide gutters.
   const chartElement = document.querySelector(target);
-  spec.width = spec.projection ? 1030 : target === "#growth_heatmap" ? Math.max(480, chartElement.clientWidth) : chartElement.clientWidth;
+  spec.width = spec.projection ? 1030 : target === "#production_value_scatter" ? Math.max(720, chartElement.clientWidth) : ["#growth_heatmap", "#fruit_sankey", "#production_trend", "#production_rank_bump"].includes(target) ? Math.max(480, chartElement.clientWidth) : chartElement.clientWidth;
   spec.padding = 0;
   spec.autosize = { type: "fit-x", contains: "padding" };
   if (["#state_production_map", "#state_growth_choropleth"].includes(target)) {
@@ -370,17 +652,20 @@ async function embedChart(target, source, options) {
   }
   const compiled = target === "#export_flow_map" ? compileExportArrows(spec)
     : target === "#state_production_map" ? compileProductionMap(spec)
+    : target === "#state_growth_choropleth" ? compileChoroplethMap(spec)
     : target === "#growth_heatmap" ? compileHeatmapAnnotation(spec)
     : ["#production_value_scatter", "#export_value_waterfall"].includes(target) ? compileBoxedAnnotations(spec)
     : options.mode === "vega" ? spec : vegaLite.compile(spec).spec;
   const result = await vegaEmbed(target, standardiseVegaTypography(compiled), { ...options, mode: "vega" });
+  styleFruitMenus(chartElement);
+  styleFinancialYearControls(chartElement);
   let previousWidth;
   let previousScale;
   let pendingLayout = Promise.resolve();
   const updateTypography = () => {
     const svg = chartElement.querySelector("svg.marks");
     if (!svg) return;
-    const width = target === "#growth_heatmap" ? Math.max(480, chartElement.clientWidth) : chartElement.clientWidth;
+    const width = target === "#production_value_scatter" ? Math.max(720, chartElement.clientWidth) : ["#growth_heatmap", "#fruit_sankey", "#production_trend", "#production_rank_bump"].includes(target) ? Math.max(480, chartElement.clientWidth) : chartElement.clientWidth;
     const scale = 1 / Math.abs(svg.getScreenCTM().a);
     if (width === previousWidth && Math.abs(scale - previousScale) < 0.0001) return;
     previousWidth = width;
@@ -691,6 +976,19 @@ function alignLabelInk(svg) {
   });
 }
 function fitChartSvg(svg) {
+  // Vega can retain the initial tspan spacing after a scale signal changes.
+  // Keep the rendered lines in sync with the current scenegraph line height.
+  svg.querySelectorAll("text").forEach(text => {
+    const spans = [...text.querySelectorAll(":scope > tspan")];
+    if (spans.length < 2) return;
+    const matrix = text.getScreenCTM();
+    if (!matrix) return;
+    const scale = Math.hypot(matrix.c, matrix.d);
+    if (!scale) return;
+    const isAnnotation = /annotation|avocadoGrowthText/i.test(text.closest(".role-mark")?.getAttribute("class") || "");
+    const lineHeight = (isAnnotation ? typography.annotationLineHeight : typography.labelLineHeight) / scale;
+    spans.slice(1).forEach(span => span.setAttribute("dy", lineHeight));
+  });
   trimMapInset(svg);
   requestAnimationFrame(() => chartTypographyUpdates.get(svg.closest(".chart-shell"))?.());
   if (observedChartSvgs.has(svg)) {

@@ -120,20 +120,20 @@
           {
             "field": "Export2021",
             "type": "quantitative",
-            "title": "Year ending June 2021 export value:",
-            "format": "$,.1f"
+            "title": "2020–21 export value (AUD million):",
+            "format": ",.1f"
           },
           {
             "field": "Export2025",
             "type": "quantitative",
-            "title": "Year ending June 2025 export value:",
-            "format": "$,.1f"
+            "title": "2024–25 export value (AUD million):",
+            "format": ",.1f"
           },
           {
             "field": "ChangeM",
             "type": "quantitative",
-            "title": "Absolute change:",
-            "format": "+$,.1f"
+            "title": "Absolute change (AUD million):",
+            "format": "+,.1f"
           },
           {
             "field": "ChangePct",

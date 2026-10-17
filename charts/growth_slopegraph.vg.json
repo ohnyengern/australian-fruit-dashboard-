@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "How much has production changed since year ending June 2021?",
+    "text": "How much has production changed since 2020–21?",
     "fontSize": 20,
     "anchor": "start",
     "offset": 15,
@@ -39,6 +39,10 @@
     {
       "calculate": "datum.PeriodField == 'StartProduction' ? '2021' : '2025'",
       "as": "Period"
+    },
+    {
+      "calculate": "format(toNumber(datum.Period) - 1, '.0f') + '–' + substring(toString(datum.Period), 2)",
+      "as": "FinancialYear"
     }
   ],
   "layer": [
@@ -49,19 +53,20 @@
       },
       "encoding": {
         "x": {
-          "field": "Period",
+          "field": "FinancialYear",
           "type": "ordinal",
-          "title": null,
+          "title": "Year",
           "sort": [
-            "2021",
-            "2025"
+            "2020–21",
+            "2024–25"
           ],
           "axis": {
             "labelAngle": 0,
             "labelFontSize": 12,
-            "labelFontWeight": "bold",
+            "labelFontWeight": 400,
             "ticks": false,
-            "domain": false
+            "domain": false,
+            "titlePadding": 12
           }
         },
         "y": {
@@ -98,7 +103,7 @@
               "#54a24b",
               "#E0A900",
               "#b279a2",
-              "#ff9da6"
+              "#E04488"
             ]
           }
         },
@@ -112,9 +117,9 @@
             "title": "Fruit:"
           },
           {
-            "field": "Period",
-            "type": "ordinal",
-            "title": "Year ending June:"
+            "field": "FinancialYear",
+            "type": "nominal",
+            "title": "Year:"
           },
           {
             "field": "Production",
@@ -139,12 +144,16 @@
       },
       "encoding": {
         "x": {
-          "field": "Period",
+          "field": "FinancialYear",
           "type": "ordinal",
           "sort": [
-            "2021",
-            "2025"
-          ]
+            "2020–21",
+            "2024–25"
+          ],
+          "title": "Year",
+          "axis": {
+            "labelAngle": 0
+          }
         },
         "y": {
           "field": "Production",
@@ -173,7 +182,7 @@
               "#54a24b",
               "#E0A900",
               "#b279a2",
-              "#ff9da6"
+              "#E04488"
             ]
           }
         },
@@ -184,9 +193,9 @@
             "title": "Fruit:"
           },
           {
-            "field": "Period",
-            "type": "ordinal",
-            "title": "Year ending June:"
+            "field": "FinancialYear",
+            "type": "nominal",
+            "title": "Year:"
           },
           {
             "field": "Production",
@@ -223,12 +232,16 @@
       },
       "encoding": {
         "x": {
-          "field": "Period",
+          "field": "FinancialYear",
           "type": "ordinal",
           "sort": [
-            "2021",
-            "2025"
-          ]
+            "2020–21",
+            "2024–25"
+          ],
+          "title": "Year",
+          "axis": {
+            "labelAngle": 0
+          }
         },
         "y": {
           "field": "Production",
@@ -260,7 +273,7 @@
               "#54a24b",
               "#E0A900",
               "#b279a2",
-              "#ff9da6"
+              "#E04488"
             ]
           },
           "condition": {
@@ -291,12 +304,16 @@
       },
       "encoding": {
         "x": {
-          "field": "Period",
+          "field": "FinancialYear",
           "type": "ordinal",
           "sort": [
-            "2021",
-            "2025"
-          ]
+            "2020–21",
+            "2024–25"
+          ],
+          "title": "Year",
+          "axis": {
+            "labelAngle": 0
+          }
         },
         "y": {
           "field": "Production",
@@ -328,7 +345,7 @@
               "#54a24b",
               "#E0A900",
               "#b279a2",
-              "#ff9da6"
+              "#E04488"
             ]
           },
           "condition": {
@@ -359,12 +376,16 @@
       },
       "encoding": {
         "x": {
-          "field": "Period",
+          "field": "FinancialYear",
           "type": "ordinal",
           "sort": [
-            "2021",
-            "2025"
-          ]
+            "2020–21",
+            "2024–25"
+          ],
+          "title": "Year",
+          "axis": {
+            "labelAngle": 0
+          }
         },
         "y": {
           "field": "Production",
@@ -396,7 +417,7 @@
               "#54a24b",
               "#E0A900",
               "#b279a2",
-              "#ff9da6"
+              "#E04488"
             ]
           },
           "condition": {

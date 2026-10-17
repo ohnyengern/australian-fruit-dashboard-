@@ -54,11 +54,11 @@
         "y": {
           "field": "ProductionValueMNum",
           "type": "quantitative",
-          "title": "Production value ($ million)",
+          "title": "Production value (AUD million)",
           "scale": {
             "domain": [
               0,
-              900
+              1000
             ]
           },
           "axis": {
@@ -89,7 +89,7 @@
               "#54a24b",
               "#E0A900",
               "#b279a2",
-              "#ff9da6"
+              "#E04488"
             ]
           }
         },
@@ -108,7 +108,7 @@
           {
             "field": "ProductionValueMNum",
             "type": "quantitative",
-            "title": "Production value ($m):",
+            "title": "Production value (AUD million):",
             "format": ",.1f"
           }
         ]
@@ -189,7 +189,7 @@
         "values": [
           {
             "x": 210000,
-            "y": 840,
+            "y": 874.9,
             "label": [
               "Highest production value despite",
               "a relatively smaller harvest"
@@ -259,7 +259,7 @@
         "values": [
           {
             "x": 465000,
-            "y": 420,
+            "y": 360,
             "label": [
               "High production volume,",
               "but relatively low",

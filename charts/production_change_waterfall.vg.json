@@ -98,7 +98,7 @@
       "as": "LabelY"
     },
     {
-      "calculate": "(datum.ChangeM >= 0 ? '+' : '-') + '$' + format(abs(datum.ChangeM), ',.1f') + 'm'",
+      "calculate": "(datum.ChangeM >= 0 ? '+' : '-') + 'AUD ' + format(abs(datum.ChangeM), ',.1f') + ' million'",
       "as": "ChangeLabel"
     }
   ],
@@ -134,7 +134,7 @@
             ]
           },
           "axis": {
-            "format": "$,.0f",
+            "format": ",.0f",
             "grid": true,
             "gridColor": "#e6e6e6",
             "gridOpacity": 0.7,
@@ -173,20 +173,20 @@
           {
             "field": "Export2021Num",
             "type": "quantitative",
-            "title": "Year ending June 2021 export value:",
-            "format": "$,.1f"
+            "title": "2020–21 export value (AUD million):",
+            "format": ",.1f"
           },
           {
             "field": "Export2025Num",
             "type": "quantitative",
-            "title": "Year ending June 2025 export value:",
-            "format": "$,.1f"
+            "title": "2024–25 export value (AUD million):",
+            "format": ",.1f"
           },
           {
             "field": "ChangeM",
             "type": "quantitative",
-            "title": "Change:",
-            "format": "+$,.1f"
+            "title": "Change (AUD million):",
+            "format": "+,.1f"
           }
         ]
       }
@@ -284,7 +284,7 @@
           {
             "Fruit": "Apple",
             "OverallChange": 330,
-            "Text": "Overall increase: +$330.0m"
+            "Text": "Overall increase: +AUD 330.0 million"
           }
         ]
       },
