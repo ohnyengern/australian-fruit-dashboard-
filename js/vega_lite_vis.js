@@ -13,7 +13,6 @@ var vg_8 = "charts/state_growth_choropleth.vg.json";
 var vg_9 = "charts/production_value_scatter.vg.json";
 var vg_10 = "charts/sankey.vg.json";
 var vg_11 = "charts/export_flow_map.vg.json";
-var vg_12 = "charts/export_value_waterfall.vg.json";
 var vg_14 = "charts/state_production_small_multiples.vg.json";
 
 // ======================================
@@ -546,12 +545,6 @@ embedChart(
   new ResizeObserver(sizeLegend).observe(chart);
   sizeLegend();
 }).catch(console.error);
-
-embedChart(
-  "#export_value_waterfall",
-  vg_12,
-  embedOptions
-).catch(console.error);
 
 embedChart("#export_value_per_tonne", "charts/export_value_per_tonne.vg.json", embedOptions).catch(console.error);
 

@@ -8,12 +8,12 @@
 
   <title>Australian Fruit Production</title>
 
-  <link rel="stylesheet" href="css/style.css?v=20261017-export-legend-align">
+  <link rel="stylesheet" href="css/style.css?v=20261017-purple-map">
 
   <script defer src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
-  <script defer src="js/vega_lite_vis.js?v=20261017-export-unit-value"></script>
+  <script defer src="js/vega_lite_vis.js?v=20261017-export-direction"></script>
 </head>
 
 <body>
@@ -247,10 +247,10 @@
           >
             <h3>Production change (%)</h3>
             <div class="choropleth-scale">
-              <span style="background: #08519c;"></span>
-              <span style="background: #6baed6;"></span>
-              <span style="background: #9ecae1;"></span>
-              <span style="background: #deebf7;"></span>
+              <span style="background: #54278f;"></span>
+              <span style="background: #9e9ac8;"></span>
+              <span style="background: #cbc9e2;"></span>
+              <span style="background: #efedf5;"></span>
               <span style="background: #ffffff;"></span>
               <span style="background: #fee0b6;"></span>
               <span style="background: #fdb863;"></span>
@@ -429,44 +429,9 @@
 
     <section class="story-row story-wide">
       <div class="chart-column">
-        <div
-          class="chart-shell"
-          id="export_value_waterfall"
-          role="group"
-          aria-label="Changes in fresh-fruit export value"
-        ></div>
-      </div>
-
-      <aside class="explanation-column">
-        <p>
-          Fresh-fruit export value rose by approximately A$330 million
-          across the eight selected fruits between 2021 and 2025, but
-          the gains were concentrated in a few industries.
-          <span class="fruit-highlight fruit-table-grapes">Table grapes</span>,
-          <span class="fruit-highlight fruit-mandarin">mandarins</span>
-          and
-          <span class="fruit-highlight fruit-avocado">avocados</span>
-          contributed nearly 80% of the total increase, highlighting
-          their growing importance to Australia's international fruit
-          trade.
-        </p>
-
-        <p>
-          While most selected fruits recorded higher export values,
-          <span class="fruit-highlight fruit-apple">apple</span>
-          export value declined slightly, and
-          <span class="fruit-highlight fruit-banana">bananas</span>
-          had no recorded fresh exports. This uneven growth shows that
-          Australia's expanding fresh-fruit export trade is driven
-          primarily by a few key crops.
-        </p>
-      </aside>
-    </section>
-    <section class="story-row story-wide">
-      <div class="chart-column">
         <div class="chart-shell" id="export_value_per_tonne" role="group"
           aria-label="Percentage change in average fresh-fruit export value per tonne, years ending June 2021 and 2025"></div>
-        <p class="flow-map-note">Average = fresh export value ÷ fresh export tonnes.<br>Years end June; nominal Australian dollars, using rounded source values.<br>Bananas excluded: no recorded fresh exports.</p>
+        <p class="flow-map-note">Bananas excluded: no recorded fresh exports.</p>
       </div>
       <aside class="explanation-column balanced-story">
         <p><strong>Higher export earnings can reflect more than larger shipments.</strong>

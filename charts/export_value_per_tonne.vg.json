@@ -32,6 +32,10 @@
     {
       "calculate": "format(datum.ChangePct, '+.1f') + '%'",
       "as": "ChangeLabel"
+    },
+    {
+      "calculate": "datum.ChangePct >= 0 ? 'Increase' : 'Decrease'",
+      "as": "Direction"
     }
   ],
   "encoding": {
@@ -108,28 +112,25 @@
       },
       "encoding": {
         "color": {
-          "field": "Fruit",
+          "field": "Direction",
           "type": "nominal",
-          "legend": null,
+          "title": null,
           "scale": {
             "domain": [
-              "Apple",
-              "Avocado",
-              "Blueberry",
-              "Mandarin",
-              "Orange",
-              "Strawberry",
-              "Table grapes"
+              "Increase",
+              "Decrease"
             ],
             "range": [
-              "#4c78a8",
-              "#f58518",
-              "#72b7b2",
-              "#54a24b",
-              "#eeca3b",
-              "#b279a2",
-              "#ff9da6"
+              "#006B4F",
+              "#9A8700"
             ]
+          },
+          "legend": {
+            "orient": "right",
+            "symbolType": "square",
+            "symbolSize": 140,
+            "labelOffset": 8,
+            "offset": 16
           }
         },
         "tooltip": [
