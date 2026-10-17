@@ -58,7 +58,7 @@ h1 { margin: 0; font: bold clamp(32px, 3.5vw, 56px)/1.14 Georgia, serif; letter-
 .fruit-strawberry { color: #b279a2; }
 .fruit-blueberry { color: #4f8f8a; }
 .fruit-mandarin { color: #54a24b; }
-.fruit-banana { color: #8d7f1f; }
+.fruit-banana { color: #6B7C3A; }
 .fruit-avocado { color: #f58518; }
 .fruit-table-grapes { color: #d96f82; }
 .chart-shell, .chart-column .vega-embed { position: relative; width: 100%; min-width: 0; max-width: 100%; }
