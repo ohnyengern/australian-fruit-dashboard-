@@ -54,13 +54,13 @@ h1 { margin: 0; font: bold clamp(32px, 3.5vw, 56px)/1.14 Georgia, serif; letter-
 .reading-line { display: block; }
 .fruit-highlight { font-weight: 700; }
 .fruit-apple { color: #4c78a8; }
-.fruit-orange { color: #936600; }
+.fruit-orange { color: #b88700; }
 .fruit-strawberry { color: #b279a2; }
 .fruit-blueberry { color: #4f8f8a; }
 .fruit-mandarin { color: #54a24b; }
 .fruit-banana { color: #8d7f1f; }
 .fruit-avocado { color: #f58518; }
-.fruit-table-grapes { color: #A6405C; }
+.fruit-table-grapes { color: #d96f82; }
 .chart-shell, .chart-column .vega-embed { position: relative; width: 100%; min-width: 0; max-width: 100%; }
 .chart-shell { display: flex; justify-content: center; }
 .chart-column .vega-embed { margin-inline: auto; padding: 0; }

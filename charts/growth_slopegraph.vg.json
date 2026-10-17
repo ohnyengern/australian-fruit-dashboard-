@@ -96,9 +96,9 @@
               "#A59837",
               "#72b7b2",
               "#54a24b",
-              "#B17B00",
+              "#eeca3b",
               "#b279a2",
-              "#D67387"
+              "#ff9da6"
             ]
           }
         },
@@ -171,9 +171,9 @@
               "#A59837",
               "#72b7b2",
               "#54a24b",
-              "#B17B00",
+              "#eeca3b",
               "#b279a2",
-              "#D67387"
+              "#ff9da6"
             ]
           }
         },
@@ -258,21 +258,11 @@
               "#A59837",
               "#72b7b2",
               "#54a24b",
-              "#B17B00",
+              "#eeca3b",
               "#b279a2",
-              "#D67387"
+              "#ff9da6"
             ]
-          },
-          "condition": [
-            {
-              "test": "datum.Fruit === 'Orange'",
-              "value": "#936600"
-            },
-            {
-              "test": "datum.Fruit === 'Table grapes'",
-              "value": "#A6405C"
-            }
-          ]
+          }
         }
       }
     },
@@ -332,21 +322,11 @@
               "#A59837",
               "#72b7b2",
               "#54a24b",
-              "#B17B00",
+              "#eeca3b",
               "#b279a2",
-              "#D67387"
+              "#ff9da6"
             ]
-          },
-          "condition": [
-            {
-              "test": "datum.Fruit === 'Orange'",
-              "value": "#936600"
-            },
-            {
-              "test": "datum.Fruit === 'Table grapes'",
-              "value": "#A6405C"
-            }
-          ]
+          }
         }
       }
     },
@@ -406,21 +386,11 @@
               "#A59837",
               "#72b7b2",
               "#54a24b",
-              "#B17B00",
+              "#eeca3b",
               "#b279a2",
-              "#D67387"
+              "#ff9da6"
             ]
-          },
-          "condition": [
-            {
-              "test": "datum.Fruit === 'Orange'",
-              "value": "#936600"
-            },
-            {
-              "test": "datum.Fruit === 'Table grapes'",
-              "value": "#A6405C"
-            }
-          ]
+          }
         }
       }
     }
