@@ -58,7 +58,8 @@ function standardiseVegaTypography(spec) {
       legend.labelFontSize = size(typography.label);
       legend.titleFontSize = size(typography.body);
       legend.labelFont = legend.titleFont = "'Source Sans 3'";
-      legend.labelFontWeight = legend.titleFontWeight = 400;
+      legend.labelFontWeight = 400;
+      legend.titleFontWeight = 700;
     });
     (group.marks || []).forEach(mark => {
       if (mark.type === "text") {
@@ -359,7 +360,7 @@ async function embedChart(target, source, options) {
     });
     legend.append(row);
     if (target === "#export_value_per_tonne") {
-      chartElement.parentElement.querySelector(".export-unit-footer").append(legend);
+      chartElement.parentElement.querySelector(".export-unit-footer").prepend(legend);
     } else {
       chartElement.after(legend);
     }

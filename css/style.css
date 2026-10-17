@@ -26,7 +26,7 @@
   --font-axis-title: 15px;
   --font-body: 17px;
   --font-chart-label: 14px;
-  --font-control: 16px;
+  --font-control: 17px;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--page-bg); }
@@ -183,14 +183,16 @@ h1 { margin: 0; font: 700 clamp(40px, 4.5vw, 72px)/1.14 var(--font-heading-famil
 .inline-chart-swatch.circle { border-radius: 50%; }
 
 .export-unit-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 28px; margin-top: 28px; }
-.export-unit-footer > .flow-map-note { flex: 1 1 320px; }
-.export-unit-footer > .inline-chart-legend { flex: 0 1 auto; width: auto; max-width: 100%; margin: 0 0 0 auto; }
+.export-unit-footer > .flow-map-note { flex: 0 1 auto; margin-left: auto; }
+.export-unit-footer > .inline-chart-legend { flex: 0 1 auto; width: auto; max-width: 100%; margin: 0; }
 .export-unit-footer .inline-chart-legend-row { padding-bottom: 0; }
 
 body { font-variant-numeric: lining-nums; }
 #vg-tooltip-element { font-family: var(--font-body-family); font-size: var(--font-chart-label); }
 
-.choropleth-legend h3, .production-map-legend h3, .export-map-legend h3, .inline-chart-legend-title { font-weight: 400; }
+.choropleth-legend h3, .production-map-legend h3, .export-map-legend h3, .inline-chart-legend-title { font-weight: 700; }
 /* Preserve the right-hand vertical legend; scroll only the chart on phones. */
 #growth_heatmap { overflow-x: auto; justify-content: flex-start; }
 #growth_heatmap .chart-wrapper { min-width: 480px; flex-shrink: 0; }
+
+.vega-bind-name { font-size: var(--font-body); }
