@@ -437,66 +437,33 @@ narrativeParagraphs.forEach(paragraph => {
     node.replaceWith(fragment);
   });
 });
-// Fill each equal-width column naturally; only cap a line at ten words.
-// Do not balance individual paragraphs by shortening all of their lines.
-const narrativeMeasureContext = document.createElement("canvas").getContext("2d");
+// Let the browser fill the equal-width columns. Add a break only when
+// an actual rendered line contains an eleventh word; never estimate widths.
 function limitNarrativeLines() {
   narrativeParagraphs.forEach(paragraph => {
     paragraph.querySelectorAll(".word-limit-break").forEach(br => br.remove());
-    const words = [...paragraph.querySelectorAll(".narrative-word")];
-    if (!words.length) return;
     const column = paragraph.closest(".explanation-column");
     const style = getComputedStyle(column);
     const columns = Number(style.columnCount) || 1;
     const gap = parseFloat(style.columnGap) || 0;
-    const columnWidth = (column.clientWidth - gap * (columns - 1)) / columns;
-    const available = Math.min(paragraph.clientWidth, columnWidth) - 1;
-    const widths = [], spaces = [], starts = [0];
-    words.forEach((word, index) => {
-      narrativeMeasureContext.font = elementCanvasFont(word);
-      widths.push(narrativeMeasureContext.measureText(word.textContent).width);
-      spaces.push(narrativeMeasureContext.measureText(" ").width);
-      starts.push(starts[index] + widths[index] + spaces[index]);
-    });
-    const lineWidth = (start, end) => starts[end] - starts[start] - spaces[end - 1];
-    const ends = [];
-    for (let start = 0; start < words.length;) {
-      let end = start + 1;
-      while (end < words.length && end - start < 10 && lineWidth(start, end + 1) <= available) end++;
-      // Keep a multiword fruit name on the same line when it fits.
-      if (end < words.length) {
-        const highlight = words[end - 1].closest(".fruit-highlight");
-        if (highlight && highlight === words[end].closest(".fruit-highlight")) {
-          let nameStart = end - 1;
-          while (nameStart > start && words[nameStart - 1].closest(".fruit-highlight") === highlight) nameStart--;
-          if (nameStart > start) end = nameStart;
-        }
+    const bounds = column.getBoundingClientRect();
+    const step = (bounds.width + gap) / columns;
+    let previous;
+    let count = 0;
+    for (const word of paragraph.querySelectorAll(".narrative-word")) {
+      const rect = word.getBoundingClientRect();
+      const previousRect = previous?.getBoundingClientRect();
+      const sameLine = previousRect && Math.abs(rect.top - previousRect.top) < 1 &&
+        Math.floor((rect.left - bounds.left) / step) === Math.floor((previousRect.left - bounds.left) / step);
+      count = sameLine ? count + 1 : 1;
+      if (count > 10) {
+        const br = document.createElement("br");
+        br.className = "word-limit-break";
+        word.before(br);
+        count = 1;
       }
-      ends.push(end);
-      start = end;
+      previous = word;
     }
-    // Repair only a very short final line; earlier lines retain their full width.
-    if (ends.length > 1) {
-      const previousStart = ends.length > 2 ? ends[ends.length - 3] : 0;
-      const lastStart = ends[ends.length - 2];
-      if (words.length - lastStart < 3) {
-        for (let desired = 3; desired >= 2; desired--) {
-          let candidate = words.length - desired;
-          const highlight = words[candidate].closest(".fruit-highlight");
-          while (candidate > previousStart && highlight && words[candidate - 1].closest(".fruit-highlight") === highlight) candidate--;
-          if (candidate > previousStart && candidate < lastStart &&
-              words.length - candidate <= 10 && lineWidth(candidate, words.length) <= available) {
-            ends[ends.length - 2] = candidate;
-            break;
-          }
-        }
-      }
-    }
-    ends.slice(0, -1).forEach(end => {
-      const br = document.createElement("br");
-      br.className = "word-limit-break";
-      words[end].before(br);
-    });
   });
 }
 
