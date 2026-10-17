@@ -134,12 +134,13 @@
             "symbolSize": 140,
             "labelOffset": 8,
             "offset": 24,
-            "titleOrient": "top",
+            "titleOrient": "left",
             "titleLimit": 180,
-            "titlePadding": 10,
+            "titlePadding": 20,
             "symbolStrokeWidth": 0,
             "direction": "horizontal",
-            "columns": 2
+            "columns": 2,
+            "columnPadding": 16
           }
         },
         "tooltip": [

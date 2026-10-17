@@ -68,10 +68,10 @@
           "type": "nominal",
           "title": "Fruit",
           "legend": {
-            "titleOrient": "top",
+            "titleOrient": "left",
             "orient": "bottom",
             "direction": "horizontal",
-            "columns": 4,
+            "columns": 8,
             "symbolType": "circle",
             "labelLimit": 120,
             "titleLimit": 160,
@@ -81,7 +81,9 @@
             "symbolStrokeColor": {
               "expr": "scale('color', datum.value)"
             },
-            "offset": 24
+            "offset": 24,
+            "titlePadding": 20,
+            "columnPadding": 16
           },
           "scale": {
             "domain": [

@@ -323,16 +323,37 @@ async function embedChart(target, source, options) {
   }
   addChartHeading(target, spec.title);
   delete spec.title;
+  if (["#production_trend", "#export_value_per_tonne"].includes(target)) {
+    const colour = spec.layer.find(layer => layer.encoding?.color?.legend)?.encoding.color;
+    const legend = document.createElement("div");
+    legend.className = "inline-chart-legend";
+    legend.setAttribute("role", "group");
+    legend.setAttribute("aria-label", colour.title);
+    const row = document.createElement("div");
+    row.className = "inline-chart-legend-row";
+    const title = document.createElement("strong");
+    title.className = "inline-chart-legend-title";
+    title.textContent = colour.title;
+    row.append(title);
+    colour.scale.domain.forEach((label, index) => {
+      const item = document.createElement("span");
+      item.className = "inline-chart-legend-item";
+      const swatch = document.createElement("span");
+      swatch.className = target === "#production_trend" ? "inline-chart-swatch circle" : "inline-chart-swatch";
+      swatch.style.backgroundColor = colour.scale.range[index];
+      swatch.setAttribute("aria-hidden", "true");
+      item.append(swatch, document.createTextNode(label));
+      row.append(item);
+    });
+    legend.append(row);
+    chartElement.after(legend);
+    colour.legend = null;
+  }
   const compiled = target === "#export_flow_map" ? compileExportArrows(spec)
     : target === "#state_production_map" ? compileProductionMap(spec)
     : target === "#growth_heatmap" ? compileHeatmapAnnotation(spec)
     : ["#production_value_scatter", "#export_value_waterfall"].includes(target) ? compileBoxedAnnotations(spec)
     : options.mode === "vega" ? spec : vegaLite.compile(spec).spec;
-  if (target === "#production_trend") {
-    compiled.legends.forEach(legend => {
-      legend.columns = { signal: "width < 450 ? 2 : 4" };
-    });
-  }
   const result = await vegaEmbed(target, standardiseVegaTypography(compiled), { ...options, mode: "vega" });
   let previousWidth;
   let previousScale;
@@ -606,22 +627,6 @@ const mapHeadingObserver = new ResizeObserver(entries => {
 document.querySelectorAll(".map-title, .chart-title").forEach(title => mapHeadingObserver.observe(title));
 function alignLabelInk(svg) {
   const shell = svg.closest(".chart-shell").getBoundingClientRect();
-  // Bottom legends share the card's left sightline, including the axis gutter.
-  if (svg.closest("#production_trend, #export_value_per_tonne")) {
-    svg.querySelectorAll(".role-legend").forEach(legend => {
-      const previous = labelTransforms.get(legend);
-      const current = legend.getAttribute("transform") || "";
-      const original = previous && current === previous.aligned ? previous.original : current;
-      legend.setAttribute("transform", original);
-      const matrix = legend.getScreenCTM();
-      if (!matrix) return;
-      const delta = shell.left - legend.getBoundingClientRect().left;
-      const aligned = `${original} translate(${delta / matrix.a},0)`;
-      legend.setAttribute("transform", aligned);
-      labelTransforms.set(legend, { original, aligned });
-    });
-  }
-
   const sankeyLeft = ".fruitLabels text, .fruitValues text, .fruitHeading text";
   const sankeyRight = ".destinationLabels text, .destinationValues text, .destinationHeading text";
   const destinationWidths = [...svg.querySelectorAll(sankeyRight)].map(label => {
