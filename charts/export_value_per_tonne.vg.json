@@ -77,10 +77,7 @@
         ],
         "labelExpr": "datum.value + '%'",
         "titlePadding": 12,
-        "title": [
-          "Change in average export",
-          "value per tonne (%)"
-        ]
+        "title": "Change in average export value per tonne (%)"
       }
     }
   },
@@ -127,7 +124,7 @@
               "Decrease"
             ],
             "range": [
-              "#006B4F",
+              "#005C43",
               "#E04488"
             ]
           },
@@ -181,24 +178,6 @@
             "format": ",.0f"
           }
         ]
-      }
-    },
-    {
-      "mark": {
-        "type": "text",
-        "align": {
-          "expr": "datum.ChangePct < 0 && width >= 350 ? 'right' : 'left'"
-        },
-        "dx": {
-          "expr": "datum.ChangePct < 0 ? (width < 350 ? scale('x', 0) - scale('x', datum.ChangePct) + 7 : -7) : 7"
-        },
-        "baseline": "middle",
-        "color": "#333"
-      },
-      "encoding": {
-        "text": {
-          "field": "ChangeLabel"
-        }
       }
     }
   ],
