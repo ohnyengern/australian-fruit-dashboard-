@@ -58,6 +58,7 @@ function standardiseVegaTypography(spec) {
       legend.labelFontSize = size(typography.label);
       legend.titleFontSize = size(typography.body);
       legend.labelFont = legend.titleFont = "'Source Sans 3'";
+      legend.labelFontWeight = legend.titleFontWeight = 400;
     });
     (group.marks || []).forEach(mark => {
       if (mark.type === "text") {
@@ -233,12 +234,6 @@ function compileHeatmapAnnotation(spec) {
   const boxHeight = note.lines.length * (typography.label + 4) + 12;
   spec.padding = { top: 12, left: 0, right: 0, bottom: 0 };
   const compiled = vegaLite.compile(spec).spec;
-  // A bottom legend leaves enough room for all four years on phones.
-  compiled.legends.forEach(legend => {
-    legend.orient = { signal: "width < 350 ? 'bottom' : 'right'" };
-    legend.direction = { signal: "width < 350 ? 'horizontal' : 'vertical'" };
-    legend.gradientLength = { signal: "width < 350 ? min(220, width) : 300" };
-  });
   const top = -(boxHeight + 24);
   const cx = `scale('x', '2022') + bandwidth('x') / 2`;
   const left = `max(0, (${cx}) - ${boxWidth / 2})`;
@@ -319,7 +314,7 @@ async function embedChart(target, source, options) {
   // Match the full divider width. Vega fits labels and legends within this
   // width, reserving only the space they actually need instead of wide gutters.
   const chartElement = document.querySelector(target);
-  spec.width = spec.projection ? 1030 : chartElement.clientWidth;
+  spec.width = spec.projection ? 1030 : target === "#growth_heatmap" ? Math.max(480, chartElement.clientWidth) : chartElement.clientWidth;
   spec.padding = 0;
   spec.autosize = { type: "fit-x", contains: "padding" };
   if (["#state_production_map", "#state_growth_choropleth"].includes(target)) {
@@ -348,7 +343,7 @@ async function embedChart(target, source, options) {
     legend.setAttribute("aria-label", colour.title);
     const row = document.createElement("div");
     row.className = "inline-chart-legend-row";
-    const title = document.createElement("strong");
+    const title = document.createElement("span");
     title.className = "inline-chart-legend-title";
     title.textContent = colour.title;
     row.append(title);
@@ -382,7 +377,7 @@ async function embedChart(target, source, options) {
   const updateTypography = () => {
     const svg = chartElement.querySelector("svg.marks");
     if (!svg) return;
-    const width = chartElement.clientWidth;
+    const width = target === "#growth_heatmap" ? Math.max(480, chartElement.clientWidth) : chartElement.clientWidth;
     const scale = 1 / Math.abs(svg.getScreenCTM().a);
     if (width === previousWidth && Math.abs(scale - previousScale) < 0.0001) return;
     previousWidth = width;

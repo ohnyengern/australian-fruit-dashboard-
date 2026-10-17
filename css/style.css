@@ -95,7 +95,7 @@ h1 { margin: 0; font: 700 clamp(34px, 3.7vw, 60px)/1.14 var(--font-heading-famil
 .map-controls select { min-width: 0; text-align: left; font: inherit; }
 .map-sidebar .production-size-legend { grid-template-columns: minmax(0, 1fr); gap: 18px; margin-bottom: 0; }
 .map-sidebar .legend-item { display: grid; grid-template-columns: 51px minmax(0, 1fr); align-items: center; justify-content: start; gap: 10px; }
-.production-map-legend .legend-item { color: var(--ink); font-weight: bold; }
+.production-map-legend .legend-item { color: var(--ink); font-weight: 400; }
 .map-sidebar .choropleth-legend { width: 100%; max-width: none; }
 #choropleth-map-controls, #production-map-controls { margin-bottom: 40px; }
 .map-sidebar .choropleth-legend h3, .map-sidebar .production-map-legend h3 { text-align: left; }
@@ -105,7 +105,7 @@ h1 { margin: 0; font: 700 clamp(34px, 3.7vw, 60px)/1.14 var(--font-heading-famil
 .choropleth-scale { display: flex; flex-direction: column; width: 28px; height: 196px; border: 1px solid #222; }
 .choropleth-scale span { flex: 1; border-bottom: 1px solid #222; }
 .choropleth-scale span:last-child { border-bottom: 0; }
-.choropleth-legend ol { display: flex; flex-direction: column; justify-content: space-around; margin: 0; padding: 0; list-style: none; font-size: var(--font-chart-label); line-height: 1.2; font-weight: bold; }
+.choropleth-legend ol { display: flex; flex-direction: column; justify-content: space-around; margin: 0; padding: 0; list-style: none; font-size: var(--font-chart-label); line-height: 1.2; font-weight: 400; }
 .choropleth-special-legend { grid-column: 1 / -1; display: grid; gap: 12px; margin-top: 68px; }
 .choropleth-special-item { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 10px; align-items: center; }
 .choropleth-special-item > span { width: 28px; height: 28px; border: 1px solid #bdbdbd; border-radius: 2px; }
@@ -189,3 +189,8 @@ h1 { margin: 0; font: 700 clamp(34px, 3.7vw, 60px)/1.14 var(--font-heading-famil
 
 body { font-variant-numeric: lining-nums; }
 #vg-tooltip-element { font-family: var(--font-body-family); font-size: var(--font-chart-label); }
+
+.choropleth-legend h3, .production-map-legend h3, .export-map-legend h3, .inline-chart-legend-title { font-weight: 400; }
+/* Preserve the right-hand vertical legend; scroll only the chart on phones. */
+#growth_heatmap { overflow-x: auto; justify-content: flex-start; }
+#growth_heatmap .chart-wrapper { min-width: 480px; flex-shrink: 0; }
