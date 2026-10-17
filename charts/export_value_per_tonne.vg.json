@@ -112,7 +112,9 @@
     {
       "mark": {
         "type": "bar",
-        "height": 22
+        "height": 22,
+        "stroke": null,
+        "strokeWidth": 0
       },
       "encoding": {
         "color": {
@@ -130,16 +132,16 @@
             ]
           },
           "legend": {
-            "orient": "top",
+            "orient": "right",
             "symbolType": "square",
             "symbolSize": 140,
             "labelOffset": 8,
-            "offset": 20,
+            "offset": 16,
             "titleOrient": "top",
             "titleLimit": 180,
             "titlePadding": 10,
             "symbolStrokeWidth": 0,
-            "direction": "horizontal"
+            "direction": "vertical"
           }
         },
         "tooltip": [
@@ -211,11 +213,6 @@
       "titleColor": "#222",
       "domainColor": "#999",
       "tickColor": "#999"
-    },
-    "legend": {
-      "layout": {
-        "anchor": "end"
-      }
     }
   }
 }
