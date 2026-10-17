@@ -59,10 +59,10 @@
       "type": "quantitative",
       "title": "Change in average export value per tonne (%)",
       "scale": {
-        "domain": [
-          -30,
-          115
-        ],
+        "domainMin": -30,
+        "domainMax": {
+          "expr": "width < 350 ? 160 : 115"
+        },
         "nice": false
       },
       "axis": {
@@ -76,7 +76,11 @@
           100
         ],
         "labelExpr": "datum.value + '%'",
-        "titlePadding": 12
+        "titlePadding": 12,
+        "title": [
+          "Change in average export",
+          "value per tonne (%)"
+        ]
       }
     }
   },
@@ -108,13 +112,17 @@
     {
       "mark": {
         "type": "bar",
-        "height": 22
+        "height": 22,
+        "stroke": {
+          "expr": "datum.Direction === 'Decrease' ? '#806A00' : '#006B4F'"
+        },
+        "strokeWidth": 1
       },
       "encoding": {
         "color": {
           "field": "Direction",
           "type": "nominal",
-          "title": null,
+          "title": "Direction of change",
           "scale": {
             "domain": [
               "Increase",
@@ -122,15 +130,21 @@
             ],
             "range": [
               "#006B4F",
-              "#9A8700"
+              "#FFD500"
             ]
           },
           "legend": {
-            "orient": "right",
+            "orient": "top",
             "symbolType": "square",
             "symbolSize": 140,
             "labelOffset": 8,
-            "offset": 16
+            "offset": 20,
+            "titleOrient": "top",
+            "titleLimit": 180,
+            "titlePadding": 10,
+            "symbolStrokeColor": "#665500",
+            "symbolStrokeWidth": 0.7,
+            "direction": "horizontal"
           }
         },
         "tooltip": [
@@ -176,10 +190,10 @@
       "mark": {
         "type": "text",
         "align": {
-          "expr": "datum.ChangePct < 0 ? 'right' : 'left'"
+          "expr": "datum.ChangePct < 0 && width >= 350 ? 'right' : 'left'"
         },
         "dx": {
-          "expr": "datum.ChangePct < 0 ? -7 : 7"
+          "expr": "datum.ChangePct < 0 ? (width < 350 ? scale('x', 0) - scale('x', datum.ChangePct) + 7 : -7) : 7"
         },
         "baseline": "middle",
         "color": "#333"
@@ -202,6 +216,11 @@
       "titleColor": "#222",
       "domainColor": "#999",
       "tickColor": "#999"
+    },
+    "legend": {
+      "layout": {
+        "anchor": "end"
+      }
     }
   }
 }

@@ -70,7 +70,7 @@ h1 { margin: 0; font: bold clamp(32px, 3.5vw, 56px)/1.14 Georgia, serif; letter-
 .chart-column .chart-wrapper { width: 100%; min-width: 0; }
 .production-map-row { grid-row: auto; grid-template-rows: auto; }
 .chart-column .vega-embed details, .chart-column .vega-actions { z-index: 30; }
-#export_value_per_tonne.vega-embed details { top: 48px; }
+#export_value_per_tonne.vega-embed summary { top: 160px; }
 .chart-column .vega-embed summary { cursor: pointer; }
 .chart-column .vega-embed summary svg { width: 16px; height: 16px; }
 .vega-bindings { margin-top: 12px; max-width: 100%; font-size: var(--font-control); line-height: 1.55; }
