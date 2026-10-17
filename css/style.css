@@ -59,7 +59,7 @@ h1 { margin: 0; font: 700 clamp(40px, 4.5vw, 72px)/1.14 var(--font-heading-famil
 .reading-line { display: block; }
 .fruit-highlight { font-weight: 650; }
 .fruit-apple { color: #4c78a8; }
-.fruit-orange { color: #C04B00; }
+.fruit-orange { color: #333333; text-decoration: underline; text-decoration-color: #FFC000; text-decoration-thickness: 2px; text-underline-offset: 3px; }
 .fruit-strawberry { color: #b279a2; }
 .fruit-blueberry { color: #4f8f8a; }
 .fruit-mandarin { color: #54a24b; }
