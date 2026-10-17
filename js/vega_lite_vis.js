@@ -51,6 +51,8 @@ function standardiseVegaTypography(spec) {
       axis.labelFontSize = size(typography.label);
       axis.titleFontSize = size(typography.axisTitle);
       axis.labelFont = axis.titleFont = "'Source Sans 3'";
+      axis.labelOverlap = "greedy";
+      axis.labelSeparation = 8;
     });
     (group.legends || []).forEach(legend => {
       legend.labelFontSize = size(typography.label);
@@ -231,6 +233,12 @@ function compileHeatmapAnnotation(spec) {
   const boxHeight = note.lines.length * (typography.label + 4) + 12;
   spec.padding = { top: 12, left: 0, right: 0, bottom: 0 };
   const compiled = vegaLite.compile(spec).spec;
+  // A bottom legend leaves enough room for all four years on phones.
+  compiled.legends.forEach(legend => {
+    legend.orient = { signal: "width < 350 ? 'bottom' : 'right'" };
+    legend.direction = { signal: "width < 350 ? 'horizontal' : 'vertical'" };
+    legend.gradientLength = { signal: "width < 350 ? min(220, width) : 300" };
+  });
   const top = -(boxHeight + 24);
   const cx = `scale('x', '2022') + bandwidth('x') / 2`;
   const left = `max(0, (${cx}) - ${boxWidth / 2})`;
