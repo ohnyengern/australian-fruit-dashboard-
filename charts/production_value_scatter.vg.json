@@ -87,7 +87,7 @@
               "#A59837",
               "#72b7b2",
               "#54a24b",
-              "#FFC000",
+              "#E0A900",
               "#b279a2",
               "#ff9da6"
             ]
@@ -128,10 +128,10 @@
         },
         "font": "Arial",
         "dx": {
-          "expr": "datum.Fruit == 'Orange' ? -14 : datum.Fruit == 'Blueberry' || datum.Fruit == 'Strawberry' ? 0 : 14"
+          "expr": "datum.Fruit == 'Orange' ? -7 : datum.Fruit == 'Blueberry' || datum.Fruit == 'Strawberry' ? 0 : 14"
         },
         "dy": {
-          "expr": "datum.Fruit == 'Blueberry' || datum.Fruit == 'Orange' ? -13 : datum.Fruit == 'Strawberry' ? 13 : 0"
+          "expr": "datum.Fruit == 'Orange' ? -5 : datum.Fruit == 'Blueberry' ? -13 : datum.Fruit == 'Strawberry' ? 13 : 0"
         }
       },
       "encoding": {
@@ -155,7 +155,7 @@
         "values": [
           {
             "x": 212000,
-            "y": 860,
+            "y": 874.9,
             "x2": 228882,
             "y2": 874.9
           }
@@ -189,7 +189,7 @@
         "values": [
           {
             "x": 210000,
-            "y": 800,
+            "y": 840,
             "label": [
               "Highest production value despite",
               "a relatively smaller harvest"

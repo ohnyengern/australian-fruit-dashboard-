@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Change in average export value per tonne, 2021\u20132025",
+    "text": "Change in export value per tonne from 2021 to 2025",
     "anchor": "start"
   },
   "width": 800,

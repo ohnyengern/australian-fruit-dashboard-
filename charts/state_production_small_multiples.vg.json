@@ -275,22 +275,22 @@
           {
             "field": "Fruit",
             "type": "nominal",
-            "title": "Fruit"
+            "title": "Fruit:"
           },
           {
             "field": "State",
             "type": "nominal",
-            "title": "State / territory"
+            "title": "State / territory:"
           },
           {
             "field": "YearEndingLabel",
             "type": "nominal",
-            "title": "Year ending June"
+            "title": "Year ending June:"
           },
           {
             "field": "Production",
             "type": "quantitative",
-            "title": "Production (tonnes)",
+            "title": "Production (tonnes):",
             "format": ",.0f"
           }
         ]

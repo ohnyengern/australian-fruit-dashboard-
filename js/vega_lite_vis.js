@@ -60,7 +60,7 @@ function standardiseVegaTypography(spec) {
       legend.titleFontSize = size(typography.body);
       legend.labelFont = legend.titleFont = "'Source Sans 3'";
       legend.labelFontWeight = 400;
-      legend.titleFontWeight = 700;
+      legend.titleFontWeight = 650;
     });
     (group.marks || []).forEach(mark => {
       if (mark.type === "text") {
@@ -208,7 +208,8 @@ function compileBoxedAnnotations(spec) {
         update.y2 = { signal: `(${top}) + ${box.height} * typographyScale` };
       } else {
         const originX = `(${left}) + ${box.width} * typographyScale`;
-        const originY = `${centreY} - 8 * typographyScale`;
+        const originY = mark.name.startsWith("grapeAnnotation")
+          ? "scale('y', datum.y2)" : `${centreY} - 8 * typographyScale`;
         update.x = { signal: originX };
         update.y = { signal: originY };
         // Reach slightly inside the coloured fill so the marker's white
