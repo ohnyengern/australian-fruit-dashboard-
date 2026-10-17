@@ -328,6 +328,11 @@ async function embedChart(target, source, options) {
     : target === "#growth_heatmap" ? compileHeatmapAnnotation(spec)
     : ["#production_value_scatter", "#export_value_waterfall"].includes(target) ? compileBoxedAnnotations(spec)
     : options.mode === "vega" ? spec : vegaLite.compile(spec).spec;
+  if (target === "#production_trend") {
+    compiled.legends.forEach(legend => {
+      legend.columns = { signal: "width < 450 ? 2 : 4" };
+    });
+  }
   const result = await vegaEmbed(target, standardiseVegaTypography(compiled), { ...options, mode: "vega" });
   let previousWidth;
   let previousScale;
@@ -601,6 +606,22 @@ const mapHeadingObserver = new ResizeObserver(entries => {
 document.querySelectorAll(".map-title, .chart-title").forEach(title => mapHeadingObserver.observe(title));
 function alignLabelInk(svg) {
   const shell = svg.closest(".chart-shell").getBoundingClientRect();
+  // Bottom legends share the card's left sightline, including the axis gutter.
+  if (svg.closest("#production_trend, #export_value_per_tonne")) {
+    svg.querySelectorAll(".role-legend").forEach(legend => {
+      const previous = labelTransforms.get(legend);
+      const current = legend.getAttribute("transform") || "";
+      const original = previous && current === previous.aligned ? previous.original : current;
+      legend.setAttribute("transform", original);
+      const matrix = legend.getScreenCTM();
+      if (!matrix) return;
+      const delta = shell.left - legend.getBoundingClientRect().left;
+      const aligned = `${original} translate(${delta / matrix.a},0)`;
+      legend.setAttribute("transform", aligned);
+      labelTransforms.set(legend, { original, aligned });
+    });
+  }
+
   const sankeyLeft = ".fruitLabels text, .fruitValues text, .fruitHeading text";
   const sankeyRight = ".destinationLabels text, .destinationValues text, .destinationHeading text";
   const destinationWidths = [...svg.querySelectorAll(sankeyRight)].map(label => {

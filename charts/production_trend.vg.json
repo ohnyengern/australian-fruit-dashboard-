@@ -69,9 +69,9 @@
           "title": "Fruit",
           "legend": {
             "titleOrient": "top",
-            "orient": "right",
-            "direction": "vertical",
-            "columns": 1,
+            "orient": "bottom",
+            "direction": "horizontal",
+            "columns": 4,
             "symbolType": "circle",
             "labelLimit": 120,
             "titleLimit": 160,
@@ -80,7 +80,8 @@
             },
             "symbolStrokeColor": {
               "expr": "scale('color', datum.value)"
-            }
+            },
+            "offset": 24
           },
           "scale": {
             "domain": [
@@ -152,7 +153,10 @@
       "columnPadding": 18,
       "rowPadding": 6,
       "labelFont": "Arial",
-      "titleFont": "Arial"
+      "titleFont": "Arial",
+      "layout": {
+        "anchor": "start"
+      }
     },
     "font": "Arial",
     "header": {

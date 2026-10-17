@@ -129,16 +129,17 @@
             ]
           },
           "legend": {
-            "orient": "right",
+            "orient": "bottom",
             "symbolType": "square",
             "symbolSize": 140,
             "labelOffset": 8,
-            "offset": 16,
+            "offset": 24,
             "titleOrient": "top",
             "titleLimit": 180,
             "titlePadding": 10,
             "symbolStrokeWidth": 0,
-            "direction": "vertical"
+            "direction": "horizontal",
+            "columns": 2
           }
         },
         "tooltip": [
@@ -192,6 +193,11 @@
       "titleColor": "#222",
       "domainColor": "#999",
       "tickColor": "#999"
+    },
+    "legend": {
+      "layout": {
+        "anchor": "start"
+      }
     }
   }
 }
