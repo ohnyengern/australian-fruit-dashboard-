@@ -437,8 +437,8 @@ narrativeParagraphs.forEach(paragraph => {
     node.replaceWith(fragment);
   });
 });
-// Choose paragraph-wide line breaks instead of cutting each natural line
-// after its tenth word. Balance the ragged edge without stretching spaces.
+// Fill each equal-width column naturally; only cap a line at ten words.
+// Do not balance individual paragraphs by shortening all of their lines.
 const narrativeMeasureContext = document.createElement("canvas").getContext("2d");
 function limitNarrativeLines() {
   narrativeParagraphs.forEach(paragraph => {
@@ -459,39 +459,44 @@ function limitNarrativeLines() {
       starts.push(starts[index] + widths[index] + spaces[index]);
     });
     const lineWidth = (start, end) => starts[end] - starts[start] - spaces[end - 1];
-    const costs = Array(words.length + 1).fill(Infinity);
-    const nextBreak = Array(words.length).fill(-1);
-    costs[words.length] = 0;
-    for (let start = words.length - 1; start >= 0; start--) {
-      for (let end = start + 1; end <= Math.min(start + 10, words.length); end++) {
-        const used = lineWidth(start, end);
-        if (used > available && end > start + 1) break;
-        // Keep names such as "table grapes" together.
-        if (end < words.length) {
-          const highlight = words[end - 1].closest(".fruit-highlight");
-          if (highlight && highlight === words[end].closest(".fruit-highlight")) continue;
-        }
-        const remainingSpace = Math.max(0, available - used);
-        let cost = remainingSpace ** 2 + costs[end];
-        if (end === words.length && end - start < 3 && words.length > 10) {
-          cost += available ** 2; // Avoid isolated one- or two-word endings.
-        }
-        if (end < words.length && /^(a|an|the|and|or|to|of|in|for|with)$/i.test(words[end - 1].textContent)) {
-          cost += available * 10;
-        }
-        if (cost < costs[start]) { costs[start] = cost; nextBreak[start] = end; }
-      }
-    }
-    // Fall back to bounded chunks if an exceptionally long name cannot fit.
+    const ends = [];
     for (let start = 0; start < words.length;) {
-      const end = nextBreak[start] > start ? nextBreak[start] : Math.min(start + 10, words.length);
+      let end = start + 1;
+      while (end < words.length && end - start < 10 && lineWidth(start, end + 1) <= available) end++;
+      // Keep a multiword fruit name on the same line when it fits.
       if (end < words.length) {
-        const br = document.createElement("br");
-        br.className = "word-limit-break";
-        words[end].before(br);
+        const highlight = words[end - 1].closest(".fruit-highlight");
+        if (highlight && highlight === words[end].closest(".fruit-highlight")) {
+          let nameStart = end - 1;
+          while (nameStart > start && words[nameStart - 1].closest(".fruit-highlight") === highlight) nameStart--;
+          if (nameStart > start) end = nameStart;
+        }
       }
+      ends.push(end);
       start = end;
     }
+    // Repair only a very short final line; earlier lines retain their full width.
+    if (ends.length > 1) {
+      const previousStart = ends.length > 2 ? ends[ends.length - 3] : 0;
+      const lastStart = ends[ends.length - 2];
+      if (words.length - lastStart < 3) {
+        for (let desired = 3; desired >= 2; desired--) {
+          let candidate = words.length - desired;
+          const highlight = words[candidate].closest(".fruit-highlight");
+          while (candidate > previousStart && highlight && words[candidate - 1].closest(".fruit-highlight") === highlight) candidate--;
+          if (candidate > previousStart && candidate < lastStart &&
+              words.length - candidate <= 10 && lineWidth(candidate, words.length) <= available) {
+            ends[ends.length - 2] = candidate;
+            break;
+          }
+        }
+      }
+    }
+    ends.slice(0, -1).forEach(end => {
+      const br = document.createElement("br");
+      br.className = "word-limit-break";
+      words[end].before(br);
+    });
   });
 }
 
