@@ -16,11 +16,11 @@
   "transform": [
     {
       "fold": [
-        "2021",
-        "2022",
-        "2023",
-        "2024",
-        "2025"
+        "2020–21",
+        "2021–22",
+        "2022–23",
+        "2023–24",
+        "2024–25"
       ],
       "as": [
         "Year",
@@ -47,15 +47,11 @@
       "groupby": [
         "Year"
       ]
-    },
-    {
-      "calculate": "format(toNumber(datum.Year) - 1, '.0f') + '–' + substring(toString(datum.Year), 2)",
-      "as": "FinancialYear"
     }
   ],
   "encoding": {
     "x": {
-      "field": "FinancialYear",
+      "field": "Year",
       "type": "ordinal",
       "title": "Year",
       "sort": [
@@ -148,7 +144,7 @@
             "title": "Fruit:"
           },
           {
-            "field": "FinancialYear",
+            "field": "Year",
             "type": "nominal",
             "title": "Year:"
           },
@@ -208,7 +204,7 @@
             "title": "Fruit:"
           },
           {
-            "field": "FinancialYear",
+            "field": "Year",
             "type": "nominal",
             "title": "Year:"
           },
@@ -230,7 +226,7 @@
     {
       "transform": [
         {
-          "filter": "datum.Year == '2025'"
+          "filter": "datum.Year == '2024–25'"
         }
       ],
       "mark": {

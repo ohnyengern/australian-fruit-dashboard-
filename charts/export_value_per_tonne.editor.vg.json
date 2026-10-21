@@ -1,0 +1,532 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "background": "white",
+  "padding": 5,
+  "width": 985,
+  "height": 400,
+  "style": "cell",
+  "data": [
+    {
+      "name": "source_0",
+      "values": [
+        {
+          "Fruit": "Apple",
+          "ExportValue2021M": "5.9",
+          "ExportTonnes2021": "2147",
+          "ExportValue2025M": "5.8",
+          "ExportTonnes2025": "1737",
+          "HandbookPage": "36"
+        },
+        {
+          "Fruit": "Avocado",
+          "ExportValue2021M": "22",
+          "ExportTonnes2021": "3155",
+          "ExportValue2025M": "86.3",
+          "ExportTonnes2025": "14162",
+          "HandbookPage": "41"
+        },
+        {
+          "Fruit": "Blueberry",
+          "ExportValue2021M": "8.4",
+          "ExportTonnes2021": "342",
+          "ExportValue2025M": "24.6",
+          "ExportTonnes2025": "766",
+          "HandbookPage": "53"
+        },
+        {
+          "Fruit": "Mandarin",
+          "ExportValue2021M": "148.2",
+          "ExportTonnes2021": "62051",
+          "ExportValue2025M": "232.3",
+          "ExportTonnes2025": "94689",
+          "HandbookPage": "86"
+        },
+        {
+          "Fruit": "Orange",
+          "ExportValue2021M": "285.1",
+          "ExportTonnes2021": "172416",
+          "ExportValue2025M": "321.5",
+          "ExportTonnes2025": "172947",
+          "HandbookPage": "91"
+        },
+        {
+          "Fruit": "Strawberry",
+          "ExportValue2021M": "25.5",
+          "ExportTonnes2021": "3578",
+          "ExportValue2025M": "36.8",
+          "ExportTonnes2025": "2674",
+          "HandbookPage": "63"
+        },
+        {
+          "Fruit": "Table grapes",
+          "ExportValue2021M": "460.8",
+          "ExportTonnes2021": "120725",
+          "ExportValue2025M": "578.6",
+          "ExportTonnes2025": "140754",
+          "HandbookPage": "173"
+        }
+      ]
+    },
+    {
+      "name": "source_1",
+      "values": [
+        {}
+      ]
+    },
+    {
+      "name": "data_0",
+      "source": "source_0",
+      "transform": [
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.ExportValue2021M) * 1000000 / toNumber(datum.ExportTonnes2021)",
+          "as": "Value2021"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.ExportValue2025M) * 1000000 / toNumber(datum.ExportTonnes2025)",
+          "as": "Value2025"
+        },
+        {
+          "type": "formula",
+          "expr": "(datum.Value2025 / datum.Value2021 - 1) * 100",
+          "as": "ChangePct"
+        },
+        {
+          "type": "formula",
+          "expr": "format(datum.ChangePct, '+.1f') + '%'",
+          "as": "ChangeLabel"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.ChangePct >= 0 ? 'Increase' : 'Decrease'",
+          "as": "Direction"
+        },
+        {
+          "type": "formula",
+          "expr": "'AUD ' + format(datum.Value2021, ',.0f')",
+          "as": "Average2021Tooltip"
+        },
+        {
+          "type": "formula",
+          "expr": "'AUD ' + format(datum.Value2025, ',.0f')",
+          "as": "Average2025Tooltip"
+        },
+        {
+          "type": "formula",
+          "expr": "(datum.ChangePct >= 0 ? 'Increase of ' : 'Decrease of ') + format(abs(datum.ChangePct), '.1f') + ' percent'",
+          "as": "ChangeTooltip"
+        },
+        {
+          "type": "formula",
+          "expr": "format(toNumber(datum.ExportTonnes2021), ',.0f') + ' tonnes'",
+          "as": "Volume2021Tooltip"
+        },
+        {
+          "type": "formula",
+          "expr": "format(toNumber(datum.ExportTonnes2025), ',.0f') + ' tonnes'",
+          "as": "Volume2025Tooltip"
+        }
+      ]
+    },
+    {
+      "name": "data_1",
+      "source": "data_0",
+      "transform": [
+        {
+          "type": "stack",
+          "groupby": [
+            "Fruit"
+          ],
+          "field": "ChangePct",
+          "sort": {
+            "field": [
+              "Direction"
+            ],
+            "order": [
+              "ascending"
+            ]
+          },
+          "as": [
+            "ChangePct_start",
+            "ChangePct_end"
+          ],
+          "offset": "zero"
+        },
+        {
+          "type": "filter",
+          "expr": "isValid(datum[\"ChangePct\"]) && isFinite(+datum[\"ChangePct\"])"
+        }
+      ]
+    },
+    {
+      "name": "data_2",
+      "source": "source_1",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "isValid(datum[\"ChangePct\"]) && isFinite(+datum[\"ChangePct\"])"
+        }
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "name": "layer_0_marks",
+      "type": "rule",
+      "style": [
+        "rule"
+      ],
+      "from": {
+        "data": "data_2"
+      },
+      "encode": {
+        "update": {
+          "strokeWidth": {
+            "value": 1
+          },
+          "stroke": {
+            "value": "#777"
+          },
+          "description": {
+            "signal": "\"Change in average export value per tonne (%): \" + (format(datum[\"ChangePct\"], \"\"))"
+          },
+          "x": {
+            "scale": "x",
+            "value": 0
+          },
+          "y": {
+            "value": 0
+          },
+          "y2": {
+            "value": 400
+          }
+        }
+      }
+    },
+    {
+      "name": "layer_1_marks",
+      "type": "rect",
+      "style": [
+        "bar"
+      ],
+      "from": {
+        "data": "data_1"
+      },
+      "encode": {
+        "update": {
+          "stroke": {
+            "value": null
+          },
+          "strokeWidth": {
+            "value": 0
+          },
+          "fill": {
+            "scale": "color",
+            "field": "Direction"
+          },
+          "tooltip": {
+            "signal": "{\"Fruit:\": isValid(datum[\"Fruit\"]) ? datum[\"Fruit\"] : \"\"+datum[\"Fruit\"], \"Average export value per tonne in 2020–21:\": isValid(datum[\"Average2021Tooltip\"]) ? datum[\"Average2021Tooltip\"] : \"\"+datum[\"Average2021Tooltip\"], \"Average export value per tonne in 2024–25:\": isValid(datum[\"Average2025Tooltip\"]) ? datum[\"Average2025Tooltip\"] : \"\"+datum[\"Average2025Tooltip\"], \"Change in average export value per tonne:\": isValid(datum[\"ChangeTooltip\"]) ? datum[\"ChangeTooltip\"] : \"\"+datum[\"ChangeTooltip\"], \"Fresh export volume in 2020–21:\": isValid(datum[\"Volume2021Tooltip\"]) ? datum[\"Volume2021Tooltip\"] : \"\"+datum[\"Volume2021Tooltip\"], \"Fresh export volume in 2024–25:\": isValid(datum[\"Volume2025Tooltip\"]) ? datum[\"Volume2025Tooltip\"] : \"\"+datum[\"Volume2025Tooltip\"]}"
+          },
+          "ariaRoleDescription": {
+            "value": "bar"
+          },
+          "description": {
+            "signal": "\"Change in average export value per tonne (%): \" + (format(datum[\"ChangePct\"], \"\")) + \"; Fruit: \" + (isValid(datum[\"Fruit\"]) ? datum[\"Fruit\"] : \"\"+datum[\"Fruit\"]) + \"; Direction of change: \" + (isValid(datum[\"Direction\"]) ? datum[\"Direction\"] : \"\"+datum[\"Direction\"]) + \"; Fruit:: \" + (isValid(datum[\"Fruit\"]) ? datum[\"Fruit\"] : \"\"+datum[\"Fruit\"]) + \"; Average export value per tonne in 2020–21:: \" + (isValid(datum[\"Average2021Tooltip\"]) ? datum[\"Average2021Tooltip\"] : \"\"+datum[\"Average2021Tooltip\"]) + \"; Average export value per tonne in 2024–25:: \" + (isValid(datum[\"Average2025Tooltip\"]) ? datum[\"Average2025Tooltip\"] : \"\"+datum[\"Average2025Tooltip\"]) + \"; Change in average export value per tonne:: \" + (isValid(datum[\"ChangeTooltip\"]) ? datum[\"ChangeTooltip\"] : \"\"+datum[\"ChangeTooltip\"]) + \"; Fresh export volume in 2020–21:: \" + (isValid(datum[\"Volume2021Tooltip\"]) ? datum[\"Volume2021Tooltip\"] : \"\"+datum[\"Volume2021Tooltip\"]) + \"; Fresh export volume in 2024–25:: \" + (isValid(datum[\"Volume2025Tooltip\"]) ? datum[\"Volume2025Tooltip\"] : \"\"+datum[\"Volume2025Tooltip\"])"
+          },
+          "x": {
+            "scale": "x",
+            "field": "ChangePct_end"
+          },
+          "x2": {
+            "scale": "x",
+            "field": "ChangePct_start"
+          },
+          "yc": {
+            "scale": "y",
+            "field": "Fruit",
+            "band": 0.5
+          },
+          "height": {
+            "value": 22
+          }
+        }
+      }
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear",
+      "domain": {
+        "fields": [
+          [
+            0
+          ],
+          {
+            "data": "data_1",
+            "field": "ChangePct_start"
+          },
+          {
+            "data": "data_1",
+            "field": "ChangePct_end"
+          }
+        ]
+      },
+      "range": [
+        0,
+        {
+          "signal": "width"
+        }
+      ],
+      "domainMax": {
+        "signal": "width < 350 ? 160 : 115"
+      },
+      "domainMin": -30,
+      "nice": false,
+      "zero": true
+    },
+    {
+      "name": "y",
+      "type": "band",
+      "domain": {
+        "data": "data_0",
+        "field": "Fruit",
+        "sort": {
+          "op": "sum",
+          "field": "ChangePct",
+          "order": "descending"
+        }
+      },
+      "range": [
+        0,
+        {
+          "signal": "height"
+        }
+      ],
+      "paddingInner": 0.1,
+      "paddingOuter": 0.05
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": [
+        "Increase",
+        "Decrease"
+      ],
+      "range": [
+        "#005C43",
+        "#ff9da6"
+      ]
+    }
+  ],
+  "axes": [
+    {
+      "scale": "x",
+      "orient": "bottom",
+      "values": [
+        -20,
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "gridScale": "y",
+      "grid": true,
+      "domain": false,
+      "labels": false,
+      "aria": false,
+      "maxExtent": 0,
+      "minExtent": 0,
+      "ticks": false,
+      "zindex": 0,
+      "labelFontSize": {
+        "signal": "14 * typographyScale"
+      },
+      "titleFontSize": {
+        "signal": "15 * typographyScale"
+      },
+      "titleFont": "'Source Sans 3'",
+      "labelFont": "'Source Sans 3'",
+      "labelOverlap": "greedy",
+      "labelSeparation": 8,
+      "labelFontWeight": 400,
+      "titleFontWeight": {
+        "signal": "650"
+      },
+      "titlePadding": {
+        "signal": "12 * typographyScale"
+      },
+      "labelPadding": {
+        "signal": "6 * typographyScale"
+      }
+    },
+    {
+      "scale": "x",
+      "orient": "bottom",
+      "grid": false,
+      "title": "Change in average export value per tonne (%)",
+      "titlePadding": {
+        "signal": "12 * typographyScale"
+      },
+      "values": [
+        -20,
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "labelFlush": true,
+      "labelFont": "'Source Sans 3'",
+      "labelFontSize": {
+        "signal": "14 * typographyScale"
+      },
+      "labelFontWeight": 400,
+      "labelOverlap": "greedy",
+      "labelPadding": {
+        "signal": "6 * typographyScale"
+      },
+      "labelSeparation": 8,
+      "titleFont": "'Source Sans 3'",
+      "titleFontSize": {
+        "signal": "15 * typographyScale"
+      },
+      "titleFontWeight": {
+        "signal": "650"
+      },
+      "encode": {
+        "labels": {
+          "update": {
+            "text": {
+              "signal": "datum.value + '%'"
+            }
+          }
+        }
+      },
+      "zindex": 0
+    },
+    {
+      "scale": "y",
+      "orient": "left",
+      "grid": false,
+      "domain": false,
+      "labelLimit": 100,
+      "labelPadding": {
+        "signal": "6 * typographyScale"
+      },
+      "ticks": false,
+      "labelFont": "'Source Sans 3'",
+      "labelFontSize": {
+        "signal": "14 * typographyScale"
+      },
+      "labelFontWeight": 400,
+      "labelOverlap": "greedy",
+      "labelSeparation": 8,
+      "titleFont": "'Source Sans 3'",
+      "titleFontSize": {
+        "signal": "15 * typographyScale"
+      },
+      "titleFontWeight": {
+        "signal": "650"
+      },
+      "titlePadding": {
+        "signal": "12 * typographyScale"
+      },
+      "zindex": 0
+    }
+  ],
+  "legends": [
+    {
+      "columnPadding": 16,
+      "columns": 2,
+      "direction": "horizontal",
+      "labelOffset": {
+        "signal": "10 * typographyScale"
+      },
+      "offset": 24,
+      "orient": "bottom",
+      "symbolSize": 140,
+      "symbolStrokeWidth": 0,
+      "symbolType": "square",
+      "title": "Direction of change",
+      "titleLimit": 180,
+      "titleOrient": "left",
+      "titlePadding": {
+        "signal": "12 * typographyScale"
+      },
+      "fill": "color",
+      "encode": {
+        "symbols": {
+          "update": {
+            "stroke": {
+              "value": null
+            }
+          }
+        }
+      },
+      "labelFontSize": {
+        "signal": "14 * typographyScale"
+      },
+      "titleFontSize": {
+        "signal": "17 * typographyScale"
+      },
+      "titleFont": "'Source Sans 3'",
+      "labelFont": "'Source Sans 3'",
+      "labelFontWeight": 400,
+      "titleFontWeight": {
+        "signal": "650"
+      },
+      "rowPadding": {
+        "signal": "12 * typographyScale"
+      }
+    }
+  ],
+  "config": {
+    "axis": {
+      "gridColor": "#e6e6e6",
+      "labelColor": "#444",
+      "titleColor": "#222",
+      "domainColor": "#999",
+      "tickColor": "#999"
+    },
+    "legend": {
+      "layout": {
+        "anchor": "start"
+      }
+    },
+    "style": {
+      "guide-label": {
+        "font": "Arial"
+      },
+      "guide-title": {
+        "font": "Arial"
+      },
+      "group-title": {
+        "font": "Arial"
+      },
+      "group-subtitle": {
+        "font": "Arial"
+      },
+      "cell": {
+        "stroke": null
+      },
+      "text": {
+        "font": "Arial"
+      }
+    }
+  },
+  "usermeta": {
+    "source": "Australian Horticulture Statistics Handbook 2024/25, fresh-fruit five-year comparison tables",
+    "method": "Nominal fresh export value (AUD million × 1,000,000) divided by fresh export tonnes. Percentage change compares 2020–21 and 2024–25. Rounded source values yield approximate results. Bananas excluded: no recorded fresh exports."
+  },
+  "signals": [
+    {
+      "name": "typographyScale",
+      "value": 1
+    }
+  ]
+}

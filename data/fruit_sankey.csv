@@ -1,25 +1,25 @@
-Fruit,YearEnding,Destination,Tonnes,ProductionTonnes,FruitOrder,DestinationOrder,SourcePage
-Banana,2025,Domestic fresh market,367598,368701,0,0,45
-Banana,2025,Fresh exports,0,368701,0,1,45
-Banana,2025,Processing,1103,368701,0,2,45
-Apple,2025,Domestic fresh market,211758,295691,1,0,35
-Apple,2025,Fresh exports,1737,295691,1,1,35
-Apple,2025,Processing,82196,295691,1,2,35
-Avocado,2025,Domestic fresh market,114395,131385,2,0,40
-Avocado,2025,Fresh exports,14162,131385,2,1,40
-Avocado,2025,Processing,2828,131385,2,2,40
-Strawberry,2025,Domestic fresh market,70445,77872,3,0,62
-Strawberry,2025,Fresh exports,2674,77872,3,1,62
-Strawberry,2025,Processing,4753,77872,3,2,62
-Blueberry,2025,Domestic fresh market,25154,28382,4,0,52
-Blueberry,2025,Fresh exports,766,28382,4,1,52
-Blueberry,2025,Processing,2462,28382,4,2,52
-Mandarin,2025,Domestic fresh market,140851,240486,5,0,85
-Mandarin,2025,Fresh exports,94689,240486,5,1,85
-Mandarin,2025,Processing,4946,240486,5,2,85
-Table grapes,2025,Domestic fresh market,88128,228882,6,0,172
-Table grapes,2025,Fresh exports,140754,228882,6,1,172
-Table grapes,2025,Processing,0,228882,6,2,172
-Orange,2025,Domestic fresh market,186012,572540,7,0,90
-Orange,2025,Fresh exports,172947,572540,7,1,90
-Orange,2025,Processing,213581,572540,7,2,90
+Fruit,Year,Destination,Tonnes,ProductionTonnes,FruitOrder,DestinationOrder,SourcePage
+Banana,2024–25,Domestic fresh market,367598,368701,0,0,45
+Banana,2024–25,Fresh exports,0,368701,0,1,45
+Banana,2024–25,Processing,1103,368701,0,2,45
+Apple,2024–25,Domestic fresh market,211758,295691,1,0,35
+Apple,2024–25,Fresh exports,1737,295691,1,1,35
+Apple,2024–25,Processing,82196,295691,1,2,35
+Avocado,2024–25,Domestic fresh market,114395,131385,2,0,40
+Avocado,2024–25,Fresh exports,14162,131385,2,1,40
+Avocado,2024–25,Processing,2828,131385,2,2,40
+Strawberry,2024–25,Domestic fresh market,70445,77872,3,0,62
+Strawberry,2024–25,Fresh exports,2674,77872,3,1,62
+Strawberry,2024–25,Processing,4753,77872,3,2,62
+Blueberry,2024–25,Domestic fresh market,25154,28382,4,0,52
+Blueberry,2024–25,Fresh exports,766,28382,4,1,52
+Blueberry,2024–25,Processing,2462,28382,4,2,52
+Mandarin,2024–25,Domestic fresh market,140851,240486,5,0,85
+Mandarin,2024–25,Fresh exports,94689,240486,5,1,85
+Mandarin,2024–25,Processing,4946,240486,5,2,85
+Table grapes,2024–25,Domestic fresh market,88128,228882,6,0,172
+Table grapes,2024–25,Fresh exports,140754,228882,6,1,172
+Table grapes,2024–25,Processing,0,228882,6,2,172
+Orange,2024–25,Domestic fresh market,186012,572540,7,0,90
+Orange,2024–25,Fresh exports,172947,572540,7,1,90
+Orange,2024–25,Processing,213581,572540,7,2,90

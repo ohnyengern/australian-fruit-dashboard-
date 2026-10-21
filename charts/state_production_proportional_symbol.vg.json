@@ -9,7 +9,7 @@
     "font": "Arial"
   },
   "data": {
-    "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/fruit_state_year_small_multiples.csv",
+    "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/fruit_state_production_by_year.csv",
     "format": {
       "type": "csv"
     }
@@ -35,11 +35,11 @@
     },
     {
       "name": "YearSelection",
-      "value": 2025,
+      "value": 4,
       "bind": {
         "input": "range",
-        "min": 2021,
-        "max": 2025,
+        "min": 0,
+        "max": 4,
         "step": 1,
         "name": "Year: "
       }
@@ -47,7 +47,7 @@
   ],
   "transform": [
     {
-      "filter": "datum.YearEnding == YearSelection"
+      "filter": "datum.YearIndex == YearSelection"
     },
     {
       "fold": [
@@ -81,10 +81,6 @@
         "key": "properties.STE_NAME26"
       },
       "as": "geo"
-    },
-    {
-      "calculate": "format(toNumber(datum.YearEnding) - 1, '.0f') + '–' + substring(toString(datum.YearEnding), 2)",
-      "as": "FinancialYear"
     }
   ],
   "config": {
@@ -287,7 +283,7 @@
             "title": "State / territory:"
           },
           {
-            "field": "FinancialYear",
+            "field": "Year",
             "type": "nominal",
             "title": "Year:"
           },

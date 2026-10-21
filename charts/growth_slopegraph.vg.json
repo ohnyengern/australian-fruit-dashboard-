@@ -15,11 +15,11 @@
   },
   "transform": [
     {
-      "calculate": "toNumber(datum['2021'])",
+      "calculate": "toNumber(datum['2020–21'])",
       "as": "StartProduction"
     },
     {
-      "calculate": "toNumber(datum['2025'])",
+      "calculate": "toNumber(datum['2024–25'])",
       "as": "EndProduction"
     },
     {
@@ -37,12 +37,8 @@
       ]
     },
     {
-      "calculate": "datum.PeriodField == 'StartProduction' ? '2021' : '2025'",
+      "calculate": "datum.PeriodField == 'StartProduction' ? '2020–21' : '2024–25'",
       "as": "Period"
-    },
-    {
-      "calculate": "format(toNumber(datum.Period) - 1, '.0f') + '–' + substring(toString(datum.Period), 2)",
-      "as": "FinancialYear"
     }
   ],
   "layer": [
@@ -53,7 +49,7 @@
       },
       "encoding": {
         "x": {
-          "field": "FinancialYear",
+          "field": "Period",
           "type": "ordinal",
           "title": "Year",
           "sort": [
@@ -117,7 +113,7 @@
             "title": "Fruit:"
           },
           {
-            "field": "FinancialYear",
+            "field": "Period",
             "type": "nominal",
             "title": "Year:"
           },
@@ -144,7 +140,7 @@
       },
       "encoding": {
         "x": {
-          "field": "FinancialYear",
+          "field": "Period",
           "type": "ordinal",
           "sort": [
             "2020–21",
@@ -193,7 +189,7 @@
             "title": "Fruit:"
           },
           {
-            "field": "FinancialYear",
+            "field": "Period",
             "type": "nominal",
             "title": "Year:"
           },
@@ -215,7 +211,7 @@
     {
       "transform": [
         {
-          "filter": "datum.Period == '2025' && datum.Fruit != 'Mandarin' && datum.Fruit != 'Table grapes'"
+          "filter": "datum.Period == '2024–25' && datum.Fruit != 'Mandarin' && datum.Fruit != 'Table grapes'"
         },
         {
           "calculate": "datum.Fruit + '  ' + format(datum.GrowthPct, '+.1f') + '%'",
@@ -232,7 +228,7 @@
       },
       "encoding": {
         "x": {
-          "field": "FinancialYear",
+          "field": "Period",
           "type": "ordinal",
           "sort": [
             "2020–21",
@@ -286,7 +282,7 @@
     {
       "transform": [
         {
-          "filter": "datum.Period == '2025' && datum.Fruit == 'Mandarin'"
+          "filter": "datum.Period == '2024–25' && datum.Fruit == 'Mandarin'"
         },
         {
           "calculate": "datum.Fruit + '  ' + format(datum.GrowthPct, '+.1f') + '%'",
@@ -304,7 +300,7 @@
       },
       "encoding": {
         "x": {
-          "field": "FinancialYear",
+          "field": "Period",
           "type": "ordinal",
           "sort": [
             "2020–21",
@@ -358,7 +354,7 @@
     {
       "transform": [
         {
-          "filter": "datum.Period == '2025' && datum.Fruit == 'Table grapes'"
+          "filter": "datum.Period == '2024–25' && datum.Fruit == 'Table grapes'"
         },
         {
           "calculate": "datum.Fruit + '  ' + format(datum.GrowthPct, '+.1f') + '%'",
@@ -376,7 +372,7 @@
       },
       "encoding": {
         "x": {
-          "field": "FinancialYear",
+          "field": "Period",
           "type": "ordinal",
           "sort": [
             "2020–21",

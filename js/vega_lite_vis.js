@@ -13,7 +13,7 @@ var vg_8 = "charts/state_growth_choropleth.vg.json";
 var vg_9 = "charts/production_value_scatter.vg.json";
 var vg_10 = "charts/sankey.vg.json";
 var vg_11 = "charts/export_flow_map.vg.json";
-var vg_14 = "charts/state_production_small_multiples.vg.json";
+var vg_14 = "charts/state_production_proportional_symbol.vg.json";
 
 // ======================================
 // Vega Embed Options
@@ -81,7 +81,7 @@ function standardiseVegaTypography(spec) {
       axis.labelOverlap = "greedy";
       axis.labelSeparation = 8;
       axis.labelFontWeight = 400;
-      axis.titleFontWeight = 650;
+      axis.titleFontWeight = { signal: "650" };
       axis.titlePadding = size(typography.axisTitleGap);
       axis.labelPadding = size(typography.axisLabelGap);
     });
@@ -90,7 +90,7 @@ function standardiseVegaTypography(spec) {
       legend.titleFontSize = size(typography.legendTitle);
       legend.labelFont = legend.titleFont = "'Source Sans 3'";
       legend.labelFontWeight = 400;
-      legend.titleFontWeight = 650;
+      legend.titleFontWeight = { signal: "650" };
       legend.titlePadding = size(typography.legendTitleGap);
       legend.labelOffset = size(typography.legendSymbolGap);
       legend.rowPadding = size(typography.legendRowGap);
@@ -129,68 +129,67 @@ function addChartHeading(target, title) {
   mapHeadingObserver.observe(heading);
 }
 
-// Build a single filled arrow from a projected route. Its shaft uses the
-// same thickness scale as the legend; the head joins it without seams.
-function exportArrowPath(rows, thickness, xField, yField) {
-  const points = [...rows].sort((a, b) => a.PathOrder - b.PathOrder)
-    .map(row => [Number(row[xField]), Number(row[yField])]);
-  if (points.length < 3 || !points.flat().every(Number.isFinite)) return "";
-  const [start, control, end] = points;
-  const at = t => [
-    (1 - t) ** 2 * start[0] + 2 * (1 - t) * t * control[0] + t * t * end[0],
-    (1 - t) ** 2 * start[1] + 2 * (1 - t) * t * control[1] + t * t * end[1]
-  ];
-  const normal = t => {
-    const dx = 2 * (1 - t) * (control[0] - start[0]) + 2 * t * (end[0] - control[0]);
-    const dy = 2 * (1 - t) * (control[1] - start[1]) + 2 * t * (end[1] - control[1]);
-    const length = Math.hypot(dx, dy) || 1;
-    return [-dy / length, dx / length];
-  };
-  const headLength = Math.max(12, thickness * 2);
-  const headWidth = Math.max(8, thickness * 1.9);
-  let distance = 0;
-  let baseT = 0;
-  let previous = end;
-  for (let i = 199; i >= 0; i--) {
-    const point = at(i / 200);
-    const segment = Math.hypot(point[0] - previous[0], point[1] - previous[1]);
-    if (distance + segment >= headLength) {
-      baseT = (i + 1 - (headLength - distance) / segment) / 200;
-      break;
-    }
-    distance += segment;
-    previous = point;
-  }
-  const left = [], right = [];
-  for (let i = 0; i <= 120; i++) {
-    const t = baseT * i / 120;
-    const point = at(t), n = normal(t);
-    left.push([point[0] + n[0] * thickness / 2, point[1] + n[1] * thickness / 2]);
-    right.push([point[0] - n[0] * thickness / 2, point[1] - n[1] * thickness / 2]);
-  }
-  const base = at(baseT);
-  const dx = end[0] - base[0], dy = end[1] - base[1];
-  const length = Math.hypot(dx, dy) || 1;
-  const n = [-dy / length, dx / length];
-  const outline = [...left,
-    [base[0] + n[0] * headWidth / 2, base[1] + n[1] * headWidth / 2], end,
-    [base[0] - n[0] * headWidth / 2, base[1] - n[1] * headWidth / 2],
-    ...right.reverse()];
-  return outline.map((point, index) => `${index ? "L" : "M"}${point.map(value => value.toFixed(3)).join(",")}`).join("") + "Z";
-}
-
+// Describe the filled arrows with standard Vega data transforms so exported
+// specifications work in Vega Editor without a registered JavaScript function.
 function compileExportArrows(spec) {
-  vega.expressionFunction("exportArrowPath", exportArrowPath);
   const compiled = vegaLite.compile(spec).spec;
   const route = compiled.marks.find(mark => mark.type === "group" && mark.marks?.some(child => child.type === "line"));
   const line = route.marks.find(mark => mark.type === "line");
   const update = line.encode.update;
-  route.data = [{ name: "exportRoute", source: line.from.data, transform: [{ type: "filter", expr: "datum.PathOrder == 0" }] }];
+  const coordinate = (index, field) => `data('exportRoutePoints')[${index}][${JSON.stringify(field)}]`;
+  const curve = (axis, t) => `pow(1 - (${t}), 2) * arrowStart${axis} + 2 * (1 - (${t})) * (${t}) * arrowControl${axis} + pow(${t}, 2) * arrowEnd${axis}`;
+  const formula = (as, expr) => ({ type: "formula", as, expr });
+  route.signals = [
+    ...["X", "Y"].flatMap(axis => ["Start", "Control", "End"].map((part, index) => ({
+      name: `arrow${part}${axis}`,
+      update: `length(data('exportRoutePoints')) >= 3 ? ${coordinate(index, axis === "X" ? update.x.field : update.y.field)} : 0`
+    }))),
+    { name: "arrowThickness", update: "length(data('exportRoutePoints')) ? scale('strokeWidth', data('exportRoutePoints')[0].ExportTonnesNum) : 0" },
+    { name: "arrowHeadLength", update: "max(12, arrowThickness * 2)" },
+    { name: "arrowHeadWidth", update: "max(8, arrowThickness * 1.9)" },
+    { name: "arrowBaseT", update: "length(data('exportArrowBase')) ? data('exportArrowBase')[0].baseT : 0" },
+    { name: "arrowBaseX", update: curve("X", "arrowBaseT") },
+    { name: "arrowBaseY", update: curve("Y", "arrowBaseT") },
+    { name: "arrowHeadDX", update: "arrowEndX - arrowBaseX" },
+    { name: "arrowHeadDY", update: "arrowEndY - arrowBaseY" },
+    { name: "arrowHeadNorm", update: "sqrt(pow(arrowHeadDX, 2) + pow(arrowHeadDY, 2)) || 1" }
+  ];
+  route.data = [
+    { name: "exportRoutePoints", source: line.from.data, transform: [{ type: "collect", sort: { field: "PathOrder" } }] },
+    { name: "exportRoute", source: "exportRoutePoints", transform: [{ type: "filter", expr: "datum.PathOrder == 0" }] },
+    { name: "exportArrowBase", transform: [
+      { type: "sequence", start: 0, stop: 201, as: "sample" },
+      formula("t", "datum.sample / 200"),
+      formula("nextT", "min(1, datum.t + 1 / 200)"),
+      formula("x", curve("X", "datum.t")),
+      formula("y", curve("Y", "datum.t")),
+      formula("nextX", curve("X", "datum.nextT")),
+      formula("nextY", curve("Y", "datum.nextT")),
+      formula("segment", "sqrt(pow(datum.nextX - datum.x, 2) + pow(datum.nextY - datum.y, 2))"),
+      { type: "window", sort: { field: "sample", order: "descending" }, ops: ["sum"], fields: ["segment"], as: ["distance"], frame: [null, 0] },
+      { type: "filter", expr: "datum.segment > 0 && datum.distance >= arrowHeadLength && datum.distance - datum.segment < arrowHeadLength" },
+      formula("baseT", "(datum.sample + 1 - (arrowHeadLength - (datum.distance - datum.segment)) / datum.segment) / 200")
+    ] },
+    { name: "exportArrowOutline", transform: [
+      { type: "sequence", start: 0, stop: 245, as: "index" },
+      formula("t", "arrowBaseT * (datum.index <= 120 ? datum.index : 244 - datum.index) / 120"),
+      formula("x", curve("X", "datum.t")),
+      formula("y", curve("Y", "datum.t")),
+      formula("dx", "2 * (1 - datum.t) * (arrowControlX - arrowStartX) + 2 * datum.t * (arrowEndX - arrowControlX)"),
+      formula("dy", "2 * (1 - datum.t) * (arrowControlY - arrowStartY) + 2 * datum.t * (arrowEndY - arrowControlY)"),
+      formula("norm", "sqrt(pow(datum.dx, 2) + pow(datum.dy, 2)) || 1"),
+      formula("side", "datum.index <= 120 ? 1 : -1"),
+      formula("outlineX", "datum.index == 122 ? arrowEndX : datum.index == 121 || datum.index == 123 ? arrowBaseX - arrowHeadDY / arrowHeadNorm * arrowHeadWidth / 2 * (datum.index == 121 ? 1 : -1) : datum.x - datum.dy / datum.norm * arrowThickness / 2 * datum.side"),
+      formula("outlineY", "datum.index == 122 ? arrowEndY : datum.index == 121 || datum.index == 123 ? arrowBaseY + arrowHeadDX / arrowHeadNorm * arrowHeadWidth / 2 * (datum.index == 121 ? 1 : -1) : datum.y + datum.dx / datum.norm * arrowThickness / 2 * datum.side"),
+      formula("pathPart", "(datum.index == 0 ? 'M' : 'L') + format(datum.outlineX, '.3f') + ',' + format(datum.outlineY, '.3f')"),
+      { type: "collect", sort: { field: "index" } }
+    ] }
+  ];
   route.marks = [{
     name: "exportFlowArrow", type: "path", clip: true,
     from: { data: "exportRoute" },
     encode: { update: {
-      path: { signal: `exportArrowPath(data('${line.from.data}'), scale('strokeWidth', datum.ExportTonnesNum), '${update.x.field}', '${update.y.field}')` },
+      path: { signal: "join(pluck(data('exportArrowOutline'), 'pathPart'), '') + 'Z'" },
       fill: { value: "#8F5601" }, opacity: { value: 0.8 },
       tooltip: update.tooltip, description: update.description,
       ariaRoleDescription: { value: "export flow arrow" }
@@ -285,7 +284,7 @@ function compileHeatmapAnnotation(spec) {
   spec.padding = { top: 12, left: 0, right: 0, bottom: 0 };
   const compiled = vegaLite.compile(spec).spec;
   const top = `-(${boxHeight} + 24) * typographyScale`;
-  const cx = `scale('x', '${financialYearLabel(note.target.Year)}') + bandwidth('x') / 2`;
+  const cx = `scale('x', '${note.target.Year}') + bandwidth('x') / 2`;
   const left = `max(0, (${cx}) - ${boxWidth / 2} * typographyScale)`;
   const cy = `scale('y', 'Avocado') + bandwidth('y') / 2`;
   const connectorPath = { signal: `'M' + (${cx}) + ',' + ((${top}) + ${boxHeight} * typographyScale) + ' L' + (${cx}) + ',' + (${cy})` };
@@ -326,6 +325,12 @@ function compileProductionMap(spec) {
   });
   const compiled = vegaLite.compile(spec).spec;
   compiled.signals.push({ name: "annotationScale", value: 1 });
+  const source = compiled.data.find(data => data.url?.includes("fruit_state_production_by_year.csv"));
+  compiled.data.push({ name: "reportingYears", url: source.url, format: source.format, transform: [
+    { type: "aggregate", groupby: ["YearIndex", "Year"] },
+    { type: "collect", sort: { field: "YearIndex" } }
+  ] });
+  compiled.signals.push({ name: "reportingYearLabel", update: "data('reportingYears')[YearSelection] ? data('reportingYears')[YearSelection].Year : ''" });
   compiled.marks.forEach(mark => {
     if (!mark.name?.includes("Annotation")) return;
     const update = mark.encode.update;
@@ -451,24 +456,19 @@ function compileChoroplethMap(spec) {
   return compiled;
 }
 
-// Keep numeric year keys for filtering; display ABS financial-year labels.
-function financialYearLabel(year) {
-  const end = Number(year);
-  return `${end - 1}–${String(end).slice(-2)}`;
-}
-function styleFinancialYearControls(root) {
+// Reflect the reporting-period label supplied by the map dataset.
+function styleYearControl(root, view) {
   root.querySelectorAll('.vega-bind input[type="range"]').forEach(input => {
     const label = input.closest("label");
     const value = [...label.querySelectorAll("span")].find(span => !span.classList.contains("vega-bind-name"));
     if (!value) return;
     value.classList.add("financial-year-value");
     const update = () => {
-      const text = financialYearLabel(input.value);
+      const text = view.signal("reportingYearLabel");
       value.textContent = text;
       input.setAttribute("aria-valuetext", text);
     };
-    input.addEventListener("input", update);
-    input.addEventListener("change", update);
+    view.addSignalListener("reportingYearLabel", () => queueMicrotask(update));
     update();
   });
 }
@@ -596,6 +596,25 @@ async function embedChart(target, source, options) {
     if (!response.ok) throw new Error(`Could not load chart: ${source}`);
     spec = await response.json();
   }
+  // Load this checkout's datasets locally and keep exported URLs absolute.
+  function resolveDatasetUrls(value) {
+    if (!value || typeof value !== "object") return;
+    const prefix = "https://ohnyengern.github.io/australian-fruit-dashboard-/data/";
+    if (typeof value.url === "string" && value.url.startsWith(prefix)) {
+      const url = new URL(`data/${value.url.slice(prefix.length)}`, document.baseURI);
+      url.searchParams.set("v", chartLoadVersion);
+      value.url = url.href;
+    }
+    Object.values(value).forEach(resolveDatasetUrls);
+  }
+  resolveDatasetUrls(spec);
+  if (target === "#export_value_per_tonne") {
+    // Carry the small dataset with exported specs, avoiding relative URL failures.
+    const response = await fetch(spec.data.url, { cache: "no-store" });
+    if (!response.ok) throw new Error("Could not load export values per tonne");
+    const values = vega.read(await response.text(), { type: "csv" });
+    spec.data = { values };
+  }
   // Match the full divider width. Vega fits labels and legends within this
   // width, reserving only the space they actually need instead of wide gutters.
   const chartElement = document.querySelector(target);
@@ -658,7 +677,7 @@ async function embedChart(target, source, options) {
     : options.mode === "vega" ? spec : vegaLite.compile(spec).spec;
   const result = await vegaEmbed(target, standardiseVegaTypography(compiled), { ...options, mode: "vega" });
   styleFruitMenus(chartElement);
-  styleFinancialYearControls(chartElement);
+  styleYearControl(chartElement, result.view);
   let previousWidth;
   let previousScale;
   let pendingLayout = Promise.resolve();

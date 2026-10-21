@@ -16,20 +16,16 @@
   "transform": [
     {
       "fold": [
-        "2021",
-        "2022",
-        "2023",
-        "2024",
-        "2025"
+        "2020–21",
+        "2021–22",
+        "2022–23",
+        "2023–24",
+        "2024–25"
       ],
       "as": [
         "Year",
         "Production"
       ]
-    },
-    {
-      "calculate": "format(toNumber(datum.Year) - 1, '.0f') + '–' + substring(toString(datum.Year), 2)",
-      "as": "FinancialYear"
     }
   ],
   "layer": [
@@ -40,7 +36,7 @@
       },
       "encoding": {
         "x": {
-          "field": "FinancialYear",
+          "field": "Year",
           "type": "ordinal",
           "title": "Year",
           "sort": [
@@ -122,7 +118,7 @@
             "title": "Fruit:"
           },
           {
-            "field": "FinancialYear",
+            "field": "Year",
             "type": "nominal",
             "title": "Year:"
           },

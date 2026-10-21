@@ -16,11 +16,11 @@
   "transform": [
     {
       "fold": [
-        "2021",
-        "2022",
-        "2023",
-        "2024",
-        "2025"
+        "2020–21",
+        "2021–22",
+        "2022–23",
+        "2023–24",
+        "2024–25"
       ],
       "as": [
         "Year",
@@ -32,10 +32,6 @@
       "as": "Production"
     },
     {
-      "calculate": "datum.Year == '2021' ? 1 : datum.Year == '2022' ? 2 : datum.Year == '2023' ? 3 : datum.Year == '2024' ? 4 : 5",
-      "as": "YearOrder"
-    },
-    {
       "window": [
         {
           "op": "lag",
@@ -45,7 +41,7 @@
       ],
       "sort": [
         {
-          "field": "YearOrder",
+          "field": "Year",
           "order": "ascending"
         }
       ],
@@ -59,10 +55,6 @@
     {
       "calculate": "((datum.Production - datum.PreviousProduction) / datum.PreviousProduction) * 100",
       "as": "YoYGrowth"
-    },
-    {
-      "calculate": "format(toNumber(datum.Year) - 1, '.0f') + '–' + substring(toString(datum.Year), 2)",
-      "as": "FinancialYear"
     }
   ],
   "layer": [
@@ -74,7 +66,7 @@
       },
       "encoding": {
         "x": {
-          "field": "FinancialYear",
+          "field": "Year",
           "type": "ordinal",
           "title": "Year",
           "sort": [
@@ -121,7 +113,7 @@
             "title": "Fruit:"
           },
           {
-            "field": "FinancialYear",
+            "field": "Year",
             "type": "nominal",
             "title": "Year:"
           },
@@ -180,7 +172,7 @@
       ],
       "target": {
         "Fruit": "Avocado",
-        "Year": "2022"
+        "Year": "2021–22"
       },
       "source": "https://www.rabobank.com.au/news/media-releases/2022/220725-an-avo-lanche-of-avocados-australia-needs-to-consume-and-export-more-avocados"
     }

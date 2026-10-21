@@ -15,7 +15,7 @@
   },
   "transform": [
     {
-      "calculate": "toNumber(datum['2025'])",
+      "calculate": "toNumber(datum['2024–25'])",
       "as": "Production"
     }
   ],
