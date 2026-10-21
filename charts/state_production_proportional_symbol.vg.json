@@ -35,11 +35,11 @@
     },
     {
       "name": "YearSelection",
-      "value": 4,
+      "value": 2024,
       "bind": {
         "input": "range",
-        "min": 0,
-        "max": 4,
+        "min": 2020,
+        "max": 2024,
         "step": 1,
         "name": "Year: "
       }
@@ -47,7 +47,7 @@
   ],
   "transform": [
     {
-      "filter": "datum.YearIndex == YearSelection"
+      "filter": "parseInt(datum.Year) == YearSelection"
     },
     {
       "fold": [

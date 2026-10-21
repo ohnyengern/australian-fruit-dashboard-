@@ -325,12 +325,7 @@ function compileProductionMap(spec) {
   });
   const compiled = vegaLite.compile(spec).spec;
   compiled.signals.push({ name: "annotationScale", value: 1 });
-  const source = compiled.data.find(data => data.url?.includes("fruit_state_production_by_year.csv"));
-  compiled.data.push({ name: "reportingYears", url: source.url, format: source.format, transform: [
-    { type: "aggregate", groupby: ["YearIndex", "Year"] },
-    { type: "collect", sort: { field: "YearIndex" } }
-  ] });
-  compiled.signals.push({ name: "reportingYearLabel", update: "data('reportingYears')[YearSelection] ? data('reportingYears')[YearSelection].Year : ''" });
+  compiled.signals.push({ name: "reportingYearLabel", update: "YearSelection + '–' + substring(toString(YearSelection + 1), 2)" });
   compiled.marks.forEach(mark => {
     if (!mark.name?.includes("Annotation")) return;
     const update = mark.encode.update;
@@ -456,12 +451,15 @@ function compileChoroplethMap(spec) {
   return compiled;
 }
 
-// Reflect the reporting-period label supplied by the map dataset.
+// Format the selected start year as a financial year.
 function styleYearControl(root, view) {
   root.querySelectorAll('.vega-bind input[type="range"]').forEach(input => {
     const label = input.closest("label");
-    const value = [...label.querySelectorAll("span")].find(span => !span.classList.contains("vega-bind-name"));
-    if (!value) return;
+    const nativeValue = [...label.querySelectorAll("span")].find(span => !span.classList.contains("vega-bind-name"));
+    if (!nativeValue) return;
+    // Vega updates its own value node on input; keep our formatted label separate.
+    const value = document.createElement("span");
+    nativeValue.replaceWith(value);
     value.classList.add("financial-year-value");
     const update = () => {
       const text = view.signal("reportingYearLabel");
