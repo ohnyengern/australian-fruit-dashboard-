@@ -108,18 +108,20 @@
   },
   "layer": [
     {
+      "name": "stateBoundaries",
+      "data": {
+        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/australia_states.json",
+        "format": {
+          "type": "topojson",
+          "feature": "STE_2026_AUST_GDA2020"
+        }
+      },
       "transform": [],
       "mark": {
         "type": "geoshape",
         "fill": "#E6E6E6",
         "stroke": "#FFFFFF",
         "strokeWidth": 1
-      },
-      "encoding": {
-        "shape": {
-          "field": "geo",
-          "type": "geojson"
-        }
       }
     },
     {
