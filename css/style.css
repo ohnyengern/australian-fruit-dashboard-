@@ -32,7 +32,7 @@
   --rule: #e7ded4;
   --page-bg: #faf8f5;
   --section-bg: #f3e7d9;
-  --accent: #a77a51;
+  --accent: #75451F;
   --page-margin: clamp(32px, 9vw, 180px);
   --card-padding: clamp(20px, 2vw, 32px);
   --container-margin-top: 8px;
@@ -97,9 +97,9 @@ body {
   margin: 0 var(--container-margin-right) 0 var(--container-margin-left);
   font: 700 7.4cqw/1.14 var(--font-heading-family);
   letter-spacing: -.025em;
-  text-transform: none;
+  text-transform: uppercase;
   white-space: nowrap;
-  color: #8F5601;
+  color: #75451F;
 }
 
 .section-header {
@@ -117,20 +117,21 @@ body {
   flex: 0 0 42px;
   height: 42px;
   border-radius: 50%;
-  background: #8F5601;
+  background: #75451F;
   color: white;
   font-size: var(--font-section);
   font-weight: 700;
 }
 
 .section-title {
+  text-transform: uppercase;
   font-family: var(--font-body-family);
   font-weight: 700;
   margin: 0;
   font-size: var(--font-section);
   line-height: var(--line-heading);
   letter-spacing: -.02em;
-  color: #8F5601;
+  color: #75451F;
 }
 
 .story-grid {
@@ -309,14 +310,20 @@ body {
   margin: 0 0 var(--chart-title-gap);
   font-size: var(--font-chart-title);
   line-height: var(--line-heading);
-  color: #8F5601;
+  color: #75451F;
 }
 
 .map-layout {
+  --map-sidebar-width: 240px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 200px;
+  grid-template-columns: minmax(0, 1fr) var(--map-sidebar-width);
   align-items: start;
   gap: 32px;
+}
+
+.map-layout:has(#state_growth_choropleth),
+.map-layout:has(#state_production_map) {
+  --map-sidebar-width: 224px;
 }
 
 .map-sidebar {
@@ -327,6 +334,28 @@ body {
   padding: 0;
   text-align: left;
   justify-items: stretch;
+}
+
+#state_production_map svg.marks {
+  overflow: visible;
+}
+
+.production-banana-callout {
+  width: max-content;
+  max-width: 100%;
+  padding: var(--annotation-padding-y) var(--annotation-padding-x);
+  border: 1px solid #000;
+  background: #fff;
+  color: #333;
+  font: 400 var(--font-annotation)/var(--annotation-line-height) var(--font-body-family);
+}
+
+.production-banana-callout span {
+  display: block;
+}
+
+.production-banana-callout[hidden] {
+  display: none;
 }
 
 .map-controls .vega-bindings {
@@ -343,8 +372,13 @@ body {
 }
 
 .map-controls .vega-bind label:has(select) {
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: max-content max-content;
+  justify-content: end;
   align-items: center;
+}
+
+.map-controls .vega-bind label:has(select) .vega-bind-name {
+  font-weight: 650;
 }
 
 .map-controls .vega-bind label:has(input[type="range"]) {
@@ -388,10 +422,14 @@ body {
 
 .map-sidebar .legend-item {
   display: grid;
-  grid-template-columns: 51px minmax(0, 1fr);
+  grid-template-columns: var(--production-symbol-width, 56px) minmax(0, 1fr);
   align-items: center;
   justify-content: start;
   gap: 10px;
+}
+
+.map-sidebar .legend-circle {
+  justify-self: center;
 }
 
 .production-map-legend .legend-item {
@@ -407,6 +445,19 @@ body {
 #choropleth-map-controls,
 #production-map-controls {
   margin-bottom: 40px;
+}
+
+#choropleth-map-controls .vega-bind label:has(select),
+#production-map-controls .vega-bind label:has(select) {
+  grid-template-columns: max-content minmax(0, 1fr);
+  justify-content: stretch;
+}
+
+#choropleth-map-controls .fruit-dropdown,
+#production-map-controls .fruit-dropdown {
+  width: 100%;
+  min-width: 0;
+  justify-self: stretch;
 }
 
 .map-sidebar .choropleth-legend h3,
@@ -531,25 +582,30 @@ body {
 
 .legend-circle {
   display: inline-block;
-  background: #8f5601;
-  opacity: .9;
-  border: 1px solid white;
+  background: #B8D986;
+  opacity: 1;
+  border: none;
   border-radius: 50%;
 }
 
-.legend-100 {
-  width: 30px;
-  height: 30px;
+.legend-50 {
+  width: 20.871px;
+  height: 20.871px;
 }
 
-.legend-200 {
-  width: 42px;
-  height: 42px;
+.legend-150 {
+  width: 36.149px;
+  height: 36.149px;
 }
 
-.legend-300 {
-  width: 51px;
-  height: 51px;
+.legend-250 {
+  width: 46.668px;
+  height: 46.668px;
+}
+
+.legend-350 {
+  width: 55.218px;
+  height: 55.218px;
 }
 
 #production-map-controls {
@@ -644,7 +700,7 @@ body {
 .export-volume-swatch {
   display: block;
   width: 36px;
-  background: #8f5601;
+  background: #2450D3;
   opacity: .8;
   border-radius: 0;
 }
@@ -677,7 +733,7 @@ body {
   .map-sidebar {
     --map-sidebar-gap: 24px;
     grid-template-columns: minmax(0, 1fr);
-    width: 200px;
+    width: var(--map-sidebar-width);
     max-width: 100%;
     justify-self: end;
   }
@@ -930,17 +986,16 @@ body {
   font-weight: 650;
 }
 
-/* Preserve readable full state names on narrow screens. */
+/* Fit maps to their columns without introducing horizontal scrollbars. */
 #state_production_map,
 #state_growth_choropleth {
-  overflow-x: auto;
   justify-content: flex-start;
 }
 
 #state_production_map .chart-wrapper,
 #state_growth_choropleth .chart-wrapper {
-  min-width: 740px;
-  flex-shrink: 0;
+  width: 100%;
+  min-width: 0;
 }
 
 /* Keep open fruit menus at the same size as the selector labels. */
@@ -955,19 +1010,22 @@ body {
 
 .fruit-dropdown {
   display: inline-block;
-  width: 100%;
-  min-width: 0;
+  width: 132px;
+  min-width: max-content;
+  justify-self: start;
   position: relative;
 }
 
 .fruit-dropdown-button {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 6px;
   width: 100%;
+  min-width: max-content;
   min-height: 30px;
-  padding: 3px 6px;
+  padding: 3px 28px 3px 8px;
   border: 1px solid #777;
   border-radius: 3px;
   background: white;
@@ -980,12 +1038,15 @@ body {
 
 .fruit-dropdown-button::after {
   content: "";
+  position: absolute;
+  right: 10px;
+  top: 50%;
   width: 6px;
   height: 6px;
   flex-shrink: 0;
   border: solid currentColor;
   border-width: 0 1.5px 1.5px 0;
-  transform: rotate(45deg) translateY(-2px);
+  transform: translateY(-70%) rotate(45deg);
 }
 
 .fruit-dropdown-button:focus-visible {

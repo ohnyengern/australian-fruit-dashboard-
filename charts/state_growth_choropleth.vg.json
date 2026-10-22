@@ -372,8 +372,10 @@
         "lines": [
           "Tasmania"
         ],
-        "longitude": 146.6,
-        "latitude": -41.9
+        "longitude": 151.5,
+        "latitude": -41.9,
+        "anchorLongitude": 148.2,
+        "anchorLatitude": -41.9
       }
     ],
     "orchardAnnotation": {

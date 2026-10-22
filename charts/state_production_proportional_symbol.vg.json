@@ -65,7 +65,7 @@
     }
   },
   "width": 720,
-  "height": 460,
+  "height": 500,
   "projection": {
     "type": "mercator"
   },
@@ -112,7 +112,7 @@
           "filter": "datum.Fruit == 'Apple' && datum.State == 'Victoria'"
         },
         {
-          "calculate": "132",
+          "calculate": "130.8",
           "as": "NoteLongitude"
         },
         {
@@ -168,11 +168,11 @@
           "filter": "datum.Fruit == 'Banana' && datum.State == 'Queensland'"
         },
         {
-          "calculate": "152",
+          "calculate": "155",
           "as": "NoteLongitude"
         },
         {
-          "calculate": "-17",
+          "calculate": "-13",
           "as": "NoteLatitude"
         }
       ],
@@ -224,11 +224,11 @@
           "filter": "datum.Fruit == 'Orange' && datum.State == 'New South Wales'"
         },
         {
-          "calculate": "128",
+          "calculate": "121",
           "as": "NoteLongitude"
         },
         {
-          "calculate": "-40.5",
+          "calculate": "-36",
           "as": "NoteLatitude"
         }
       ],
@@ -281,10 +281,10 @@
       ],
       "mark": {
         "type": "circle",
-        "color": "#8F5601",
-        "opacity": 0.9,
-        "stroke": "#FFFFFF",
-        "strokeWidth": 0.5
+        "color": "#B8D986",
+        "opacity": 1,
+        "stroke": null,
+        "strokeWidth": 0
       },
       "encoding": {
         "longitude": {
@@ -356,7 +356,7 @@
           "filter": "datum.Fruit == 'Apple' && datum.State == 'Victoria'"
         },
         {
-          "calculate": "132",
+          "calculate": "130.8",
           "as": "NoteLongitude"
         },
         {
@@ -368,8 +368,9 @@
         "type": "rect",
         "width": 228,
         "height": 72,
-        "fill": "#FFF2D6",
-        "stroke": null
+        "fill": "#FFFFFF",
+        "stroke": "#000000",
+        "strokeWidth": 1
       },
       "encoding": {
         "longitude": {
@@ -408,7 +409,7 @@
           "filter": "datum.Fruit == 'Apple' && datum.State == 'Victoria'"
         },
         {
-          "calculate": "132",
+          "calculate": "130.8",
           "as": "NoteLongitude"
         },
         {
@@ -480,11 +481,11 @@
           "filter": "datum.Fruit == 'Banana' && datum.State == 'Queensland'"
         },
         {
-          "calculate": "152",
+          "calculate": "155",
           "as": "NoteLongitude"
         },
         {
-          "calculate": "-17",
+          "calculate": "-13",
           "as": "NoteLatitude"
         }
       ],
@@ -492,8 +493,9 @@
         "type": "rect",
         "width": 228,
         "height": 72,
-        "fill": "#FFF2D6",
-        "stroke": null
+        "fill": "#FFFFFF",
+        "stroke": "#000000",
+        "strokeWidth": 1
       },
       "encoding": {
         "longitude": {
@@ -532,15 +534,15 @@
           "filter": "datum.Fruit == 'Banana' && datum.State == 'Queensland'"
         },
         {
-          "calculate": "152",
+          "calculate": "155",
           "as": "NoteLongitude"
         },
         {
-          "calculate": "-17",
+          "calculate": "-13",
           "as": "NoteLatitude"
         },
         {
-          "calculate": "[\"Queensland dominates banana\", \"production, supported by\", \"tropical climates and rainfall\"]",
+          "calculate": "[\"Queensland dominates\", \"banana production,\", \"supported by tropical\", \"climates and rainfall\"]",
           "as": "NoteLines"
         },
         {
@@ -548,7 +550,7 @@
           "as": ["NoteLine"]
         },
         {
-          "calculate": "indexof([\"Queensland dominates banana\", \"production, supported by\", \"tropical climates and rainfall\"], datum.NoteLine)",
+          "calculate": "indexof([\"Queensland dominates\", \"banana production,\", \"supported by tropical\", \"climates and rainfall\"], datum.NoteLine)",
           "as": "NoteLineIndex"
         }
       ],
@@ -604,11 +606,11 @@
           "filter": "datum.Fruit == 'Orange' && datum.State == 'New South Wales'"
         },
         {
-          "calculate": "128",
+          "calculate": "121",
           "as": "NoteLongitude"
         },
         {
-          "calculate": "-40.5",
+          "calculate": "-36",
           "as": "NoteLatitude"
         }
       ],
@@ -616,8 +618,9 @@
         "type": "rect",
         "width": 228,
         "height": 72,
-        "fill": "#FFF2D6",
-        "stroke": null
+        "fill": "#FFFFFF",
+        "stroke": "#000000",
+        "strokeWidth": 1
       },
       "encoding": {
         "longitude": {
@@ -656,11 +659,11 @@
           "filter": "datum.Fruit == 'Orange' && datum.State == 'New South Wales'"
         },
         {
-          "calculate": "128",
+          "calculate": "121",
           "as": "NoteLongitude"
         },
         {
-          "calculate": "-40.5",
+          "calculate": "-36",
           "as": "NoteLatitude"
         },
         {
@@ -715,7 +718,7 @@
         "name": "Northern Territory",
         "lines": ["Northern", "Territory"],
         "longitude": 133.5,
-        "latitude": -16
+        "latitude": -19.5
       },
       {
         "name": "South Australia",

@@ -626,7 +626,13 @@
             "value": 60
           },
           "fill": {
-            "value": "#eeeeee"
+            "value": "#FFFFFF"
+          },
+          "stroke": {
+            "value": "#000000"
+          },
+          "strokeWidth": {
+            "value": 1
           }
         }
       }

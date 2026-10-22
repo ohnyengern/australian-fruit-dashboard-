@@ -1,5 +1,13 @@
 {
-  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "autosize": {
+    "type": "fit-x",
+    "contains": "padding"
+  },
+  "background": "white",
+  "padding": 0,
+  "width": 1030,
+  "height": 794,
   "title": {
     "text": "Major destinations of Australian fresh-fruit exports in 2024–25",
     "fontSize": 20,
@@ -8,9 +16,676 @@
     "offset": 15,
     "font": "Arial"
   },
-  "width": 1030,
-  "height": 794,
-  "params": [
+  "style": "view",
+  "data": [
+    {
+      "name": "source_0",
+      "values": [
+        {
+          "type": "Sphere"
+        }
+      ]
+    },
+    {
+      "name": "source_1",
+      "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/ne_110m_graticules_30.json",
+      "format": {
+        "type": "topojson",
+        "feature": "ne_110m_graticules_30"
+      }
+    },
+    {
+      "name": "source_2",
+      "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/ne_110m_admin_0_countries.json",
+      "format": {
+        "type": "topojson",
+        "feature": "ne_110m_admin_0_countries"
+      }
+    },
+    {
+      "name": "source_4",
+      "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/country_locations.csv",
+      "format": {
+        "type": "csv"
+      }
+    },
+    {
+      "name": "source_5",
+      "values": [
+        {
+          "Origin": "Australia",
+          "Longitude": 134.54588060379,
+          "Latitude": -24.5710555076599,
+          "Label": "Australia (origin)"
+        }
+      ],
+      "format": {}
+    },
+    {
+      "name": "source_3",
+      "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/hort_fruit_exports.csv",
+      "format": {
+        "type": "csv"
+      },
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.Fruit == FruitSelection"
+        }
+      ]
+    },
+    {
+      "name": "data_0",
+      "source": "source_3",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.Destination != 'Others'"
+        },
+        {
+          "type": "lookup",
+          "from": "source_4",
+          "key": "Destination",
+          "fields": [
+            "Destination"
+          ],
+          "values": [
+            "Longitude",
+            "Latitude"
+          ],
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "'Australia'",
+          "as": "Origin"
+        },
+        {
+          "type": "lookup",
+          "from": "source_4",
+          "key": "Destination",
+          "fields": [
+            "Origin"
+          ],
+          "values": [
+            "Longitude",
+            "Latitude"
+          ],
+          "as": [
+            "OriginLongitude",
+            "OriginLatitude"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.ExportTonnes)",
+          "as": "ExportTonnesNum"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.Fruit == 'Orange' && datum.Destination == 'China' ? -16 : datum.Fruit == 'Orange' && datum.Destination == 'Hong Kong' ? 0 : toNumber(datum.Bend)",
+          "as": "BendNum"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.OriginLongitude)",
+          "as": "OriginLongitudeNum"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.OriginLatitude)",
+          "as": "OriginLatitudeNum"
+        },
+        {
+          "type": "formula",
+          "expr": "(datum.OriginLongitudeNum + datum.DestinationLongitudeNum) / 2 + datum.BendNum",
+          "as": "MidLongitude"
+        },
+        {
+          "type": "formula",
+          "expr": "(datum.OriginLatitudeNum + datum.DestinationLatitudeNum) / 2",
+          "as": "MidLatitude"
+        },
+        {
+          "type": "formula",
+          "expr": "[datum.OriginLongitudeNum, datum.MidLongitude, datum.DestinationLongitudeNum]",
+          "as": "PathLongitude"
+        },
+        {
+          "type": "formula",
+          "expr": "[datum.OriginLatitudeNum, datum.MidLatitude, datum.DestinationLatitudeNum]",
+          "as": "PathLatitude"
+        },
+        {
+          "type": "formula",
+          "expr": "[0, 1, 2]",
+          "as": "PathOrder"
+        },
+        {
+          "type": "flatten",
+          "fields": [
+            "PathLongitude",
+            "PathLatitude",
+            "PathOrder"
+          ],
+          "as": [
+            "PathLongitude",
+            "PathLatitude",
+            "PathOrder"
+          ]
+        },
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": [
+            "PathLongitude",
+            "PathLatitude"
+          ],
+          "as": [
+            "layer_3_x",
+            "layer_3_y"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "data_1",
+      "source": "source_3",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.Destination != 'Others' && datum.Destination != 'Singapore' && datum.Destination != 'Indonesia' && datum.Destination != 'South Korea' && datum.Destination != 'Thailand' && datum.Destination != 'New Zealand' && datum.Destination != 'United Arab Emirates' && datum.Destination != 'Philippines' && datum.Destination != 'China' && datum.Destination != 'Malaysia' && datum.Destination != 'Vietnam'"
+        },
+        {
+          "type": "lookup",
+          "from": "source_4",
+          "key": "Destination",
+          "fields": [
+            "Destination"
+          ],
+          "values": [
+            "Longitude",
+            "Latitude"
+          ],
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        },
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": [
+            "DestinationLongitudeNum",
+            "DestinationLatitudeNum"
+          ],
+          "as": [
+            "layer_4_x",
+            "layer_4_y"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "data_2",
+      "source": "source_3",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.Destination == 'Singapore'"
+        },
+        {
+          "type": "lookup",
+          "from": "source_4",
+          "key": "Destination",
+          "fields": [
+            "Destination"
+          ],
+          "values": [
+            "Longitude",
+            "Latitude"
+          ],
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        },
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": [
+            "DestinationLongitudeNum",
+            "DestinationLatitudeNum"
+          ],
+          "as": [
+            "layer_5_x",
+            "layer_5_y"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "data_3",
+      "source": "source_3",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.Destination == 'Indonesia' || datum.Destination == 'South Korea'"
+        },
+        {
+          "type": "lookup",
+          "from": "source_4",
+          "key": "Destination",
+          "fields": [
+            "Destination"
+          ],
+          "values": [
+            "Longitude",
+            "Latitude"
+          ],
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        },
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": [
+            "DestinationLongitudeNum",
+            "DestinationLatitudeNum"
+          ],
+          "as": [
+            "layer_6_x",
+            "layer_6_y"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "data_4",
+      "source": "source_3",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.Destination == 'Thailand' || datum.Destination == 'China'"
+        },
+        {
+          "type": "lookup",
+          "from": "source_4",
+          "key": "Destination",
+          "fields": [
+            "Destination"
+          ],
+          "values": [
+            "Longitude",
+            "Latitude"
+          ],
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        },
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": [
+            "DestinationLongitudeNum",
+            "DestinationLatitudeNum"
+          ],
+          "as": [
+            "layer_7_x",
+            "layer_7_y"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "data_5",
+      "source": "source_3",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.Destination == 'Philippines'"
+        },
+        {
+          "type": "lookup",
+          "from": "source_4",
+          "key": "Destination",
+          "fields": [
+            "Destination"
+          ],
+          "values": [
+            "Longitude",
+            "Latitude"
+          ],
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        },
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": [
+            "DestinationLongitudeNum",
+            "DestinationLatitudeNum"
+          ],
+          "as": [
+            "layer_8_x",
+            "layer_8_y"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "data_6",
+      "source": "source_3",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.Destination == 'Malaysia'"
+        },
+        {
+          "type": "lookup",
+          "from": "source_4",
+          "key": "Destination",
+          "fields": [
+            "Destination"
+          ],
+          "values": [
+            "Longitude",
+            "Latitude"
+          ],
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        },
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": [
+            "DestinationLongitudeNum",
+            "DestinationLatitudeNum"
+          ],
+          "as": [
+            "layer_9_x",
+            "layer_9_y"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "data_7",
+      "source": "source_3",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.Destination == 'Vietnam'"
+        },
+        {
+          "type": "lookup",
+          "from": "source_4",
+          "key": "Destination",
+          "fields": [
+            "Destination"
+          ],
+          "values": [
+            "Longitude",
+            "Latitude"
+          ],
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        },
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": [
+            "DestinationLongitudeNum",
+            "DestinationLatitudeNum"
+          ],
+          "as": [
+            "layer_10_x",
+            "layer_10_y"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "data_8",
+      "source": "source_3",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.Destination == 'United Arab Emirates'"
+        },
+        {
+          "type": "lookup",
+          "from": "source_4",
+          "key": "Destination",
+          "fields": [
+            "Destination"
+          ],
+          "values": [
+            "Longitude",
+            "Latitude"
+          ],
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        },
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": [
+            "DestinationLongitudeNum",
+            "DestinationLatitudeNum"
+          ],
+          "as": [
+            "layer_11_x",
+            "layer_11_y"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "data_9",
+      "source": "source_3",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.Destination == 'New Zealand'"
+        },
+        {
+          "type": "lookup",
+          "from": "source_4",
+          "key": "Destination",
+          "fields": [
+            "Destination"
+          ],
+          "values": [
+            "Longitude",
+            "Latitude"
+          ],
+          "as": [
+            "DestinationLongitude",
+            "DestinationLatitude"
+          ]
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLongitude)",
+          "as": "DestinationLongitudeNum"
+        },
+        {
+          "type": "formula",
+          "expr": "toNumber(datum.DestinationLatitude)",
+          "as": "DestinationLatitudeNum"
+        },
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": [
+            "DestinationLongitudeNum",
+            "DestinationLatitudeNum"
+          ],
+          "as": [
+            "layer_12_x",
+            "layer_12_y"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "data_11",
+      "source": "source_5",
+      "transform": [
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": [
+            "Longitude",
+            "Latitude"
+          ],
+          "as": [
+            "exportOrigin_x",
+            "exportOrigin_y"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "data_12",
+      "source": "source_5",
+      "transform": [
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": [
+            "Longitude",
+            "Latitude"
+          ],
+          "as": [
+            "exportOriginLabel_x",
+            "exportOriginLabel_y"
+          ]
+        }
+      ]
+    }
+  ],
+  "projections": [
+    {
+      "name": "projection",
+      "translate": [
+        515,
+        397
+      ],
+      "type": "equirectangular",
+      "center": [
+        112.5,
+        3
+      ],
+      "scale": 437.1455770257392
+    }
+  ],
+  "signals": [
     {
       "name": "FruitSelection",
       "value": "Apple",
@@ -29,946 +704,950 @@
       }
     }
   ],
-  "projection": {
-    "type": "equirectangular",
-    "center": [
-      112.5,
-      3
-    ],
-    "scale": 437.1455770257392,
-    "translate": [
-      515,
-      397
-    ]
-  },
-  "layer": [
+  "marks": [
     {
-      "data": {
-        "sphere": true
-      },
-      "mark": {
-        "type": "geoshape",
-        "fill": "#F0F7FA",
-        "stroke": null,
-        "clip": true
-      }
-    },
-    {
-      "data": {
-        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/ne_110m_graticules_30.json",
-        "format": {
-          "type": "topojson",
-          "feature": "ne_110m_graticules_30"
-        }
-      },
-      "mark": {
-        "type": "geoshape",
-        "fill": null,
-        "stroke": "#CBDDE7",
-        "strokeWidth": 0.7,
-        "opacity": 0.7,
-        "clip": true
-      }
-    },
-    {
-      "data": {
-        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/ne_110m_admin_0_countries.json",
-        "format": {
-          "type": "topojson",
-          "feature": "ne_110m_admin_0_countries"
-        }
-      },
-      "mark": {
-        "type": "geoshape",
-        "fill": "#E6E6E6",
-        "stroke": "#FFFFFF",
-        "strokeWidth": 0.7,
-        "clip": true
-      }
-    },
-    {
-      "data": {
-        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/hort_fruit_exports.csv",
-        "format": {
-          "type": "csv"
-        }
-      },
-      "transform": [
-        {
-          "filter": "datum.Fruit == FruitSelection"
-        },
-        {
-          "filter": "datum.Destination != 'Others'"
-        },
-        {
-          "lookup": "Destination",
-          "from": {
-            "data": {
-              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/country_locations.csv",
-              "format": {
-                "type": "csv"
-              }
-            },
-            "key": "Destination",
-            "fields": [
-              "Longitude",
-              "Latitude"
-            ]
-          },
-          "as": [
-            "DestinationLongitude",
-            "DestinationLatitude"
-          ]
-        },
-        {
-          "calculate": "'Australia'",
-          "as": "Origin"
-        },
-        {
-          "lookup": "Origin",
-          "from": {
-            "data": {
-              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/country_locations.csv",
-              "format": {
-                "type": "csv"
-              }
-            },
-            "key": "Destination",
-            "fields": [
-              "Longitude",
-              "Latitude"
-            ]
-          },
-          "as": [
-            "OriginLongitude",
-            "OriginLatitude"
-          ]
-        },
-        {
-          "calculate": "toNumber(datum.ExportTonnes)",
-          "as": "ExportTonnesNum"
-        },
-        {
-          "calculate": "datum.Fruit == 'Orange' && datum.Destination == 'China' ? -16 : datum.Fruit == 'Orange' && datum.Destination == 'Hong Kong' ? 0 : toNumber(datum.Bend)",
-          "as": "BendNum"
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLongitude)",
-          "as": "DestinationLongitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLatitude)",
-          "as": "DestinationLatitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.OriginLongitude)",
-          "as": "OriginLongitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.OriginLatitude)",
-          "as": "OriginLatitudeNum"
-        },
-        {
-          "calculate": "(datum.OriginLongitudeNum + datum.DestinationLongitudeNum) / 2 + datum.BendNum",
-          "as": "MidLongitude"
-        },
-        {
-          "calculate": "(datum.OriginLatitudeNum + datum.DestinationLatitudeNum) / 2",
-          "as": "MidLatitude"
-        },
-        {
-          "calculate": "[datum.OriginLongitudeNum, datum.MidLongitude, datum.DestinationLongitudeNum]",
-          "as": "PathLongitude"
-        },
-        {
-          "calculate": "[datum.OriginLatitudeNum, datum.MidLatitude, datum.DestinationLatitudeNum]",
-          "as": "PathLatitude"
-        },
-        {
-          "calculate": "[0, 1, 2]",
-          "as": "PathOrder"
-        },
-        {
-          "flatten": [
-            "PathLongitude",
-            "PathLatitude",
-            "PathOrder"
-          ]
-        }
+      "name": "layer_0_marks",
+      "type": "shape",
+      "clip": true,
+      "style": [
+        "geoshape"
       ],
-      "mark": {
-        "type": "line",
-        "interpolate": "basis",
-        "opacity": 0.8,
-        "strokeCap": "butt",
-        "clip": true
+      "from": {
+        "data": "source_0"
       },
-      "encoding": {
-        "longitude": {
-          "field": "PathLongitude",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "PathLatitude",
-          "type": "quantitative"
-        },
-        "detail": {
-          "field": "Destination",
-          "type": "nominal"
-        },
-        "order": {
-          "field": "PathOrder",
-          "type": "ordinal"
-        },
-        "strokeWidth": {
-          "field": "ExportTonnesNum",
-          "type": "quantitative",
-          "title": "Export volume (tonnes)",
-          "scale": {
-            "type": "linear",
-            "domain": [
-              0,
-              45000
-            ],
-            "range": [
-              0.7,
-              12
-            ]
+      "encode": {
+        "update": {
+          "fill": {
+            "value": "#F0F7FA"
           },
-          "legend": null
-        },
-        "tooltip": [
-          {
-            "field": "Fruit",
-            "type": "nominal",
-            "title": "Fruit:"
+          "stroke": {
+            "value": null
           },
-          {
-            "field": "Origin",
-            "type": "nominal",
-            "title": "Origin:"
-          },
-          {
-            "field": "Destination",
-            "type": "nominal",
-            "title": "Destination:"
-          },
-          {
-            "field": "ExportTonnesNum",
-            "type": "quantitative",
-            "title": "Export volume (tonnes):",
-            "format": ",.0f"
+          "ariaRoleDescription": {
+            "value": "geoshape"
           }
-        ],
-        "color": {
-          "value": "#8F5601"
-        }
-      }
-    },
-    {
-      "data": {
-        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/hort_fruit_exports.csv",
-        "format": {
-          "type": "csv"
         }
       },
       "transform": [
         {
-          "filter": "datum.Fruit == FruitSelection"
-        },
-        {
-          "filter": "datum.Destination != 'Others' && datum.Destination != 'Singapore' && datum.Destination != 'Indonesia' && datum.Destination != 'South Korea' && datum.Destination != 'Thailand' && datum.Destination != 'New Zealand' && datum.Destination != 'United Arab Emirates' && datum.Destination != 'Philippines' && datum.Destination != 'China' && datum.Destination != 'Malaysia' && datum.Destination != 'Vietnam'"
-        },
-        {
-          "lookup": "Destination",
-          "from": {
-            "data": {
-              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/country_locations.csv",
-              "format": {
-                "type": "csv"
-              }
-            },
-            "key": "Destination",
-            "fields": [
-              "Longitude",
-              "Latitude"
-            ]
-          },
-          "as": [
-            "DestinationLongitude",
-            "DestinationLatitude"
-          ]
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLongitude)",
-          "as": "DestinationLongitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLatitude)",
-          "as": "DestinationLatitudeNum"
+          "type": "geoshape",
+          "projection": "projection"
         }
-      ],
-      "mark": {
-        "type": "text",
-        "font": "Source Sans 3",
-        "fontSize": 14,
-        "fontWeight": 400,
-        "color": "#333333",
-        "align": "left",
-        "baseline": "middle",
-        "dx": 8,
-        "clip": true
-      },
-      "encoding": {
-        "longitude": {
-          "field": "DestinationLongitudeNum",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "DestinationLatitudeNum",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "Destination",
-          "type": "nominal"
-        }
-      }
+      ]
     },
     {
-      "data": {
-        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/hort_fruit_exports.csv",
-        "format": {
-          "type": "csv"
-        }
-      },
-      "transform": [
-        {
-          "filter": "datum.Fruit == FruitSelection"
-        },
-        {
-          "filter": "datum.Destination == 'Singapore'"
-        },
-        {
-          "lookup": "Destination",
-          "from": {
-            "data": {
-              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/country_locations.csv",
-              "format": {
-                "type": "csv"
-              }
-            },
-            "key": "Destination",
-            "fields": [
-              "Longitude",
-              "Latitude"
-            ]
-          },
-          "as": [
-            "DestinationLongitude",
-            "DestinationLatitude"
-          ]
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLongitude)",
-          "as": "DestinationLongitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLatitude)",
-          "as": "DestinationLatitudeNum"
-        }
+      "name": "layer_1_marks",
+      "type": "shape",
+      "clip": true,
+      "style": [
+        "geoshape"
       ],
-      "mark": {
-        "type": "text",
-        "font": "Source Sans 3",
-        "fontSize": 14,
-        "fontWeight": 400,
-        "color": "#333333",
-        "align": "right",
-        "baseline": "bottom",
-        "dx": -8,
-        "dy": -8,
-        "clip": true
+      "from": {
+        "data": "source_1"
       },
-      "encoding": {
-        "longitude": {
-          "field": "DestinationLongitudeNum",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "DestinationLatitudeNum",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "Destination",
-          "type": "nominal"
-        }
-      }
-    },
-    {
-      "data": {
-        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/hort_fruit_exports.csv",
-        "format": {
-          "type": "csv"
-        }
-      },
-      "transform": [
-        {
-          "filter": "datum.Fruit == FruitSelection"
-        },
-        {
-          "filter": "datum.Destination == 'Indonesia' || datum.Destination == 'South Korea'"
-        },
-        {
-          "lookup": "Destination",
-          "from": {
-            "data": {
-              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/country_locations.csv",
-              "format": {
-                "type": "csv"
-              }
-            },
-            "key": "Destination",
-            "fields": [
-              "Longitude",
-              "Latitude"
-            ]
+      "encode": {
+        "update": {
+          "opacity": {
+            "value": 0.7
           },
-          "as": [
-            "DestinationLongitude",
-            "DestinationLatitude"
-          ]
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLongitude)",
-          "as": "DestinationLongitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLatitude)",
-          "as": "DestinationLatitudeNum"
-        }
-      ],
-      "mark": {
-        "type": "text",
-        "font": "Source Sans 3",
-        "fontSize": 14,
-        "fontWeight": 400,
-        "color": "#333333",
-        "align": "right",
-        "baseline": "middle",
-        "dx": -8,
-        "clip": true
-      },
-      "encoding": {
-        "longitude": {
-          "field": "DestinationLongitudeNum",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "DestinationLatitudeNum",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "Destination",
-          "type": "nominal"
-        }
-      }
-    },
-    {
-      "data": {
-        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/hort_fruit_exports.csv",
-        "format": {
-          "type": "csv"
-        }
-      },
-      "transform": [
-        {
-          "filter": "datum.Fruit == FruitSelection"
-        },
-        {
-          "filter": "datum.Destination == 'Thailand' || datum.Destination == 'China'"
-        },
-        {
-          "lookup": "Destination",
-          "from": {
-            "data": {
-              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/country_locations.csv",
-              "format": {
-                "type": "csv"
-              }
-            },
-            "key": "Destination",
-            "fields": [
-              "Longitude",
-              "Latitude"
-            ]
+          "fill": {
+            "value": null
           },
-          "as": [
-            "DestinationLongitude",
-            "DestinationLatitude"
-          ]
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLongitude)",
-          "as": "DestinationLongitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLatitude)",
-          "as": "DestinationLatitudeNum"
-        }
-      ],
-      "mark": {
-        "type": "text",
-        "font": "Source Sans 3",
-        "fontSize": 14,
-        "fontWeight": 400,
-        "color": "#333333",
-        "align": "right",
-        "baseline": "middle",
-        "dx": -8,
-        "clip": true
-      },
-      "encoding": {
-        "longitude": {
-          "field": "DestinationLongitudeNum",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "DestinationLatitudeNum",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "Destination",
-          "type": "nominal"
-        }
-      }
-    },
-    {
-      "data": {
-        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/hort_fruit_exports.csv",
-        "format": {
-          "type": "csv"
-        }
-      },
-      "transform": [
-        {
-          "filter": "datum.Fruit == FruitSelection"
-        },
-        {
-          "filter": "datum.Destination == 'Philippines'"
-        },
-        {
-          "lookup": "Destination",
-          "from": {
-            "data": {
-              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/country_locations.csv",
-              "format": {
-                "type": "csv"
-              }
-            },
-            "key": "Destination",
-            "fields": [
-              "Longitude",
-              "Latitude"
-            ]
+          "stroke": {
+            "value": "#CBDDE7"
           },
-          "as": [
-            "DestinationLongitude",
-            "DestinationLatitude"
-          ]
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLongitude)",
-          "as": "DestinationLongitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLatitude)",
-          "as": "DestinationLatitudeNum"
-        }
-      ],
-      "mark": {
-        "type": "text",
-        "font": "Source Sans 3",
-        "fontSize": 14,
-        "fontWeight": 400,
-        "color": "#333333",
-        "align": "center",
-        "baseline": "bottom",
-        "dy": -8,
-        "clip": true
-      },
-      "encoding": {
-        "longitude": {
-          "field": "DestinationLongitudeNum",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "DestinationLatitudeNum",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "Destination",
-          "type": "nominal"
-        }
-      }
-    },
-    {
-      "data": {
-        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/hort_fruit_exports.csv",
-        "format": {
-          "type": "csv"
-        }
-      },
-      "transform": [
-        {
-          "filter": "datum.Fruit == FruitSelection"
-        },
-        {
-          "filter": "datum.Destination == 'Malaysia'"
-        },
-        {
-          "lookup": "Destination",
-          "from": {
-            "data": {
-              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/country_locations.csv",
-              "format": {
-                "type": "csv"
-              }
-            },
-            "key": "Destination",
-            "fields": [
-              "Longitude",
-              "Latitude"
-            ]
+          "strokeWidth": {
+            "value": 0.7
           },
-          "as": [
-            "DestinationLongitude",
-            "DestinationLatitude"
-          ]
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLongitude)",
-          "as": "DestinationLongitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLatitude)",
-          "as": "DestinationLatitudeNum"
-        }
-      ],
-      "mark": {
-        "type": "text",
-        "font": "Source Sans 3",
-        "fontSize": 14,
-        "fontWeight": 400,
-        "color": "#333333",
-        "align": "center",
-        "baseline": "bottom",
-        "dy": -8,
-        "clip": true
-      },
-      "encoding": {
-        "longitude": {
-          "field": "DestinationLongitudeNum",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "DestinationLatitudeNum",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "Destination",
-          "type": "nominal"
-        }
-      }
-    },
-    {
-      "data": {
-        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/hort_fruit_exports.csv",
-        "format": {
-          "type": "csv"
-        }
-      },
-      "transform": [
-        {
-          "filter": "datum.Fruit == FruitSelection"
-        },
-        {
-          "filter": "datum.Destination == 'Vietnam'"
-        },
-        {
-          "lookup": "Destination",
-          "from": {
-            "data": {
-              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/country_locations.csv",
-              "format": {
-                "type": "csv"
-              }
-            },
-            "key": "Destination",
-            "fields": [
-              "Longitude",
-              "Latitude"
-            ]
-          },
-          "as": [
-            "DestinationLongitude",
-            "DestinationLatitude"
-          ]
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLongitude)",
-          "as": "DestinationLongitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLatitude)",
-          "as": "DestinationLatitudeNum"
-        }
-      ],
-      "mark": {
-        "type": "text",
-        "font": "Source Sans 3",
-        "fontSize": 14,
-        "fontWeight": 400,
-        "color": "#333333",
-        "align": "right",
-        "baseline": "middle",
-        "dx": -8,
-        "dy": 0,
-        "clip": true
-      },
-      "encoding": {
-        "longitude": {
-          "field": "DestinationLongitudeNum",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "DestinationLatitudeNum",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "Destination",
-          "type": "nominal"
-        }
-      }
-    },
-    {
-      "data": {
-        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/hort_fruit_exports.csv",
-        "format": {
-          "type": "csv"
-        }
-      },
-      "transform": [
-        {
-          "filter": "datum.Fruit == FruitSelection"
-        },
-        {
-          "filter": "datum.Destination == 'United Arab Emirates'"
-        },
-        {
-          "lookup": "Destination",
-          "from": {
-            "data": {
-              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/country_locations.csv",
-              "format": {
-                "type": "csv"
-              }
-            },
-            "key": "Destination",
-            "fields": [
-              "Longitude",
-              "Latitude"
-            ]
-          },
-          "as": [
-            "DestinationLongitude",
-            "DestinationLatitude"
-          ]
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLongitude)",
-          "as": "DestinationLongitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLatitude)",
-          "as": "DestinationLatitudeNum"
-        }
-      ],
-      "mark": {
-        "type": "text",
-        "font": "Source Sans 3",
-        "fontSize": 14,
-        "fontWeight": 400,
-        "color": "#333333",
-        "align": "center",
-        "baseline": "bottom",
-        "dy": -8,
-        "clip": true
-      },
-      "encoding": {
-        "longitude": {
-          "field": "DestinationLongitudeNum",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "DestinationLatitudeNum",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "Destination",
-          "type": "nominal"
-        }
-      }
-    },
-    {
-      "data": {
-        "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/hort_fruit_exports.csv",
-        "format": {
-          "type": "csv"
-        }
-      },
-      "transform": [
-        {
-          "filter": "datum.Fruit == FruitSelection"
-        },
-        {
-          "filter": "datum.Destination == 'New Zealand'"
-        },
-        {
-          "lookup": "Destination",
-          "from": {
-            "data": {
-              "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/country_locations.csv",
-              "format": {
-                "type": "csv"
-              }
-            },
-            "key": "Destination",
-            "fields": [
-              "Longitude",
-              "Latitude"
-            ]
-          },
-          "as": [
-            "DestinationLongitude",
-            "DestinationLatitude"
-          ]
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLongitude)",
-          "as": "DestinationLongitudeNum"
-        },
-        {
-          "calculate": "toNumber(datum.DestinationLatitude)",
-          "as": "DestinationLatitudeNum"
-        }
-      ],
-      "mark": {
-        "type": "text",
-        "font": "Source Sans 3",
-        "fontSize": 14,
-        "fontWeight": 400,
-        "color": "#333333",
-        "align": "center",
-        "baseline": "top",
-        "dy": 8,
-        "clip": true
-      },
-      "encoding": {
-        "longitude": {
-          "field": "DestinationLongitudeNum",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "DestinationLatitudeNum",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "Destination",
-          "type": "nominal"
-        }
-      }
-    },
-    {
-      "name": "exportOrigin",
-      "data": {
-        "values": [
-          {
-            "Origin": "Australia",
-            "Longitude": 134.54588060379,
-            "Latitude": -24.5710555076599,
-            "Label": "Australia (origin)"
+          "ariaRoleDescription": {
+            "value": "geoshape"
           }
-        ]
+        }
       },
-      "mark": {
-        "type": "point",
-        "filled": true,
-        "size": 130,
-        "color": "#30251d",
-        "stroke": "white",
-        "strokeWidth": 1.6,
-        "opacity": 1
+      "transform": [
+        {
+          "type": "geoshape",
+          "projection": "projection"
+        }
+      ]
+    },
+    {
+      "name": "layer_2_marks",
+      "type": "shape",
+      "clip": true,
+      "style": [
+        "geoshape"
+      ],
+      "from": {
+        "data": "source_2"
       },
-      "encoding": {
-        "longitude": {
-          "field": "Longitude",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "Latitude",
-          "type": "quantitative"
-        },
-        "tooltip": [
-          {
-            "field": "Origin",
-            "type": "nominal",
-            "title": "Country-level export origin"
+      "encode": {
+        "update": {
+          "fill": {
+            "value": "#E6E6E6"
+          },
+          "stroke": {
+            "value": "#FFFFFF"
+          },
+          "strokeWidth": {
+            "value": 0.7
+          },
+          "ariaRoleDescription": {
+            "value": "geoshape"
           }
-        ]
+        }
+      },
+      "transform": [
+        {
+          "type": "geoshape",
+          "projection": "projection"
+        }
+      ]
+    },
+    {
+      "name": "layer_3_pathgroup",
+      "type": "group",
+      "from": {
+        "facet": {
+          "name": "faceted_path_layer_3_main",
+          "data": "data_0",
+          "groupby": [
+            "ExportTonnesNum",
+            "Destination"
+          ]
+        }
+      },
+      "encode": {
+        "update": {
+          "width": {
+            "field": {
+              "group": "width"
+            }
+          },
+          "height": {
+            "field": {
+              "group": "height"
+            }
+          }
+        }
+      },
+      "marks": [
+        {
+          "name": "exportFlowArrow",
+          "type": "path",
+          "clip": true,
+          "from": {
+            "data": "exportRoute"
+          },
+          "encode": {
+            "update": {
+              "path": {
+                "signal": "join(pluck(data('exportArrowOutline'), 'pathPart'), '') + 'Z'"
+              },
+              "fill": {
+                "value": "#2450D3"
+              },
+              "opacity": {
+                "value": 0.8
+              },
+              "tooltip": {
+                "signal": "{\"Fruit:\": isValid(datum[\"Fruit\"]) ? datum[\"Fruit\"] : \"\"+datum[\"Fruit\"], \"Origin:\": isValid(datum[\"Origin\"]) ? datum[\"Origin\"] : \"\"+datum[\"Origin\"], \"Destination:\": isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"], \"Export volume (tonnes):\": format(datum[\"ExportTonnesNum\"], \",.0f\")}"
+              },
+              "description": {
+                "signal": "\"PathLongitude: \" + (format(datum[\"PathLongitude\"], \"\")) + \"; PathLatitude: \" + (format(datum[\"PathLatitude\"], \"\")) + \"; Export volume (tonnes): \" + (format(datum[\"ExportTonnesNum\"], \"\")) + \"; PathOrder: \" + (isValid(datum[\"PathOrder\"]) ? datum[\"PathOrder\"] : \"\"+datum[\"PathOrder\"]) + \"; Destination: \" + (isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"]) + \"; Fruit:: \" + (isValid(datum[\"Fruit\"]) ? datum[\"Fruit\"] : \"\"+datum[\"Fruit\"]) + \"; Origin:: \" + (isValid(datum[\"Origin\"]) ? datum[\"Origin\"] : \"\"+datum[\"Origin\"]) + \"; Destination:: \" + (isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"]) + \"; Export volume (tonnes):: \" + (format(datum[\"ExportTonnesNum\"], \",.0f\"))"
+              },
+              "ariaRoleDescription": {
+                "value": "export flow arrow"
+              }
+            }
+          }
+        }
+      ],
+      "signals": [
+        {
+          "name": "arrowStartX",
+          "update": "length(data('exportRoutePoints')) >= 3 ? data('exportRoutePoints')[0][\"layer_3_x\"] : 0"
+        },
+        {
+          "name": "arrowControlX",
+          "update": "length(data('exportRoutePoints')) >= 3 ? data('exportRoutePoints')[1][\"layer_3_x\"] : 0"
+        },
+        {
+          "name": "arrowEndX",
+          "update": "length(data('exportRoutePoints')) >= 3 ? data('exportRoutePoints')[2][\"layer_3_x\"] : 0"
+        },
+        {
+          "name": "arrowStartY",
+          "update": "length(data('exportRoutePoints')) >= 3 ? data('exportRoutePoints')[0][\"layer_3_y\"] : 0"
+        },
+        {
+          "name": "arrowControlY",
+          "update": "length(data('exportRoutePoints')) >= 3 ? data('exportRoutePoints')[1][\"layer_3_y\"] : 0"
+        },
+        {
+          "name": "arrowEndY",
+          "update": "length(data('exportRoutePoints')) >= 3 ? data('exportRoutePoints')[2][\"layer_3_y\"] : 0"
+        },
+        {
+          "name": "arrowThickness",
+          "update": "length(data('exportRoutePoints')) ? scale('strokeWidth', data('exportRoutePoints')[0].ExportTonnesNum) : 0"
+        },
+        {
+          "name": "arrowHeadLength",
+          "update": "max(12, arrowThickness * 2)"
+        },
+        {
+          "name": "arrowHeadWidth",
+          "update": "max(8, arrowThickness * 1.9)"
+        },
+        {
+          "name": "arrowBaseT",
+          "update": "length(data('exportArrowBase')) ? data('exportArrowBase')[0].baseT : 0"
+        },
+        {
+          "name": "arrowBaseX",
+          "update": "pow(1 - (arrowBaseT), 2) * arrowStartX + 2 * (1 - (arrowBaseT)) * (arrowBaseT) * arrowControlX + pow(arrowBaseT, 2) * arrowEndX"
+        },
+        {
+          "name": "arrowBaseY",
+          "update": "pow(1 - (arrowBaseT), 2) * arrowStartY + 2 * (1 - (arrowBaseT)) * (arrowBaseT) * arrowControlY + pow(arrowBaseT, 2) * arrowEndY"
+        },
+        {
+          "name": "arrowHeadDX",
+          "update": "arrowEndX - arrowBaseX"
+        },
+        {
+          "name": "arrowHeadDY",
+          "update": "arrowEndY - arrowBaseY"
+        },
+        {
+          "name": "arrowHeadNorm",
+          "update": "sqrt(pow(arrowHeadDX, 2) + pow(arrowHeadDY, 2)) || 1"
+        }
+      ],
+      "data": [
+        {
+          "name": "exportRoutePoints",
+          "source": "faceted_path_layer_3_main",
+          "transform": [
+            {
+              "type": "collect",
+              "sort": {
+                "field": "PathOrder"
+              }
+            }
+          ]
+        },
+        {
+          "name": "exportRoute",
+          "source": "exportRoutePoints",
+          "transform": [
+            {
+              "type": "filter",
+              "expr": "datum.PathOrder == 0"
+            }
+          ]
+        },
+        {
+          "name": "exportArrowBase",
+          "transform": [
+            {
+              "type": "sequence",
+              "start": 0,
+              "stop": 201,
+              "as": "sample"
+            },
+            {
+              "type": "formula",
+              "as": "t",
+              "expr": "datum.sample / 200"
+            },
+            {
+              "type": "formula",
+              "as": "nextT",
+              "expr": "min(1, datum.t + 1 / 200)"
+            },
+            {
+              "type": "formula",
+              "as": "x",
+              "expr": "pow(1 - (datum.t), 2) * arrowStartX + 2 * (1 - (datum.t)) * (datum.t) * arrowControlX + pow(datum.t, 2) * arrowEndX"
+            },
+            {
+              "type": "formula",
+              "as": "y",
+              "expr": "pow(1 - (datum.t), 2) * arrowStartY + 2 * (1 - (datum.t)) * (datum.t) * arrowControlY + pow(datum.t, 2) * arrowEndY"
+            },
+            {
+              "type": "formula",
+              "as": "nextX",
+              "expr": "pow(1 - (datum.nextT), 2) * arrowStartX + 2 * (1 - (datum.nextT)) * (datum.nextT) * arrowControlX + pow(datum.nextT, 2) * arrowEndX"
+            },
+            {
+              "type": "formula",
+              "as": "nextY",
+              "expr": "pow(1 - (datum.nextT), 2) * arrowStartY + 2 * (1 - (datum.nextT)) * (datum.nextT) * arrowControlY + pow(datum.nextT, 2) * arrowEndY"
+            },
+            {
+              "type": "formula",
+              "as": "segment",
+              "expr": "sqrt(pow(datum.nextX - datum.x, 2) + pow(datum.nextY - datum.y, 2))"
+            },
+            {
+              "type": "window",
+              "sort": {
+                "field": "sample",
+                "order": "descending"
+              },
+              "ops": [
+                "sum"
+              ],
+              "fields": [
+                "segment"
+              ],
+              "as": [
+                "distance"
+              ],
+              "frame": [
+                null,
+                0
+              ]
+            },
+            {
+              "type": "filter",
+              "expr": "datum.segment > 0 && datum.distance >= arrowHeadLength && datum.distance - datum.segment < arrowHeadLength"
+            },
+            {
+              "type": "formula",
+              "as": "baseT",
+              "expr": "(datum.sample + 1 - (arrowHeadLength - (datum.distance - datum.segment)) / datum.segment) / 200"
+            }
+          ]
+        },
+        {
+          "name": "exportArrowOutline",
+          "transform": [
+            {
+              "type": "sequence",
+              "start": 0,
+              "stop": 245,
+              "as": "index"
+            },
+            {
+              "type": "formula",
+              "as": "t",
+              "expr": "arrowBaseT * (datum.index <= 120 ? datum.index : 244 - datum.index) / 120"
+            },
+            {
+              "type": "formula",
+              "as": "x",
+              "expr": "pow(1 - (datum.t), 2) * arrowStartX + 2 * (1 - (datum.t)) * (datum.t) * arrowControlX + pow(datum.t, 2) * arrowEndX"
+            },
+            {
+              "type": "formula",
+              "as": "y",
+              "expr": "pow(1 - (datum.t), 2) * arrowStartY + 2 * (1 - (datum.t)) * (datum.t) * arrowControlY + pow(datum.t, 2) * arrowEndY"
+            },
+            {
+              "type": "formula",
+              "as": "dx",
+              "expr": "2 * (1 - datum.t) * (arrowControlX - arrowStartX) + 2 * datum.t * (arrowEndX - arrowControlX)"
+            },
+            {
+              "type": "formula",
+              "as": "dy",
+              "expr": "2 * (1 - datum.t) * (arrowControlY - arrowStartY) + 2 * datum.t * (arrowEndY - arrowControlY)"
+            },
+            {
+              "type": "formula",
+              "as": "norm",
+              "expr": "sqrt(pow(datum.dx, 2) + pow(datum.dy, 2)) || 1"
+            },
+            {
+              "type": "formula",
+              "as": "side",
+              "expr": "datum.index <= 120 ? 1 : -1"
+            },
+            {
+              "type": "formula",
+              "as": "outlineX",
+              "expr": "datum.index == 122 ? arrowEndX : datum.index == 121 || datum.index == 123 ? arrowBaseX - arrowHeadDY / arrowHeadNorm * arrowHeadWidth / 2 * (datum.index == 121 ? 1 : -1) : datum.x - datum.dy / datum.norm * arrowThickness / 2 * datum.side"
+            },
+            {
+              "type": "formula",
+              "as": "outlineY",
+              "expr": "datum.index == 122 ? arrowEndY : datum.index == 121 || datum.index == 123 ? arrowBaseY + arrowHeadDX / arrowHeadNorm * arrowHeadWidth / 2 * (datum.index == 121 ? 1 : -1) : datum.y + datum.dx / datum.norm * arrowThickness / 2 * datum.side"
+            },
+            {
+              "type": "formula",
+              "as": "pathPart",
+              "expr": "(datum.index == 0 ? 'M' : 'L') + format(datum.outlineX, '.3f') + ',' + format(datum.outlineY, '.3f')"
+            },
+            {
+              "type": "collect",
+              "sort": {
+                "field": "index"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "layer_4_marks",
+      "type": "text",
+      "clip": true,
+      "style": [
+        "text"
+      ],
+      "from": {
+        "data": "data_1"
+      },
+      "encode": {
+        "update": {
+          "align": {
+            "value": "left"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "dx": {
+            "value": 8
+          },
+          "font": {
+            "value": "Source Sans 3"
+          },
+          "fontSize": {
+            "value": 14
+          },
+          "fontWeight": {
+            "value": 400
+          },
+          "fill": {
+            "value": "#333333"
+          },
+          "description": {
+            "signal": "\"DestinationLongitudeNum: \" + (format(datum[\"DestinationLongitudeNum\"], \"\")) + \"; DestinationLatitudeNum: \" + (format(datum[\"DestinationLatitudeNum\"], \"\")) + \"; Destination: \" + (isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"])"
+          },
+          "x": {
+            "field": "layer_4_x"
+          },
+          "y": {
+            "field": "layer_4_y"
+          },
+          "text": {
+            "signal": "isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"]"
+          }
+        }
       }
     },
     {
-      "name": "exportOriginLabel",
-      "data": {
-        "values": [
-          {
-            "Origin": "Australia",
-            "Longitude": 134.54588060379,
-            "Latitude": -24.5710555076599,
-            "Label": "Australia (origin)"
+      "name": "layer_5_marks",
+      "type": "text",
+      "clip": true,
+      "style": [
+        "text"
+      ],
+      "from": {
+        "data": "data_2"
+      },
+      "encode": {
+        "update": {
+          "align": {
+            "value": "right"
+          },
+          "baseline": {
+            "value": "bottom"
+          },
+          "dx": {
+            "value": -8
+          },
+          "dy": {
+            "value": -8
+          },
+          "font": {
+            "value": "Source Sans 3"
+          },
+          "fontSize": {
+            "value": 14
+          },
+          "fontWeight": {
+            "value": 400
+          },
+          "fill": {
+            "value": "#333333"
+          },
+          "description": {
+            "signal": "\"DestinationLongitudeNum: \" + (format(datum[\"DestinationLongitudeNum\"], \"\")) + \"; DestinationLatitudeNum: \" + (format(datum[\"DestinationLatitudeNum\"], \"\")) + \"; Destination: \" + (isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"])"
+          },
+          "x": {
+            "field": "layer_5_x"
+          },
+          "y": {
+            "field": "layer_5_y"
+          },
+          "text": {
+            "signal": "isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"]"
           }
-        ]
+        }
+      }
+    },
+    {
+      "name": "layer_6_marks",
+      "type": "text",
+      "clip": true,
+      "style": [
+        "text"
+      ],
+      "from": {
+        "data": "data_3"
       },
-      "mark": {
-        "type": "text",
-        "font": "Source Sans 3",
-        "fontSize": 14,
-        "fontWeight": 400,
-        "color": "#30251d",
-        "align": "right",
-        "baseline": "top",
-        "dy": 16,
-        "dx": -16
+      "encode": {
+        "update": {
+          "align": {
+            "value": "right"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "dx": {
+            "value": -8
+          },
+          "font": {
+            "value": "Source Sans 3"
+          },
+          "fontSize": {
+            "value": 14
+          },
+          "fontWeight": {
+            "value": 400
+          },
+          "fill": {
+            "value": "#333333"
+          },
+          "description": {
+            "signal": "\"DestinationLongitudeNum: \" + (format(datum[\"DestinationLongitudeNum\"], \"\")) + \"; DestinationLatitudeNum: \" + (format(datum[\"DestinationLatitudeNum\"], \"\")) + \"; Destination: \" + (isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"])"
+          },
+          "x": {
+            "field": "layer_6_x"
+          },
+          "y": {
+            "field": "layer_6_y"
+          },
+          "text": {
+            "signal": "isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"]"
+          }
+        }
+      }
+    },
+    {
+      "name": "layer_7_marks",
+      "type": "text",
+      "clip": true,
+      "style": [
+        "text"
+      ],
+      "from": {
+        "data": "data_4"
       },
-      "encoding": {
-        "longitude": {
-          "field": "Longitude",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "Latitude",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "Label"
+      "encode": {
+        "update": {
+          "align": {
+            "value": "right"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "dx": {
+            "value": -8
+          },
+          "font": {
+            "value": "Source Sans 3"
+          },
+          "fontSize": {
+            "value": 14
+          },
+          "fontWeight": {
+            "value": 400
+          },
+          "fill": {
+            "value": "#333333"
+          },
+          "description": {
+            "signal": "\"DestinationLongitudeNum: \" + (format(datum[\"DestinationLongitudeNum\"], \"\")) + \"; DestinationLatitudeNum: \" + (format(datum[\"DestinationLatitudeNum\"], \"\")) + \"; Destination: \" + (isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"])"
+          },
+          "x": {
+            "field": "layer_7_x"
+          },
+          "y": {
+            "field": "layer_7_y"
+          },
+          "text": {
+            "signal": "isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"]"
+          }
+        }
+      }
+    },
+    {
+      "name": "layer_8_marks",
+      "type": "text",
+      "clip": true,
+      "style": [
+        "text"
+      ],
+      "from": {
+        "data": "data_5"
+      },
+      "encode": {
+        "update": {
+          "align": {
+            "value": "center"
+          },
+          "baseline": {
+            "value": "bottom"
+          },
+          "dy": {
+            "value": -8
+          },
+          "font": {
+            "value": "Source Sans 3"
+          },
+          "fontSize": {
+            "value": 14
+          },
+          "fontWeight": {
+            "value": 400
+          },
+          "fill": {
+            "value": "#333333"
+          },
+          "description": {
+            "signal": "\"DestinationLongitudeNum: \" + (format(datum[\"DestinationLongitudeNum\"], \"\")) + \"; DestinationLatitudeNum: \" + (format(datum[\"DestinationLatitudeNum\"], \"\")) + \"; Destination: \" + (isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"])"
+          },
+          "x": {
+            "field": "layer_8_x"
+          },
+          "y": {
+            "field": "layer_8_y"
+          },
+          "text": {
+            "signal": "isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"]"
+          }
+        }
+      }
+    },
+    {
+      "name": "layer_9_marks",
+      "type": "text",
+      "clip": true,
+      "style": [
+        "text"
+      ],
+      "from": {
+        "data": "data_6"
+      },
+      "encode": {
+        "update": {
+          "align": {
+            "value": "center"
+          },
+          "baseline": {
+            "value": "bottom"
+          },
+          "dy": {
+            "value": -8
+          },
+          "font": {
+            "value": "Source Sans 3"
+          },
+          "fontSize": {
+            "value": 14
+          },
+          "fontWeight": {
+            "value": 400
+          },
+          "fill": {
+            "value": "#333333"
+          },
+          "description": {
+            "signal": "\"DestinationLongitudeNum: \" + (format(datum[\"DestinationLongitudeNum\"], \"\")) + \"; DestinationLatitudeNum: \" + (format(datum[\"DestinationLatitudeNum\"], \"\")) + \"; Destination: \" + (isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"])"
+          },
+          "x": {
+            "field": "layer_9_x"
+          },
+          "y": {
+            "field": "layer_9_y"
+          },
+          "text": {
+            "signal": "isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"]"
+          }
+        }
+      }
+    },
+    {
+      "name": "layer_10_marks",
+      "type": "text",
+      "clip": true,
+      "style": [
+        "text"
+      ],
+      "from": {
+        "data": "data_7"
+      },
+      "encode": {
+        "update": {
+          "align": {
+            "value": "right"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "dx": {
+            "value": -8
+          },
+          "dy": {
+            "value": 0
+          },
+          "font": {
+            "value": "Source Sans 3"
+          },
+          "fontSize": {
+            "value": 14
+          },
+          "fontWeight": {
+            "value": 400
+          },
+          "fill": {
+            "value": "#333333"
+          },
+          "description": {
+            "signal": "\"DestinationLongitudeNum: \" + (format(datum[\"DestinationLongitudeNum\"], \"\")) + \"; DestinationLatitudeNum: \" + (format(datum[\"DestinationLatitudeNum\"], \"\")) + \"; Destination: \" + (isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"])"
+          },
+          "x": {
+            "field": "layer_10_x"
+          },
+          "y": {
+            "field": "layer_10_y"
+          },
+          "text": {
+            "signal": "isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"]"
+          }
+        }
+      }
+    },
+    {
+      "name": "layer_11_marks",
+      "type": "text",
+      "clip": true,
+      "style": [
+        "text"
+      ],
+      "from": {
+        "data": "data_8"
+      },
+      "encode": {
+        "update": {
+          "align": {
+            "value": "center"
+          },
+          "baseline": {
+            "value": "bottom"
+          },
+          "dy": {
+            "value": -8
+          },
+          "font": {
+            "value": "Source Sans 3"
+          },
+          "fontSize": {
+            "value": 14
+          },
+          "fontWeight": {
+            "value": 400
+          },
+          "fill": {
+            "value": "#333333"
+          },
+          "description": {
+            "signal": "\"DestinationLongitudeNum: \" + (format(datum[\"DestinationLongitudeNum\"], \"\")) + \"; DestinationLatitudeNum: \" + (format(datum[\"DestinationLatitudeNum\"], \"\")) + \"; Destination: \" + (isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"])"
+          },
+          "x": {
+            "field": "layer_11_x"
+          },
+          "y": {
+            "field": "layer_11_y"
+          },
+          "text": {
+            "signal": "isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"]"
+          }
+        }
+      }
+    },
+    {
+      "name": "layer_12_marks",
+      "type": "text",
+      "clip": true,
+      "style": [
+        "text"
+      ],
+      "from": {
+        "data": "data_9"
+      },
+      "encode": {
+        "update": {
+          "align": {
+            "value": "center"
+          },
+          "baseline": {
+            "value": "top"
+          },
+          "dy": {
+            "value": 8
+          },
+          "font": {
+            "value": "Source Sans 3"
+          },
+          "fontSize": {
+            "value": 14
+          },
+          "fontWeight": {
+            "value": 400
+          },
+          "fill": {
+            "value": "#333333"
+          },
+          "description": {
+            "signal": "\"DestinationLongitudeNum: \" + (format(datum[\"DestinationLongitudeNum\"], \"\")) + \"; DestinationLatitudeNum: \" + (format(datum[\"DestinationLatitudeNum\"], \"\")) + \"; Destination: \" + (isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"])"
+          },
+          "x": {
+            "field": "layer_12_x"
+          },
+          "y": {
+            "field": "layer_12_y"
+          },
+          "text": {
+            "signal": "isValid(datum[\"Destination\"]) ? datum[\"Destination\"] : \"\"+datum[\"Destination\"]"
+          }
+        }
+      }
+    },
+    {
+      "name": "exportOrigin_marks",
+      "type": "symbol",
+      "clip": true,
+      "style": [
+        "point"
+      ],
+      "from": {
+        "data": "data_11"
+      },
+      "encode": {
+        "update": {
+          "opacity": {
+            "value": 1
+          },
+          "stroke": {
+            "value": "white"
+          },
+          "strokeWidth": {
+            "value": 1.6
+          },
+          "size": {
+            "value": 130
+          },
+          "fill": {
+            "value": "#30251d"
+          },
+          "tooltip": {
+            "signal": "{\"Country-level export origin\": isValid(datum[\"Origin\"]) ? datum[\"Origin\"] : \"\"+datum[\"Origin\"]}"
+          },
+          "ariaRoleDescription": {
+            "value": "point"
+          },
+          "description": {
+            "signal": "\"Longitude: \" + (format(datum[\"Longitude\"], \"\")) + \"; Latitude: \" + (format(datum[\"Latitude\"], \"\")) + \"; Country-level export origin: \" + (isValid(datum[\"Origin\"]) ? datum[\"Origin\"] : \"\"+datum[\"Origin\"])"
+          },
+          "x": {
+            "field": "exportOrigin_x"
+          },
+          "y": {
+            "field": "exportOrigin_y"
+          }
+        }
+      }
+    },
+    {
+      "name": "exportOriginLabel_marks",
+      "type": "text",
+      "clip": true,
+      "style": [
+        "text"
+      ],
+      "from": {
+        "data": "data_12"
+      },
+      "encode": {
+        "update": {
+          "align": {
+            "value": "right"
+          },
+          "baseline": {
+            "value": "top"
+          },
+          "dx": {
+            "value": -16
+          },
+          "dy": {
+            "value": 16
+          },
+          "font": {
+            "value": "Source Sans 3"
+          },
+          "fontSize": {
+            "value": 14
+          },
+          "fontWeight": {
+            "value": 400
+          },
+          "fill": {
+            "value": "#30251d"
+          },
+          "description": {
+            "signal": "\"Longitude: \" + (format(datum[\"Longitude\"], \"\")) + \"; Latitude: \" + (format(datum[\"Latitude\"], \"\")) + \"; Label: \" + (isValid(datum[\"Label\"]) ? datum[\"Label\"] : \"\"+datum[\"Label\"])"
+          },
+          "x": {
+            "field": "exportOriginLabel_x"
+          },
+          "y": {
+            "field": "exportOriginLabel_y"
+          },
+          "text": {
+            "signal": "isValid(datum[\"Label\"]) ? datum[\"Label\"] : \"\"+datum[\"Label\"]"
+          }
         }
       }
     }
   ],
+  "scales": [
+    {
+      "name": "strokeWidth",
+      "type": "linear",
+      "domain": [
+        0,
+        45000
+      ],
+      "range": [
+        0.7,
+        12
+      ],
+      "zero": true
+    }
+  ],
   "config": {
-    "view": {
-      "stroke": null,
-      "fill": "#F0F7FA"
+    "axis": {
+      "labelFont": "Arial",
+      "titleFont": "Arial",
+      "labelFontSize": 12,
+      "titleFontSize": 13
     },
     "legend": {
       "labelFontSize": 12,
@@ -978,16 +1657,27 @@
       "labelFont": "Arial",
       "titleFont": "Arial"
     },
-    "font": "Arial",
-    "axis": {
-      "labelFont": "Arial",
-      "titleFont": "Arial",
-      "labelFontSize": 12,
-      "titleFontSize": 13
-    },
-    "header": {
-      "labelFont": "Arial",
-      "titleFont": "Arial"
+    "style": {
+      "guide-label": {
+        "font": "Arial"
+      },
+      "guide-title": {
+        "font": "Arial"
+      },
+      "group-title": {
+        "font": "Arial"
+      },
+      "group-subtitle": {
+        "font": "Arial"
+      },
+      "cell": {
+        "stroke": null,
+        "fill": "#F0F7FA"
+      },
+      "text": {
+        "font": "Arial"
+      }
     }
-  }
+  },
+  "description": "Australian fresh-fruit export flow map. Curved filled arrows, arrowheads, volume-based thickness and fruit selection are defined entirely in Vega."
 }

@@ -78,6 +78,7 @@ const chartFontsReady = Promise.all([
   document.fonts.load('700 56px "Fraunces"')
 ]);
 const chartTypographyUpdates = new WeakMap();
+const productionCalloutUpdates = new WeakMap();
 function standardiseVegaTypography(spec) {
   spec.signals ||= [];
   spec.signals.push({ name: "typographyScale", value: 1 });
@@ -119,6 +120,15 @@ function standardiseVegaTypography(spec) {
       legend.rowPadding = size(typography.legendRowGap);
     });
     (group.marks || []).forEach(mark => {
+      if (mark.type === "rect" && /annotation|avocadoGrowthBox/i.test(mark.name || "")) {
+        mark.encode ||= {};
+        mark.encode.update ||= {};
+        Object.assign(mark.encode.update, {
+          fill: { value: "#FFFFFF" },
+          stroke: { value: "#000000" },
+          strokeWidth: size(1)
+        });
+      }
       if (mark.type === "text") {
         mark.encode ||= {};
         mark.encode.update ||= {};
@@ -152,77 +162,8 @@ function addChartHeading(target, title) {
   mapHeadingObserver.observe(heading);
 }
 
-// Describe the filled arrows with standard Vega data transforms so exported
-// specifications work in Vega Editor without a registered JavaScript function.
-function compileExportArrows(spec) {
-  const compiled = vegaLite.compile(spec).spec;
-  const route = compiled.marks.find(mark => mark.type === "group" && mark.marks?.some(child => child.type === "line"));
-  const line = route.marks.find(mark => mark.type === "line");
-  const update = line.encode.update;
-  const coordinate = (index, field) => `data('exportRoutePoints')[${index}][${JSON.stringify(field)}]`;
-  const curve = (axis, t) => `pow(1 - (${t}), 2) * arrowStart${axis} + 2 * (1 - (${t})) * (${t}) * arrowControl${axis} + pow(${t}, 2) * arrowEnd${axis}`;
-  const formula = (as, expr) => ({ type: "formula", as, expr });
-  route.signals = [
-    ...["X", "Y"].flatMap(axis => ["Start", "Control", "End"].map((part, index) => ({
-      name: `arrow${part}${axis}`,
-      update: `length(data('exportRoutePoints')) >= 3 ? ${coordinate(index, axis === "X" ? update.x.field : update.y.field)} : 0`
-    }))),
-    { name: "arrowThickness", update: "length(data('exportRoutePoints')) ? scale('strokeWidth', data('exportRoutePoints')[0].ExportTonnesNum) : 0" },
-    { name: "arrowHeadLength", update: "max(12, arrowThickness * 2)" },
-    { name: "arrowHeadWidth", update: "max(8, arrowThickness * 1.9)" },
-    { name: "arrowBaseT", update: "length(data('exportArrowBase')) ? data('exportArrowBase')[0].baseT : 0" },
-    { name: "arrowBaseX", update: curve("X", "arrowBaseT") },
-    { name: "arrowBaseY", update: curve("Y", "arrowBaseT") },
-    { name: "arrowHeadDX", update: "arrowEndX - arrowBaseX" },
-    { name: "arrowHeadDY", update: "arrowEndY - arrowBaseY" },
-    { name: "arrowHeadNorm", update: "sqrt(pow(arrowHeadDX, 2) + pow(arrowHeadDY, 2)) || 1" }
-  ];
-  route.data = [
-    { name: "exportRoutePoints", source: line.from.data, transform: [{ type: "collect", sort: { field: "PathOrder" } }] },
-    { name: "exportRoute", source: "exportRoutePoints", transform: [{ type: "filter", expr: "datum.PathOrder == 0" }] },
-    { name: "exportArrowBase", transform: [
-      { type: "sequence", start: 0, stop: 201, as: "sample" },
-      formula("t", "datum.sample / 200"),
-      formula("nextT", "min(1, datum.t + 1 / 200)"),
-      formula("x", curve("X", "datum.t")),
-      formula("y", curve("Y", "datum.t")),
-      formula("nextX", curve("X", "datum.nextT")),
-      formula("nextY", curve("Y", "datum.nextT")),
-      formula("segment", "sqrt(pow(datum.nextX - datum.x, 2) + pow(datum.nextY - datum.y, 2))"),
-      { type: "window", sort: { field: "sample", order: "descending" }, ops: ["sum"], fields: ["segment"], as: ["distance"], frame: [null, 0] },
-      { type: "filter", expr: "datum.segment > 0 && datum.distance >= arrowHeadLength && datum.distance - datum.segment < arrowHeadLength" },
-      formula("baseT", "(datum.sample + 1 - (arrowHeadLength - (datum.distance - datum.segment)) / datum.segment) / 200")
-    ] },
-    { name: "exportArrowOutline", transform: [
-      { type: "sequence", start: 0, stop: 245, as: "index" },
-      formula("t", "arrowBaseT * (datum.index <= 120 ? datum.index : 244 - datum.index) / 120"),
-      formula("x", curve("X", "datum.t")),
-      formula("y", curve("Y", "datum.t")),
-      formula("dx", "2 * (1 - datum.t) * (arrowControlX - arrowStartX) + 2 * datum.t * (arrowEndX - arrowControlX)"),
-      formula("dy", "2 * (1 - datum.t) * (arrowControlY - arrowStartY) + 2 * datum.t * (arrowEndY - arrowControlY)"),
-      formula("norm", "sqrt(pow(datum.dx, 2) + pow(datum.dy, 2)) || 1"),
-      formula("side", "datum.index <= 120 ? 1 : -1"),
-      formula("outlineX", "datum.index == 122 ? arrowEndX : datum.index == 121 || datum.index == 123 ? arrowBaseX - arrowHeadDY / arrowHeadNorm * arrowHeadWidth / 2 * (datum.index == 121 ? 1 : -1) : datum.x - datum.dy / datum.norm * arrowThickness / 2 * datum.side"),
-      formula("outlineY", "datum.index == 122 ? arrowEndY : datum.index == 121 || datum.index == 123 ? arrowBaseY + arrowHeadDX / arrowHeadNorm * arrowHeadWidth / 2 * (datum.index == 121 ? 1 : -1) : datum.y + datum.dx / datum.norm * arrowThickness / 2 * datum.side"),
-      formula("pathPart", "(datum.index == 0 ? 'M' : 'L') + format(datum.outlineX, '.3f') + ',' + format(datum.outlineY, '.3f')"),
-      { type: "collect", sort: { field: "index" } }
-    ] }
-  ];
-  route.marks = [{
-    name: "exportFlowArrow", type: "path", clip: true,
-    from: { data: "exportRoute" },
-    encode: { update: {
-      path: { signal: "join(pluck(data('exportArrowOutline'), 'pathPart'), '') + 'Z'" },
-      fill: { value: "#8F5601" }, opacity: { value: 0.8 },
-      tooltip: update.tooltip, description: update.description,
-      ariaRoleDescription: { value: "export flow arrow" }
-    } }
-  }];
-  return compiled;
-}
-
-// Size chart callouts to their text, using the same borderless grey as
-// the Sankey. Padding and line spacing follow the shared annotation size.
+// Size chart callouts to their text. Padding and line spacing follow
+// the shared annotation size.
 function compileBoxedAnnotations(spec) {
   const context = document.createElement("canvas").getContext("2d");
   context.font = `${typography.annotation}px "Source Sans 3"`;
@@ -240,7 +181,7 @@ function compileBoxedAnnotations(spec) {
     return [{
       name: layer.name.replace("Text", "Background"),
       data: layer.data,
-      mark: { type: "rect", width: box.width, height: box.height, fill: "#eeeeee", stroke: null },
+      mark: { type: "rect", width: box.width, height: box.height, fill: "#FFFFFF", stroke: "#000000", strokeWidth: 1 },
       encoding: { x: layer.encoding.x, y: layer.encoding.y }
     }, layer];
   });
@@ -322,7 +263,7 @@ function compileHeatmapAnnotation(spec) {
     description: { value: "Connector to the Avocado 2021–22 growth cell" }
   }}}, { name: "avocadoGrowthBox", type: "rect", encode: { update: {
     x: { signal: left }, y: { signal: top }, width: { signal: `${boxWidth} * typographyScale` }, height: { signal: `${boxHeight} * typographyScale` },
-    fill: { value: "#eeeeee" }, stroke: { value: null }, tooltip: { value: note.text }
+    fill: { value: "#FFFFFF" }, stroke: { value: "#000000" }, strokeWidth: { value: 1 }, tooltip: { value: note.text }
   }}}, { name: "avocadoGrowthText", type: "text", encode: { update: {
     x: { signal: `(${left}) + ${typography.paddingX} * typographyScale` }, y: { signal: `(${top}) + ${typography.paddingY} * typographyScale` }, text: { value: note.lines },
     align: { value: "left" }, baseline: { value: "top" },
@@ -347,6 +288,9 @@ function compileProductionMap(spec) {
     Object.assign(layer.mark, boxes.get(layer.name.split("Annotation")[0]));
   });
   const compiled = vegaLite.compile(spec).spec;
+  // Fit the geography to state boundaries only. Callouts must not zoom the map.
+  const boundarySource = compiled.data.find(data => data.format?.type === "topojson");
+  compiled.projections[0].fit = { signal: `data('${boundarySource.name}')` };
   compiled.signals.push({ name: "annotationScale", value: 1 });
   compiled.signals.push({ name: "reportingYearLabel", update: "YearSelection + '–' + substring(toString(YearSelection + 1), 2)" });
   compiled.marks.forEach(mark => {
@@ -370,6 +314,18 @@ function compileProductionMap(spec) {
       update.y = { signal: `datum['${update.y.field}'] + ${box.height / 2} * annotationScale` };
     }
   });
+  // Put the banana text in the sidebar, outside the geographic viewport.
+  const bananaText = spec.layer.find(layer => layer.name === "bananaAnnotationText");
+  compiled.signals.push(
+    { name: "bananaCalloutX", value: 0 },
+    { name: "bananaCalloutY", value: 0 },
+    { name: "bananaCalloutLines", value: JSON.parse(bananaText.transform.find(transform => transform.as === "NoteLines").calculate) }
+  );
+  compiled.autosize = { type: "none", contains: "content" };
+  compiled.marks = compiled.marks.filter(mark => !/^bananaAnnotation(?:Background|Text)_marks$/.test(mark.name || ""));
+  const bananaLeader = compiled.marks.find(mark => mark.name === "bananaAnnotationLeader_marks");
+  bananaLeader.encode.update.x = { signal: "bananaCalloutX" };
+  bananaLeader.encode.update.y = { signal: "bananaCalloutY" };
   return addStateMapLabels(compiled, spec);
 }
 
@@ -457,7 +413,7 @@ function compileChoroplethMap(spec) {
     encode: { update: {
       x: { signal: x }, y: { signal: y },
       width: { signal: `${width} * typographyScale` }, height: { signal: `${height} * typographyScale` },
-      fill: { value: "#eeeeee" }, cornerRadius: { signal: "3 * typographyScale" }, tooltip: { value: note.text }
+      fill: { value: "#FFFFFF" }, stroke: { value: "#000000" }, strokeWidth: { value: 1 }, cornerRadius: { signal: "3 * typographyScale" }, tooltip: { value: note.text }
     } }
   }, {
     name: "orchardAnnotationText", type: "text", from: { data: "orchardNote" },
@@ -492,6 +448,46 @@ function styleYearControl(root, view) {
     view.addSignalListener("reportingYearLabel", () => queueMicrotask(update));
     update();
   });
+}
+
+// Keep the banana callout in the sidebar without changing the map viewport.
+function setupProductionCallout(chart, view) {
+  const controls = document.getElementById("production-map-controls");
+  const bindings = controls.querySelector(".vega-bindings");
+  if (!bindings) return;
+  const note = document.createElement("div");
+  note.className = "production-banana-callout";
+  note.setAttribute("role", "note");
+  view.signal("bananaCalloutLines").forEach(line => {
+    const span = document.createElement("span");
+    span.textContent = line;
+    note.append(span);
+  });
+  bindings.firstElementChild.after(note);
+  let frame;
+  const position = () => {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      if (note.hidden) return;
+      const svg = chart.querySelector("svg.marks");
+      const matrix = svg?.querySelector("g")?.getScreenCTM();
+      if (!matrix) return;
+      const bounds = note.getBoundingClientRect();
+      const anchor = new DOMPoint(bounds.left, bounds.top + bounds.height / 2).matrixTransform(matrix.inverse());
+      if (Math.abs(view.signal("bananaCalloutX") - anchor.x) < 0.1 && Math.abs(view.signal("bananaCalloutY") - anchor.y) < 0.1) return;
+      view.signal("bananaCalloutX", anchor.x).signal("bananaCalloutY", anchor.y).runAsync().catch(console.error);
+    });
+  };
+  const refresh = () => {
+    note.hidden = view.signal("ProductionFruitSelection") !== "Banana";
+    position();
+  };
+  view.addSignalListener("ProductionFruitSelection", refresh);
+  new ResizeObserver(position).observe(chart);
+  new ResizeObserver(position).observe(note);
+  window.addEventListener("resize", position);
+  productionCalloutUpdates.set(chart, position);
+  refresh();
 }
 
 // Use page typography for both the selected fruit and the open options.
@@ -639,7 +635,8 @@ async function embedChart(target, source, options) {
   // Match the full divider width. Vega fits labels and legends within this
   // width, reserving only the space they actually need instead of wide gutters.
   const chartElement = document.querySelector(target);
-  spec.width = spec.projection ? 1030 : target === "#production_value_scatter" ? Math.max(720, chartElement.clientWidth) : ["#growth_heatmap", "#fruit_sankey", "#production_trend", "#production_rank_bump"].includes(target) ? Math.max(480, chartElement.clientWidth) : chartElement.clientWidth;
+  const isGeographic = Boolean(spec.projection || spec.projections?.length);
+  spec.width = isGeographic ? 1030 : target === "#production_value_scatter" ? Math.max(720, chartElement.clientWidth) : ["#growth_heatmap", "#fruit_sankey", "#production_trend", "#production_rank_bump"].includes(target) ? Math.max(480, chartElement.clientWidth) : chartElement.clientWidth;
   spec.padding = 0;
   spec.autosize = { type: "fit-x", contains: "padding" };
   if (["#state_production_map", "#state_growth_choropleth"].includes(target)) {
@@ -648,7 +645,7 @@ async function embedChart(target, source, options) {
     spec.width = 720;
   }
   if (target === "#export_flow_map") delete spec.title;
-  if (!spec.projection && options.mode !== "vega") {
+  if (!isGeographic && options.mode !== "vega") {
     spec.height = 400;
     spec.config = {
       ...spec.config,
@@ -690,8 +687,7 @@ async function embedChart(target, source, options) {
     }
     colour.legend = null;
   }
-  const compiled = target === "#export_flow_map" ? compileExportArrows(spec)
-    : target === "#state_production_map" ? compileProductionMap(spec)
+  const compiled = target === "#state_production_map" ? compileProductionMap(spec)
     : target === "#state_growth_choropleth" ? compileChoroplethMap(spec)
     : target === "#growth_heatmap" ? compileHeatmapAnnotation(spec)
     : ["#production_value_scatter", "#export_value_waterfall"].includes(target) ? compileBoxedAnnotations(spec)
@@ -711,11 +707,23 @@ async function embedChart(target, source, options) {
     previousWidth = width;
     previousScale = scale;
     pendingLayout = pendingLayout.then(async () => {
-      if (!spec.projection) result.view.width(width).resize();
+      if (!isGeographic) result.view.width(width).resize();
       result.view.signal("typographyScale", scale);
       if (target === "#state_production_map") result.view.signal("annotationScale", scale);
       await result.view.runAsync();
       fitChartSvg(svg);
+      if (target === "#state_production_map") {
+        productionCalloutUpdates.get(chartElement)?.();
+        const sizeScale = result.view.scale("size");
+        const screenScale = Math.abs(svg.getScreenCTM().a);
+        let largestDiameter = 0;
+        document.querySelectorAll(".production-size-legend .legend-circle").forEach(circle => {
+          const diameter = 2 * Math.sqrt(sizeScale(Number(circle.dataset.volume)) / Math.PI) * screenScale;
+          circle.style.width = circle.style.height = `${diameter}px`;
+          largestDiameter = Math.max(largestDiameter, diameter);
+        });
+        document.querySelector(".production-size-legend").style.setProperty("--production-symbol-width", `${Math.ceil(largestDiameter)}px`);
+      }
     }).catch(console.error);
   };
   chartTypographyUpdates.set(chartElement, updateTypography);
@@ -889,7 +897,7 @@ embedChart(
 embedChart(
   "#export_flow_map",
   vg_11,
-  embedOptions
+  { ...embedOptions, mode: "vega" }
 ).then(result => {
   const chart = document.getElementById("export_flow_map");
   const bindings = chart.querySelector(".vega-bindings");
@@ -932,7 +940,7 @@ embedChart("#state_production_map", vg_14, embedOptions)
     if (bindings) {
       document.getElementById("production-map-controls").appendChild(bindings);
     }
-
+    setupProductionCallout(document.getElementById("state_production_map"), result.view);
   })
   .catch(console.error);
 
@@ -948,7 +956,8 @@ function trimMapInset(svg) {
   const inverse = svg.getScreenCTM()?.inverse();
   if (!inverse) return;
   const edges = [];
-  svg.querySelectorAll(".role-mark").forEach(mark => {
+  const marks = svg.querySelectorAll(".mark-shape.role-mark, .productionStateNames, .productionStateLabelConnectors_marks");
+  marks.forEach(mark => {
     const bounds = mark.getBBox();
     if (!bounds.width || !bounds.height) return;
     const matrix = inverse.multiply(mark.getScreenCTM());

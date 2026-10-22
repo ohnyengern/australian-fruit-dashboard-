@@ -24,7 +24,7 @@
       "mark": {
         "type": "rule",
         "strokeWidth": 2,
-        "color": "#8F5601",
+        "color": "#D6AD70",
         "opacity": 1
       },
       "encoding": {
@@ -108,7 +108,7 @@
           }
         },
         "color": {
-          "value": "#8F5601"
+          "value": "#D6AD70"
         },
         "tooltip": [
           {

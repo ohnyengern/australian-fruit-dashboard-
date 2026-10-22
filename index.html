@@ -11,12 +11,12 @@
   <link rel="preload" href="assets/fonts/source-sans-3-variable.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="assets/fonts/fraunces-600.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="assets/fonts/fraunces-700.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=20261022-title-alignment">
+  <link rel="stylesheet" href="css/style.css?v=20261023-blue-flow-arrows">
 
   <script defer src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
-  <script defer src="js/vega_lite_vis.js?v=20261022-title-size"></script>
+  <script defer src="js/vega_lite_vis.js?v=20261023-native-vega-flow"></script>
 </head>
 
 <body>
@@ -184,21 +184,23 @@
 
             <div
               class="production-size-legend"
-              aria-label="Circle areas represent production volumes of 100,000, 200,000 and 300,000 tonnes"
+              aria-label="Circle areas represent production volumes of 50,000, 150,000, 250,000 and 350,000 tonnes"
             >
               <div class="legend-item">
-                <span class="legend-circle legend-100"></span>
-                <span>100,000</span>
+                <span class="legend-circle legend-50" data-volume="50000" aria-hidden="true"></span>
+                <span>50,000</span>
               </div>
-
               <div class="legend-item">
-                <span class="legend-circle legend-200"></span>
-                <span>200,000</span>
+                <span class="legend-circle legend-150" data-volume="150000" aria-hidden="true"></span>
+                <span>150,000</span>
               </div>
-
               <div class="legend-item">
-                <span class="legend-circle legend-300"></span>
-                <span>300,000</span>
+                <span class="legend-circle legend-250" data-volume="250000" aria-hidden="true"></span>
+                <span>250,000</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-circle legend-350" data-volume="350000" aria-hidden="true"></span>
+                <span>350,000</span>
               </div>
             </div>
 
