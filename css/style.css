@@ -309,7 +309,7 @@ body {
   margin: 0 0 var(--chart-title-gap);
   font-size: var(--font-chart-title);
   line-height: var(--line-heading);
-  color: #000;
+  color: #8F5601;
 }
 
 .map-layout {
