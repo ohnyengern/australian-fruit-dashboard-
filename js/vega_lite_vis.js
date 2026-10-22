@@ -1,6 +1,29 @@
 // Refresh chart definitions on each page load so published title edits appear.
 const chartLoadVersion = Date.now().toString(36);
 
+// Fit the main heading to the section width using its natural word spacing.
+const pageTitle = document.querySelector(".page-header h1");
+if (pageTitle) {
+  const fitPageTitle = () => {
+    if (!pageTitle.clientWidth) return;
+    pageTitle.style.fontSize = "100px";
+    const text = document.createRange();
+    text.selectNodeContents(pageTitle);
+    const textWidth = text.getBoundingClientRect().width;
+    if (textWidth) pageTitle.style.fontSize = `${100 * pageTitle.clientWidth / textWidth}px`;
+  };
+  document.fonts.ready.then(() => {
+    fitPageTitle();
+    let previousWidth = pageTitle.clientWidth;
+    new ResizeObserver(() => {
+      const width = pageTitle.clientWidth;
+      if (width === previousWidth) return;
+      previousWidth = width;
+      fitPageTitle();
+    }).observe(pageTitle);
+  });
+}
+
 
 var vg_1 = "charts/production_lollipop.vg.json";
 var vg_2 = "charts/production_trend.vg.json";

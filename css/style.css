@@ -94,8 +94,8 @@ body {
 }
 
 .page-header h1 {
-  margin: 0;
-  font: 700 min(6.8cqw, 84px)/1.14 var(--font-heading-family);
+  margin: 0 var(--container-margin-right) 0 var(--container-margin-left);
+  font: 700 7.4cqw/1.14 var(--font-heading-family);
   letter-spacing: -.025em;
   text-transform: none;
   white-space: nowrap;
