@@ -1,3 +1,4 @@
+
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "description": "Proportional symbol map of state fruit production with fruit and year selectors.",
@@ -45,44 +46,6 @@
       }
     }
   ],
-  "transform": [
-    {
-      "filter": "parseInt(datum.Year) == YearSelection"
-    },
-    {
-      "fold": [
-        "Apple",
-        "Avocado",
-        "Banana",
-        "Blueberry",
-        "Mandarin",
-        "Orange",
-        "Strawberry",
-        "Table grapes"
-      ],
-      "as": [
-        "Fruit",
-        "Production"
-      ]
-    },
-    {
-      "filter": "datum.Fruit == ProductionFruitSelection"
-    },
-    {
-      "lookup": "State",
-      "from": {
-        "data": {
-          "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/australia_states.json",
-          "format": {
-            "type": "topojson",
-            "feature": "STE_2026_AUST_GDA2020"
-          }
-        },
-        "key": "properties.STE_NAME26"
-      },
-      "as": "geo"
-    }
-  ],
   "config": {
     "view": {
       "stroke": null
@@ -116,7 +79,6 @@
           "feature": "STE_2026_AUST_GDA2020"
         }
       },
-      "transform": [],
       "mark": {
         "type": "geoshape",
         "fill": "#E6E6E6",
@@ -127,6 +89,25 @@
     {
       "name": "appleAnnotationLeader",
       "transform": [
+        {
+          "filter": "parseInt(datum.Year) == YearSelection"
+        },
+        {
+          "fold": [
+            "Apple",
+            "Avocado",
+            "Banana",
+            "Blueberry",
+            "Mandarin",
+            "Orange",
+            "Strawberry",
+            "Table grapes"
+          ],
+          "as": ["Fruit", "Production"]
+        },
+        {
+          "filter": "datum.Fruit == ProductionFruitSelection"
+        },
         {
           "filter": "datum.Fruit == 'Apple' && datum.State == 'Victoria'"
         },
@@ -165,6 +146,25 @@
       "name": "bananaAnnotationLeader",
       "transform": [
         {
+          "filter": "parseInt(datum.Year) == YearSelection"
+        },
+        {
+          "fold": [
+            "Apple",
+            "Avocado",
+            "Banana",
+            "Blueberry",
+            "Mandarin",
+            "Orange",
+            "Strawberry",
+            "Table grapes"
+          ],
+          "as": ["Fruit", "Production"]
+        },
+        {
+          "filter": "datum.Fruit == ProductionFruitSelection"
+        },
+        {
           "filter": "datum.Fruit == 'Banana' && datum.State == 'Queensland'"
         },
         {
@@ -202,6 +202,25 @@
       "name": "orangeAnnotationLeader",
       "transform": [
         {
+          "filter": "parseInt(datum.Year) == YearSelection"
+        },
+        {
+          "fold": [
+            "Apple",
+            "Avocado",
+            "Banana",
+            "Blueberry",
+            "Mandarin",
+            "Orange",
+            "Strawberry",
+            "Table grapes"
+          ],
+          "as": ["Fruit", "Production"]
+        },
+        {
+          "filter": "datum.Fruit == ProductionFruitSelection"
+        },
+        {
           "filter": "datum.Fruit == 'Orange' && datum.State == 'New South Wales'"
         },
         {
@@ -238,6 +257,25 @@
     {
       "transform": [
         {
+          "filter": "parseInt(datum.Year) == YearSelection"
+        },
+        {
+          "fold": [
+            "Apple",
+            "Avocado",
+            "Banana",
+            "Blueberry",
+            "Mandarin",
+            "Orange",
+            "Strawberry",
+            "Table grapes"
+          ],
+          "as": ["Fruit", "Production"]
+        },
+        {
+          "filter": "datum.Fruit == ProductionFruitSelection"
+        },
+        {
           "filter": "isValid(datum.Production) && datum.Production > 0"
         }
       ],
@@ -262,14 +300,8 @@
           "type": "quantitative",
           "title": "Production (tonnes)",
           "scale": {
-            "domain": [
-              0,
-              380000
-            ],
-            "range": [
-              0,
-              2600
-            ]
+            "domain": [0, 380000],
+            "range": [0, 2600]
           },
           "legend": null
         },
@@ -301,6 +333,25 @@
     {
       "name": "appleAnnotationBackground",
       "transform": [
+        {
+          "filter": "parseInt(datum.Year) == YearSelection"
+        },
+        {
+          "fold": [
+            "Apple",
+            "Avocado",
+            "Banana",
+            "Blueberry",
+            "Mandarin",
+            "Orange",
+            "Strawberry",
+            "Table grapes"
+          ],
+          "as": ["Fruit", "Production"]
+        },
+        {
+          "filter": "datum.Fruit == ProductionFruitSelection"
+        },
         {
           "filter": "datum.Fruit == 'Apple' && datum.State == 'Victoria'"
         },
@@ -335,6 +386,25 @@
       "name": "appleAnnotationText",
       "transform": [
         {
+          "filter": "parseInt(datum.Year) == YearSelection"
+        },
+        {
+          "fold": [
+            "Apple",
+            "Avocado",
+            "Banana",
+            "Blueberry",
+            "Mandarin",
+            "Orange",
+            "Strawberry",
+            "Table grapes"
+          ],
+          "as": ["Fruit", "Production"]
+        },
+        {
+          "filter": "datum.Fruit == ProductionFruitSelection"
+        },
+        {
           "filter": "datum.Fruit == 'Apple' && datum.State == 'Victoria'"
         },
         {
@@ -350,12 +420,8 @@
           "as": "NoteLines"
         },
         {
-          "flatten": [
-            "NoteLines"
-          ],
-          "as": [
-            "NoteLine"
-          ]
+          "flatten": ["NoteLines"],
+          "as": ["NoteLine"]
         },
         {
           "calculate": "indexof([\"Cooler southern regions\", \"support major apple\", \"production\"], datum.NoteLine)",
@@ -392,6 +458,25 @@
       "name": "bananaAnnotationBackground",
       "transform": [
         {
+          "filter": "parseInt(datum.Year) == YearSelection"
+        },
+        {
+          "fold": [
+            "Apple",
+            "Avocado",
+            "Banana",
+            "Blueberry",
+            "Mandarin",
+            "Orange",
+            "Strawberry",
+            "Table grapes"
+          ],
+          "as": ["Fruit", "Production"]
+        },
+        {
+          "filter": "datum.Fruit == ProductionFruitSelection"
+        },
+        {
           "filter": "datum.Fruit == 'Banana' && datum.State == 'Queensland'"
         },
         {
@@ -425,6 +510,25 @@
       "name": "bananaAnnotationText",
       "transform": [
         {
+          "filter": "parseInt(datum.Year) == YearSelection"
+        },
+        {
+          "fold": [
+            "Apple",
+            "Avocado",
+            "Banana",
+            "Blueberry",
+            "Mandarin",
+            "Orange",
+            "Strawberry",
+            "Table grapes"
+          ],
+          "as": ["Fruit", "Production"]
+        },
+        {
+          "filter": "datum.Fruit == ProductionFruitSelection"
+        },
+        {
           "filter": "datum.Fruit == 'Banana' && datum.State == 'Queensland'"
         },
         {
@@ -440,12 +544,8 @@
           "as": "NoteLines"
         },
         {
-          "flatten": [
-            "NoteLines"
-          ],
-          "as": [
-            "NoteLine"
-          ]
+          "flatten": ["NoteLines"],
+          "as": ["NoteLine"]
         },
         {
           "calculate": "indexof([\"Queensland dominates banana\", \"production, supported by\", \"tropical climates and rainfall\"], datum.NoteLine)",
@@ -482,6 +582,25 @@
       "name": "orangeAnnotationBackground",
       "transform": [
         {
+          "filter": "parseInt(datum.Year) == YearSelection"
+        },
+        {
+          "fold": [
+            "Apple",
+            "Avocado",
+            "Banana",
+            "Blueberry",
+            "Mandarin",
+            "Orange",
+            "Strawberry",
+            "Table grapes"
+          ],
+          "as": ["Fruit", "Production"]
+        },
+        {
+          "filter": "datum.Fruit == ProductionFruitSelection"
+        },
+        {
           "filter": "datum.Fruit == 'Orange' && datum.State == 'New South Wales'"
         },
         {
@@ -515,6 +634,25 @@
       "name": "orangeAnnotationText",
       "transform": [
         {
+          "filter": "parseInt(datum.Year) == YearSelection"
+        },
+        {
+          "fold": [
+            "Apple",
+            "Avocado",
+            "Banana",
+            "Blueberry",
+            "Mandarin",
+            "Orange",
+            "Strawberry",
+            "Table grapes"
+          ],
+          "as": ["Fruit", "Production"]
+        },
+        {
+          "filter": "datum.Fruit == ProductionFruitSelection"
+        },
+        {
           "filter": "datum.Fruit == 'Orange' && datum.State == 'New South Wales'"
         },
         {
@@ -530,12 +668,8 @@
           "as": "NoteLines"
         },
         {
-          "flatten": [
-            "NoteLines"
-          ],
-          "as": [
-            "NoteLine"
-          ]
+          "flatten": ["NoteLines"],
+          "as": ["NoteLine"]
         },
         {
           "calculate": "indexof([\"New South Wales leads\", \"orange production, supported\", \"by Riverina water access\"], datum.NoteLine)",
@@ -573,52 +707,37 @@
     "stateLabels": [
       {
         "name": "Western Australia",
-        "lines": [
-          "Western",
-          "Australia"
-        ],
+        "lines": ["Western", "Australia"],
         "longitude": 121.5,
         "latitude": -22
       },
       {
         "name": "Northern Territory",
-        "lines": [
-          "Northern",
-          "Territory"
-        ],
+        "lines": ["Northern", "Territory"],
         "longitude": 133.5,
         "latitude": -16
       },
       {
         "name": "South Australia",
-        "lines": [
-          "South Australia"
-        ],
+        "lines": ["South Australia"],
         "longitude": 135.5,
         "latitude": -27.3
       },
       {
         "name": "Queensland",
-        "lines": [
-          "Queensland"
-        ],
+        "lines": ["Queensland"],
         "longitude": 145,
         "latitude": -25.3
       },
       {
         "name": "New South Wales",
-        "lines": [
-          "New South Wales"
-        ],
+        "lines": ["New South Wales"],
         "longitude": 147,
         "latitude": -29.9
       },
       {
         "name": "Australian Capital Territory",
-        "lines": [
-          "Australian",
-          "Capital Territory"
-        ],
+        "lines": ["Australian", "Capital Territory"],
         "longitude": 151.5,
         "latitude": -35.28,
         "anchorLongitude": 149.13,
@@ -626,9 +745,7 @@
       },
       {
         "name": "Victoria",
-        "lines": [
-          "Victoria"
-        ],
+        "lines": ["Victoria"],
         "longitude": 151.5,
         "latitude": -38.1,
         "anchorLongitude": 147.52,
@@ -636,9 +753,7 @@
       },
       {
         "name": "Tasmania",
-        "lines": [
-          "Tasmania"
-        ],
+        "lines": ["Tasmania"],
         "longitude": 151.5,
         "latitude": -42.5,
         "anchorLongitude": 147.97,
