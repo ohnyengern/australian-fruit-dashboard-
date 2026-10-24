@@ -658,6 +658,10 @@ body {
   line-height: var(--annotation-line-height);
 }
 
+#heatmap-year-note {
+  margin-top: 12px;
+}
+
 .export-map-tools {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
@@ -904,7 +908,7 @@ body {
 
 .export-unit-footer > .flow-map-note {
   flex: 0 1 auto;
-  margin-left: auto;
+  margin-right: auto;
 }
 
 .export-unit-footer > .inline-chart-legend {

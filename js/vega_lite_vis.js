@@ -681,7 +681,7 @@ async function embedChart(target, source, options) {
     });
     legend.append(row);
     if (target === "#export_value_per_tonne") {
-      chartElement.parentElement.querySelector(".export-unit-footer").prepend(legend);
+      chartElement.parentElement.querySelector(".export-unit-footer").append(legend);
     } else {
       chartElement.after(legend);
     }
