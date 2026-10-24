@@ -773,6 +773,7 @@ narrativeParagraphs.forEach(paragraph => {
 function limitNarrativeLines() {
   narrativeParagraphs.forEach(paragraph => {
     paragraph.querySelectorAll(".word-limit-break").forEach(br => br.remove());
+    if (paragraph.closest(".harvest-story")) return;
     const column = paragraph.closest(".explanation-column");
     const style = getComputedStyle(column);
     const columns = Number(style.columnCount) || 1;
@@ -796,6 +797,7 @@ function limitNarrativeLines() {
       previous = word;
     }
   });
+
 }
 
 const narrativeWidths = new WeakMap();
@@ -812,6 +814,7 @@ const narrativeObserver = new ResizeObserver(entries => {
 });
 document.querySelectorAll(".explanation-column").forEach(column => narrativeObserver.observe(column));
 document.fonts.ready.then(limitNarrativeLines);
+
 
 // Footer citations wrap naturally so full URLs remain on their own lines.
 
