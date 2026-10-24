@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "How has production changed from year to year?",
+    "text": "Year-on-year changes in Australian fruit production",
     "fontSize": 20,
     "anchor": "start",
     "offset": 15,

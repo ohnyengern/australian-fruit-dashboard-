@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Does producing more mean earning more?",
+    "text": "Does producing more mean greater production value?",
     "fontSize": 20,
     "anchor": "start",
     "offset": 15,
@@ -155,7 +155,7 @@
         "values": [
           {
             "x": 212000,
-            "y": 874.9,
+            "y": 930,
             "x2": 228882,
             "y2": 874.9
           }
@@ -189,10 +189,11 @@
         "values": [
           {
             "x": 210000,
-            "y": 874.9,
+            "y": 930,
             "label": [
-              "Highest production value despite",
-              "a relatively smaller harvest"
+              "Highest production value,",
+              "with less than half",
+              "the harvest of oranges"
             ]
           }
         ]

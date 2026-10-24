@@ -773,7 +773,7 @@ narrativeParagraphs.forEach(paragraph => {
 function limitNarrativeLines() {
   narrativeParagraphs.forEach(paragraph => {
     paragraph.querySelectorAll(".word-limit-break").forEach(br => br.remove());
-    if (paragraph.closest(".harvest-story")) return;
+    if (paragraph.closest(".harvest-story, .ranking-story, .change-story, .export-story")) return;
     const column = paragraph.closest(".explanation-column");
     const style = getComputedStyle(column);
     const columns = Number(style.columnCount) || 1;

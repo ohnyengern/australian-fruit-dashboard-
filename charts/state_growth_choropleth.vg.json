@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Where is fruit production growing or declining?",
+    "text": "Fruit production growth across Australia, 2020–21 to 2024–25",
     "fontSize": 20,
     "anchor": "start",
     "offset": 15,

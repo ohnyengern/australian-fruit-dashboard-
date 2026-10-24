@@ -40,6 +40,7 @@
   --container-margin-bottom: 8px;
   --container-margin-left: 8px;
   --gap: 24px;
+  --section-gap: 56px;
   --font-section: 27px;
   --font-chart-title: 23px;
   --font-axis-title: 15px;
@@ -107,7 +108,7 @@ body {
   align-items: center;
   gap: 16px;
   padding: 14px 20px;
-  margin: 56px var(--container-margin-right) 24px var(--container-margin-left);
+  margin: var(--section-gap) var(--container-margin-right) 24px var(--container-margin-left);
   background: var(--section-bg);
 }
 
@@ -193,6 +194,10 @@ body {
 .story-row > .explanation-column {
   column-count: 2;
   column-gap: 44px;
+}
+
+.story-row > .harvest-story {
+  column-fill: balance;
 }
 
 .reading-line {
@@ -745,7 +750,7 @@ body {
 }
 
 .page-footer {
-  margin: 24px var(--container-margin-right) 0 var(--container-margin-left);
+  margin: var(--section-gap) var(--container-margin-right) 0 var(--container-margin-left);
   border-top: 1px solid var(--rule);
   padding: 32px 0 62px;
 }
@@ -797,6 +802,7 @@ body {
     --page-margin: 24px;
     --card-padding: 16px;
     --gap: 20px;
+    --section-gap: 36px;
   }
 
   .page-header {
@@ -806,7 +812,7 @@ body {
   .section-header {
     gap: 12px;
     padding: 14px;
-    margin-top: 36px;
+    margin-top: var(--section-gap);
   }
 
   .section-number {

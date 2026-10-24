@@ -2,7 +2,7 @@
   "$schema": "https://vega.github.io/schema/vega/v5.json",
   "description": "Australian-grown fruit allocation, 2024–25. Domestic fresh is production minus fresh exports minus processing. Imports excluded.",
   "title": {
-    "text": "Where Australian fruit goes in 2024–25",
+    "text": "Australian Fruit Production Allocation in 2024–25",
     "font": "Arial",
     "fontSize": 20,
     "anchor": "start",
