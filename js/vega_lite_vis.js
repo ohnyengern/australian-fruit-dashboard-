@@ -1090,7 +1090,7 @@ document.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach(formatHeading);
 function compileSlopeAnnotation(spec) {
   const context = document.createElement("canvas").getContext("2d");
   context.font = `${typography.annotation}px "Source Sans 3"`;
-  const lines = ["Blueberry and orange have", "nearly identical growth rates,", "despite vastly different harvest sizes"];
+  const lines = ["Blueberries and oranges had", "nearly identical growth rates", "despite very different harvest volumes"];
   const boxWidth = Math.ceil(Math.max(...lines.map(line => context.measureText(line).width))) + 2 * typography.paddingX;
   const boxHeight = lines.length * typography.annotationLineHeight + 2 * typography.paddingY;
   const compiled = vegaLite.compile(spec).spec;
@@ -1137,10 +1137,10 @@ function compileSlopeAnnotation(spec) {
   // Separate text marks preserve colour and weight within the first line.
   const original = compiled.marks.find(mark => mark.name?.startsWith("slopeAnnotationText"));
   const runs = [
-    ["Blueberry", "#72b7b2", true, 0],
+    ["Blueberries", "#72b7b2", true, 0],
     ["and", "#333333", false, 0],
-    ["orange", "#E0A900", true, 0],
-    ["have", "#333333", false, 0],
+    ["oranges", "#E0A900", true, 0],
+    ["had", "#333333", false, 0],
     [lines[1], "#333333", false, 1],
     [lines[2], "#333333", false, 2]
   ];
