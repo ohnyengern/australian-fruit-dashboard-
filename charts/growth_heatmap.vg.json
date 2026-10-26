@@ -61,8 +61,8 @@
     {
       "mark": {
         "type": "rect",
-        "stroke": "white",
-        "strokeWidth": 2
+        "stroke": "#dddddd",
+        "strokeWidth": 0.5
       },
       "encoding": {
         "x": {
@@ -94,8 +94,34 @@
           "type": "quantitative",
           "title": "Annual change (%)",
           "scale": {
-            "scheme": "redblue",
-            "domainMid": 0
+            "domain": [
+              -19.887363604364662,
+              -15.90989088349173,
+              -11.932418162618797,
+              -7.954945441745865,
+              -3.9774727208729317,
+              0,
+              11.298456809886662,
+              22.596913619773325,
+              33.89537042965999,
+              45.19382723954665,
+              56.49228404943331
+            ],
+            "range": [
+              "#67001f",
+              "#b2182b",
+              "#d6604d",
+              "#f4a582",
+              "#fddbc7",
+              "#ffffff",
+              "#d1e5f0",
+              "#92c5de",
+              "#4393c3",
+              "#2166ac",
+              "#053061"
+            ],
+            "interpolate": "rgb",
+            "nice": false
           },
           "legend": {
             "titleOrient": "top",
