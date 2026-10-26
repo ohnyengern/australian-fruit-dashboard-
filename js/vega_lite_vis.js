@@ -775,19 +775,31 @@ narrativeParagraphs.forEach(paragraph => {
     node.replaceWith(fragment);
   });
 });
-// Explicit ten-word groups guarantee the limit even with mixed font weights.
-// The browser can wrap each group earlier on narrower screens.
+// Preserve natural wrapping; only break rendered lines that exceed ten words.
 function limitNarrativeLines() {
   narrativeParagraphs.forEach(paragraph => {
     paragraph.querySelectorAll(".word-limit-break").forEach(br => br.remove());
+    const column = paragraph.closest(".explanation-column") || paragraph.parentElement;
+    const style = getComputedStyle(column);
+    const columns = Number(style.columnCount) || 1;
+    const gap = parseFloat(style.columnGap) || 0;
+    const bounds = column.getBoundingClientRect();
+    const step = (bounds.width + gap) / columns;
+    let previous;
     let count = 0;
     for (const word of paragraph.querySelectorAll(".narrative-word")) {
-      if (count && count % 10 === 0) {
+      const rect = word.getBoundingClientRect();
+      const previousRect = previous?.getBoundingClientRect();
+      const sameLine = previousRect && Math.abs(rect.top - previousRect.top) < 1 &&
+        Math.floor((rect.left - bounds.left) / step) === Math.floor((previousRect.left - bounds.left) / step);
+      count = sameLine ? count + 1 : 1;
+      if (count > 10) {
         const br = document.createElement("br");
         br.className = "word-limit-break";
         word.before(br);
+        count = 1;
       }
-      count++;
+      previous = word;
     }
   });
 
