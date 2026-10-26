@@ -1090,7 +1090,7 @@ document.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach(formatHeading);
 function compileSlopeAnnotation(spec) {
   const context = document.createElement("canvas").getContext("2d");
   context.font = `${typography.annotation}px "Source Sans 3"`;
-  const lines = ["Blueberries and oranges had", "nearly identical growth rates", "despite very different harvest volumes"];
+  const lines = ["Blueberries and oranges had", "nearly identical growth rates", "despite vastly different harvest sizes."];
   const boxWidth = Math.ceil(Math.max(...lines.map(line => context.measureText(line).width))) + 2 * typography.paddingX;
   const boxHeight = lines.length * typography.annotationLineHeight + 2 * typography.paddingY;
   const compiled = vegaLite.compile(spec).spec;
