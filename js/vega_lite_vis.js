@@ -754,72 +754,7 @@ async function embedChart(target, source, options) {
   return result;
 }
 
-// Preserve inline emphasis while limiting each rendered narrative line to ten
-// words. Breaks adapt to the actual column width rather than fixed word groups.
-const narrativeParagraphs = [...document.querySelectorAll("main p:not(.page-footer p)")];
-narrativeParagraphs.forEach(paragraph => {
-  const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
-  const nodes = [];
-  while (walker.nextNode()) nodes.push(walker.currentNode);
-  nodes.forEach(node => {
-    const fragment = document.createDocumentFragment();
-    for (const part of node.textContent.match(/\s+|\S+/g) || []) {
-      if (/^\s+$/.test(part) || !/[\p{L}\p{N}]/u.test(part)) fragment.append(document.createTextNode(part));
-      else {
-        const word = document.createElement("span");
-        word.className = "narrative-word";
-        word.textContent = part;
-        fragment.append(word);
-      }
-    }
-    node.replaceWith(fragment);
-  });
-});
-// Preserve natural wrapping; only break rendered lines that exceed ten words.
-function limitNarrativeLines() {
-  narrativeParagraphs.forEach(paragraph => {
-    paragraph.querySelectorAll(".word-limit-break").forEach(br => br.remove());
-    const column = paragraph.closest(".explanation-column") || paragraph.parentElement;
-    const style = getComputedStyle(column);
-    const columns = Number(style.columnCount) || 1;
-    const gap = parseFloat(style.columnGap) || 0;
-    const bounds = column.getBoundingClientRect();
-    const step = (bounds.width + gap) / columns;
-    let previous;
-    let count = 0;
-    for (const word of paragraph.querySelectorAll(".narrative-word")) {
-      const rect = word.getBoundingClientRect();
-      const previousRect = previous?.getBoundingClientRect();
-      const sameLine = previousRect && Math.abs(rect.top - previousRect.top) < 1 &&
-        Math.floor((rect.left - bounds.left) / step) === Math.floor((previousRect.left - bounds.left) / step);
-      count = sameLine ? count + 1 : 1;
-      if (count > 10) {
-        const br = document.createElement("br");
-        br.className = "word-limit-break";
-        word.before(br);
-        count = 1;
-      }
-      previous = word;
-    }
-  });
-
-}
-
-const narrativeWidths = new WeakMap();
-let narrativeFrame;
-const narrativeObserver = new ResizeObserver(entries => {
-  let changed = false;
-  entries.forEach(({ target, contentRect }) => {
-    if (contentRect.width !== narrativeWidths.get(target)) changed = true;
-    narrativeWidths.set(target, contentRect.width);
-  });
-  if (!changed) return;
-  cancelAnimationFrame(narrativeFrame);
-  narrativeFrame = requestAnimationFrame(limitNarrativeLines);
-});
-narrativeParagraphs.forEach(paragraph => narrativeObserver.observe(paragraph));
-document.fonts.ready.then(limitNarrativeLines);
-
+// Narrative paragraphs use normal browser wrapping without injected breaks.
 
 // Footer citations wrap naturally so full URLs remain on their own lines.
 
