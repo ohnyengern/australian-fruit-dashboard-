@@ -1130,3 +1130,19 @@ body {
 .financial-year-value {
   white-space: nowrap;
 }
+
+/* APA references use an alphabetical list with hanging indents. */
+.footer-sources .apa-references {
+  display: block;
+  list-style: none;
+  padding-left: 0;
+}
+.footer-sources .apa-references li {
+  padding-left: 2em;
+  text-indent: -2em;
+  margin-bottom: 1em;
+}
+.footer-sources .apa-references a {
+  display: inline;
+  overflow-wrap: anywhere;
+}

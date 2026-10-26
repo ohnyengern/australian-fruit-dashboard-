@@ -756,7 +756,7 @@ async function embedChart(target, source, options) {
 
 // Preserve inline emphasis while limiting each rendered narrative line to ten
 // words. Breaks adapt to the actual column width rather than fixed word groups.
-const narrativeParagraphs = [...document.querySelectorAll("main p")];
+const narrativeParagraphs = [...document.querySelectorAll("main p:not(.page-footer p)")];
 narrativeParagraphs.forEach(paragraph => {
   const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
   const nodes = [];
