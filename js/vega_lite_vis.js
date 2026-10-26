@@ -99,6 +99,10 @@ function standardiseVegaTypography(spec) {
   }
   function visit(group) {
     (group.axes || []).forEach(axis => {
+      axis.domainWidth = 1;
+      axis.tickWidth = 1;
+      axis.domainColor = "#999999";
+      axis.tickColor = "#999999";
       axis.labelFontSize = size(typography.label);
       axis.titleFontSize = size(typography.axisTitle);
       axis.labelFont = axis.titleFont = "'Source Sans 3'";
@@ -126,7 +130,8 @@ function standardiseVegaTypography(spec) {
         Object.assign(mark.encode.update, {
           fill: { value: "#FFFFFF" },
           stroke: { value: "#000000" },
-          strokeWidth: size(1)
+          strokeWidth: size(1),
+          cornerRadius: { value: 0 }
         });
       }
       if (mark.type === "text") {
@@ -142,7 +147,7 @@ function standardiseVegaTypography(spec) {
           if (!mark.encode.update.fontSize?.signal?.includes("annotationScale")) {
             mark.encode.update.fontSize = size(typography.annotation);
           }
-          mark.encode.update.fontWeight = { value: 400 };
+          mark.encode.update.fontWeight = { value: /slopeAnnotationFruit/.test(mark.name || "") ? 700 : 400 };
           mark.encode.update.lineHeight = size(typography.annotationLineHeight);
         }
       }
@@ -158,6 +163,7 @@ function addChartHeading(target, title) {
   const heading = document.createElement("h3");
   heading.className = "chart-title";
   heading.textContent = Array.isArray(title.text) ? title.text.join(" ") : title.text || title;
+  formatHeading(heading);
   chart.before(heading);
   mapHeadingObserver.observe(heading);
 }
@@ -413,7 +419,7 @@ function compileChoroplethMap(spec) {
     encode: { update: {
       x: { signal: x }, y: { signal: y },
       width: { signal: `${width} * typographyScale` }, height: { signal: `${height} * typographyScale` },
-      fill: { value: "#FFFFFF" }, stroke: { value: "#000000" }, strokeWidth: { value: 1 }, cornerRadius: { signal: "3 * typographyScale" }, tooltip: { value: note.text }
+      fill: { value: "#FFFFFF" }, stroke: { value: "#000000" }, strokeWidth: { value: 1 }, cornerRadius: { value: 0 }, tooltip: { value: note.text }
     } }
   }, {
     name: "orchardAnnotationText", type: "text", from: { data: "orchardNote" },
@@ -646,7 +652,7 @@ async function embedChart(target, source, options) {
   }
   if (target === "#export_flow_map") delete spec.title;
   if (!isGeographic && options.mode !== "vega") {
-    spec.height = 400;
+    spec.height = target === "#growth_slopegraph" ? 600 : 400;
     spec.config = {
       ...spec.config,
       // Match the original 720 × 400 plot's automatic tick density,
@@ -690,6 +696,7 @@ async function embedChart(target, source, options) {
   const compiled = target === "#state_production_map" ? compileProductionMap(spec)
     : target === "#state_growth_choropleth" ? compileChoroplethMap(spec)
     : target === "#growth_heatmap" ? compileHeatmapAnnotation(spec)
+    : target === "#growth_slopegraph" ? compileSlopeAnnotation(spec)
     : ["#production_value_scatter", "#export_value_waterfall"].includes(target) ? compileBoxedAnnotations(spec)
     : options.mode === "vega" ? spec : vegaLite.compile(spec).spec;
   const result = await vegaEmbed(target, standardiseVegaTypography(compiled), { ...options, mode: "vega" });
@@ -749,7 +756,7 @@ async function embedChart(target, source, options) {
 
 // Preserve inline emphasis while limiting each rendered narrative line to ten
 // words. Breaks adapt to the actual column width rather than fixed word groups.
-const narrativeParagraphs = [...document.querySelectorAll(".explanation-column p")];
+const narrativeParagraphs = [...document.querySelectorAll("main p")];
 narrativeParagraphs.forEach(paragraph => {
   const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
   const nodes = [];
@@ -773,8 +780,7 @@ narrativeParagraphs.forEach(paragraph => {
 function limitNarrativeLines() {
   narrativeParagraphs.forEach(paragraph => {
     paragraph.querySelectorAll(".word-limit-break").forEach(br => br.remove());
-    if (paragraph.closest(".harvest-story, .ranking-story, .change-story, .export-story")) return;
-    const column = paragraph.closest(".explanation-column");
+    const column = paragraph.closest(".explanation-column") || paragraph.parentElement;
     const style = getComputedStyle(column);
     const columns = Number(style.columnCount) || 1;
     const gap = parseFloat(style.columnGap) || 0;
@@ -812,7 +818,7 @@ const narrativeObserver = new ResizeObserver(entries => {
   cancelAnimationFrame(narrativeFrame);
   narrativeFrame = requestAnimationFrame(limitNarrativeLines);
 });
-document.querySelectorAll(".explanation-column").forEach(column => narrativeObserver.observe(column));
+narrativeParagraphs.forEach(paragraph => narrativeObserver.observe(paragraph));
 document.fonts.ready.then(limitNarrativeLines);
 
 
@@ -1060,3 +1066,98 @@ function fitChartSvg(svg) {
 new MutationObserver(() => {
   document.querySelectorAll(".chart-column .vega-embed svg.marks").forEach(fitChartSvg);
 }).observe(document.body, { childList: true, subtree: true });
+
+// Capitalise declarative headings and cap each heading line at ten words.
+function formatHeading(heading) {
+  const question = heading.textContent.includes("?");
+  let count = 0;
+  const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node => {
+    const fragment = document.createDocumentFragment();
+    for (const part of node.textContent.match(/\s+|\S+/g) || []) {
+      if (/^\s+$/.test(part)) { fragment.append(part); continue; }
+      if (count && count % 10 === 0) fragment.append(document.createElement("br"));
+      fragment.append(question ? part : part.replace(/\p{L}/u, letter => letter.toUpperCase()));
+      count++;
+    }
+    node.replaceWith(fragment);
+  });
+}
+document.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach(formatHeading);
+
+function compileSlopeAnnotation(spec) {
+  const context = document.createElement("canvas").getContext("2d");
+  context.font = `${typography.annotation}px "Source Sans 3"`;
+  const lines = ["Blueberry and orange have", "nearly identical growth rates,", "despite vastly different harvest sizes"];
+  const boxWidth = Math.ceil(Math.max(...lines.map(line => context.measureText(line).width))) + 2 * typography.paddingX;
+  const boxHeight = lines.length * typography.annotationLineHeight + 2 * typography.paddingY;
+  const compiled = vegaLite.compile(spec).spec;
+  const endpoint = "scale('x', '2024–25') + bandwidth('x') / 2";
+  const left = `max(0, min(${endpoint} - 20, width - ${boxWidth} * typographyScale))`;
+  const top = `scale('y', 35) - ${boxHeight / 2} * typographyScale`;
+  compiled.marks.forEach(mark => {
+    if (!mark.name?.startsWith("slopeAnnotation")) return;
+    const update = mark.encode.update;
+    delete update.xc; delete update.yc;
+    delete update.x2; delete update.y2;
+    if (mark.name.startsWith("slopeAnnotationBox")) {
+      update.x = { signal: left }; update.y = { signal: top };
+      update.width = { signal: `${boxWidth} * typographyScale` };
+      update.height = { signal: `${boxHeight} * typographyScale` };
+    } else if (mark.name.startsWith("slopeAnnotationText")) {
+      update.x = { signal: `(${left}) + ${typography.paddingX} * typographyScale` };
+      update.y = { signal: `(${top}) + ${typography.paddingY} * typographyScale` };
+      update.fontSize = { signal: `${typography.annotation} * typographyScale` };
+      update.lineHeight = { signal: `${typography.annotationLineHeight} * typographyScale` };
+    } else {
+      update.x = { signal: left }; update.x2 = { signal: endpoint };
+      update.y = { signal: `(${top}) + ${boxHeight} * typographyScale` };
+      update.y2 = { signal: "scale('y', 21)" };
+    }
+  });
+  // Two branches identify both actual endpoints without shifting the data.
+  const leader = compiled.marks.find(mark => mark.name?.startsWith("slopeAnnotationLeader"));
+  const branches = [
+    { fruit: "Blueberry", straight: true },
+    { fruit: "Orange", straight: false }
+  ].map(({ fruit, straight }, index) => {
+    const branch = JSON.parse(JSON.stringify(leader));
+    branch.name = `slopeAnnotationBranch${index}`;
+    const row = spec.data.values?.find(datum => datum.Fruit === fruit);
+    const growth = row ? (Number(row["2024–25"]) / Number(row["2020–21"]) - 1) * 100
+      : fruit === "Blueberry" ? 21.021661265563708 : 20.86629216566709;
+    branch.encode.update.x = { signal: straight ? endpoint : `(${left}) + 6 * typographyScale` };
+    branch.encode.update.x2 = { signal: straight ? endpoint : `(${endpoint}) - 4 * typographyScale` };
+    branch.encode.update.y2 = { signal: `scale('y', ${growth}) - ${straight ? 4 : 0} * typographyScale` };
+    return branch;
+  });
+  compiled.marks = compiled.marks.flatMap(mark => mark === leader ? branches : [mark]);
+  // Separate text marks preserve colour and weight within the first line.
+  const original = compiled.marks.find(mark => mark.name?.startsWith("slopeAnnotationText"));
+  const runs = [
+    ["Blueberry", "#72b7b2", true, 0],
+    ["and", "#333333", false, 0],
+    ["orange", "#E0A900", true, 0],
+    ["have", "#333333", false, 0],
+    [lines[1], "#333333", false, 1],
+    [lines[2], "#333333", false, 2]
+  ];
+  let offset = 0;
+  const marks = runs.map(([text, colour, bold, row], index) => {
+    const mark = JSON.parse(JSON.stringify(original));
+    mark.name = `slopeAnnotation${bold ? "Fruit" : "Run"}${index}`;
+    const update = mark.encode.update;
+    update.text = { value: text };
+    update.fill = { value: colour };
+    update.fontWeight = { value: bold ? 700 : 400 };
+    update.x = { signal: `(${left}) + ${typography.paddingX + (row ? 0 : offset)} * typographyScale` };
+    update.y = { signal: `(${top}) + ${typography.paddingY + row * typography.annotationLineHeight} * typographyScale` };
+    context.font = `${bold ? 700 : 400} ${typography.annotation}px "Source Sans 3"`;
+    if (!row) offset += context.measureText(text).width + context.measureText(" ").width;
+    return mark;
+  });
+  compiled.marks = compiled.marks.flatMap(mark => mark === original ? marks : [mark]);
+  return compiled;
+}

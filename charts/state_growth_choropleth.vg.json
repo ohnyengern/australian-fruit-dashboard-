@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Fruit production growth across Australia, 2020–21 to 2024–25",
+    "text": "Regional Fruit Production Changes from 2020–21 to 2024–25",
     "fontSize": 20,
     "anchor": "start",
     "offset": 15,
@@ -297,7 +297,11 @@
       "labelFont": "Arial",
       "titleFont": "Arial",
       "labelFontSize": 12,
-      "titleFontSize": 13
+      "titleFontSize": 13,
+      "domainWidth": 1,
+      "tickWidth": 1,
+      "domainColor": "#999999",
+      "tickColor": "#999999"
     },
     "header": {
       "labelFont": "Arial",

@@ -186,12 +186,14 @@
       "titleFontSize": 13,
       "labelColor": "#444",
       "titleColor": "#222",
-      "domainColor": "#999",
-      "tickColor": "#999",
+      "domainColor": "#999999",
+      "tickColor": "#999999",
       "gridColor": "#e6e6e6",
       "gridOpacity": 0.6,
       "labelFont": "Arial",
-      "titleFont": "Arial"
+      "titleFont": "Arial",
+      "domainWidth": 1,
+      "tickWidth": 1
     },
     "font": "Arial",
     "legend": {

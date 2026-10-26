@@ -1,0 +1,277 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Change in nominal fresh-export value for each selected fruit. Source: Hort Innovation Handbook 2024–25, five-year tables. Published banana dashes represented as nil exports.",
+  "title": {
+    "text": "Change in Australian Fresh Fruit Export Value from 2020–21 to 2024–25",
+    "fontSize": 20,
+    "anchor": "start",
+    "offset": 18,
+    "font": "Arial"
+  },
+  "width": 720,
+  "height": 390,
+  "data": {
+    "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/fruit_export_value.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "ExportValue2021M": "number",
+        "ExportValue2025M": "number"
+      }
+    }
+  },
+  "transform": [
+    {
+      "calculate": "round((datum.ExportValue2025M - datum.ExportValue2021M)*10)/10",
+      "as": "ChangeM"
+    },
+    {
+      "calculate": "datum.ChangeM > 0 ? 'Increase' : datum.ChangeM < 0 ? 'Decrease' : 'No change'",
+      "as": "Direction"
+    },
+    {
+      "calculate": "datum.ChangeM != 0 ? format(datum.ChangeM, '+,.1f') : format(datum.ChangeM, ',.1f')",
+      "as": "ValueLabel"
+    },
+    {
+      "calculate": "datum.Fruit + ': ' + format(datum.ExportValue2021M, ',.1f') + ' to ' + format(datum.ExportValue2025M, ',.1f') + ' million AUD; change ' + format(datum.ChangeM, '+,.1f') + ' million AUD'",
+      "as": "Details"
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "Fruit",
+      "type": "ordinal",
+      "sort": {
+        "field": "ChangeM",
+        "order": "descending"
+      },
+      "title": null,
+      "axis": {
+        "labelAngle": -30,
+        "labelPadding": 10,
+        "labelLimit": 180,
+        "labelOverlap": false
+      }
+    },
+    "y": {
+      "field": "ChangeM",
+      "type": "quantitative",
+      "title": "Change in fresh-export value (AUD millions)",
+      "scale": {
+        "zero": true
+      },
+      "axis": {
+        "format": "+,.0f",
+        "titlePadding": 12,
+        "gridColor": "#e6e6e6",
+        "gridOpacity": 0.7
+      }
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "bar",
+        "size": 46
+      },
+      "encoding": {
+        "y2": {
+          "datum": 0
+        },
+        "color": {
+          "field": "Direction",
+          "type": "nominal",
+          "title": "Change type",
+          "scale": {
+            "domain": [
+              "Increase",
+              "Decrease",
+              "No change"
+            ],
+            "range": [
+              "#00876C",
+              "#6F4EAD",
+              "#999999"
+            ]
+          },
+          "legend": {
+            "titleOrient": "top",
+            "orient": "right",
+            "symbolType": "square"
+          }
+        },
+        "tooltip": {
+          "field": "Details",
+          "title": "Details:"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "abs(datum.ChangeM) < 1"
+        }
+      ],
+      "mark": {
+        "type": "tick",
+        "orient": "horizontal",
+        "size": 46,
+        "thickness": 2
+      },
+      "encoding": {
+        "color": {
+          "field": "Direction",
+          "type": "nominal"
+        },
+        "tooltip": {
+          "field": "Details",
+          "title": "Details:"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.ChangeM >= 0"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "baseline": "bottom",
+        "dy": -7,
+        "fontSize": 12,
+        "color": "#333",
+        "font": "Arial"
+      },
+      "encoding": {
+        "text": {
+          "field": "ValueLabel"
+        },
+        "tooltip": {
+          "field": "Details",
+          "title": "Details:"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.ChangeM < 0"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "baseline": "top",
+        "dy": 7,
+        "fontSize": 12,
+        "color": "#333",
+        "font": "Arial"
+      },
+      "encoding": {
+        "text": {
+          "field": "ValueLabel"
+        },
+        "tooltip": {
+          "field": "Details",
+          "title": "Details:"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "Fruit": "Banana",
+            "y": 8,
+            "y2": 29
+          }
+        ]
+      },
+      "mark": {
+        "type": "rule",
+        "stroke": "#333333",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "x": {
+          "field": "Fruit",
+          "type": "ordinal"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "y2": {
+          "field": "y2"
+        }
+      },
+      "name": "bananaAnnotationLeader"
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "Fruit": "Banana",
+            "y": 35,
+            "label": [
+              "No fresh banana exports",
+              "recorded in either year"
+            ]
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "center",
+        "baseline": "bottom",
+        "fontSize": 12,
+        "color": "#333333",
+        "font": "Arial"
+      },
+      "encoding": {
+        "x": {
+          "field": "Fruit",
+          "type": "ordinal"
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label"
+        }
+      },
+      "name": "bananaAnnotationText"
+    }
+  ],
+  "config": {
+    "font": "Arial",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 13,
+      "labelColor": "#444",
+      "titleColor": "#222",
+      "domainColor": "#999999",
+      "tickColor": "#999999",
+      "labelFont": "Arial",
+      "titleFont": "Arial",
+      "domainWidth": 1,
+      "tickWidth": 1
+    },
+    "legend": {
+      "titleOrient": "top",
+      "labelFontSize": 12,
+      "titleFontSize": 15,
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    },
+    "header": {
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    }
+  }
+}

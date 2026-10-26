@@ -16,7 +16,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
-  <script defer src="js/vega_lite_vis.js?v=20261024-chart-titles-stories"></script>
+  <script defer src="js/vega_lite_vis.js?v=20261026-word-limits"></script>
 </head>
 
 <body>
@@ -133,29 +133,14 @@
           class="chart-shell"
           id="growth_slopegraph"
           role="group"
-          aria-label="Changes in production between 2020–21 and 2024–25"
+          aria-label="Percentage change in fruit production from 2020–21 to 2024–25, with a 0% baseline"
         ></div>
+        <p class="flow-map-note">Each fruit’s <span class="financial-year">2020–21</span> production is set as the 0% baseline.</p>
       </div>
 
       <aside class="explanation-column change-story">
-        <p>
-          Australia's fruit production expanded unevenly between <span class="financial-year">2020–21</span>
-          and <span class="financial-year">2024–25</span>, changing the relative importance of different
-          crops.
-          <span class="fruit-highlight fruit-avocado">Avocados</span>
-          <strong>recorded the fastest percentage growth</strong>, rising by 68.3%,
-          while
-          <span class="fruit-highlight fruit-orange">oranges</span>
-          contributed the largest increase in production volume, adding nearly 99,000 tonnes to the national harvest.
-          <span class="fruit-highlight fruit-mandarin">Mandarins</span>
-          also gained ground, overtaking
-          <span class="fruit-highlight fruit-table-grapes">table grapes</span>
-          despite starting 32,000 tonnes behind in <span class="financial-year">2020–21</span>. Meanwhile,
-          <span class="fruit-highlight fruit-banana">bananas</span>
-          remained the second-largest crop despite an 8.5% decline in production, showing
-          that high production volume does not necessarily translate
-          into continued growth.
-        </p>
+        <p><strong><span class="fruit-highlight fruit-avocado">Avocados</span> recorded the fastest relative growth of 68.3%</strong>, reflecting substantial expansion from a relatively small production base. Although <span class="fruit-highlight fruit-orange">oranges</span> added nearly 99,000 tonnes to Australia's harvest, their percentage growth was only 20.9%. This shows that larger crops can contribute more tonnes without growing as quickly in relative terms.</p>
+        <p><strong><span class="fruit-highlight fruit-mandarin">Mandarins</span> grew by 44.8%</strong>, overtaking <span class="fruit-highlight fruit-table-grapes">table grapes</span> in production volume by 2024–25. Meanwhile, <strong><span class="fruit-highlight fruit-banana">bananas</span> declined by 8.5%</strong> but remained the second-largest crop among the eight selected fruits. This highlights how faster-growing fruits can move up the rankings, while high-volume crops can retain their positions despite declining production.</p>
       </aside>
     </section>
     </div>
@@ -236,7 +221,7 @@
 
     <section class="story-row story-wide">
       <div class="chart-column">
-        <h3 class="map-title">Where is fruit production growing or declining?</h3>
+        <h3 class="map-title">Regional Fruit Production Changes from 2020–21 to 2024–25</h3>
         <div class="map-layout">
           <div
             class="chart-shell"

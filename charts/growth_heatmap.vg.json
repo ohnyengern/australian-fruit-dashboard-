@@ -147,7 +147,11 @@
       "domain": false,
       "ticks": false,
       "labelFont": "Arial",
-      "titleFont": "Arial"
+      "titleFont": "Arial",
+      "domainWidth": 1,
+      "tickWidth": 1,
+      "domainColor": "#999999",
+      "tickColor": "#999999"
     },
     "legend": {
       "labelFontSize": 12,

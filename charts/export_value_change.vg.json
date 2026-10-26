@@ -1,0 +1,220 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Which fruits experienced the fastest growth in export value?",
+    "fontSize": 20,
+    "anchor": "start",
+    "offset": 15,
+    "font": "Arial"
+  },
+  "width": 700,
+  "height": 360,
+  "data": {
+    "url": "https://ohnyengern.github.io/australian-fruit-dashboard-/data/export_value_change.csv",
+    "format": {
+      "type": "csv"
+    }
+  },
+  "transform": [
+    {
+      "calculate": "toNumber(datum.Export2021M)",
+      "as": "Export2021"
+    },
+    {
+      "calculate": "toNumber(datum.Export2025M)",
+      "as": "Export2025"
+    },
+    {
+      "calculate": "((datum.Export2025 - datum.Export2021) / datum.Export2021) * 100",
+      "as": "ChangePct"
+    },
+    {
+      "calculate": "datum.Export2025 - datum.Export2021",
+      "as": "ChangeM"
+    },
+    {
+      "calculate": "datum.ChangePct >= 0 ? 'Increase' : 'Decrease'",
+      "as": "Direction"
+    },
+    {
+      "calculate": "(datum.ChangePct > 0 ? '+' : '') + format(datum.ChangePct, '.1f') + '%'",
+      "as": "ChangeLabel"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "rule",
+        "color": "#777777",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "x": {
+          "datum": 0
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "bar",
+        "cornerRadiusEnd": 3,
+        "height": 25
+      },
+      "encoding": {
+        "y": {
+          "field": "Fruit",
+          "type": "nominal",
+          "title": null,
+          "sort": {
+            "field": "ChangePct",
+            "order": "descending"
+          },
+          "axis": {
+            "labelFontSize": 12,
+            "labelPadding": 8,
+            "ticks": false,
+            "domain": false
+          }
+        },
+        "x": {
+          "field": "ChangePct",
+          "type": "quantitative",
+          "title": "Change in fresh export value (%)",
+          "scale": {
+            "zero": true
+          },
+          "axis": {
+            "format": ".0f",
+            "grid": true,
+            "gridColor": "#e6e6e6",
+            "gridOpacity": 0.7,
+            "titlePadding": 12
+          }
+        },
+        "color": {
+          "field": "Direction",
+          "type": "nominal",
+          "title": null,
+          "scale": {
+            "domain": [
+              "Increase",
+              "Decrease"
+            ],
+            "range": [
+              "#4C9F70",
+              "#D95F59"
+            ]
+          },
+          "legend": {
+            "titleOrient": "top",
+            "orient": "right",
+            "direction": "vertical"
+          }
+        },
+        "tooltip": [
+          {
+            "field": "Fruit",
+            "type": "nominal",
+            "title": "Fruit:"
+          },
+          {
+            "field": "Export2021",
+            "type": "quantitative",
+            "title": "2020–21 export value (AUD million):",
+            "format": ",.1f"
+          },
+          {
+            "field": "Export2025",
+            "type": "quantitative",
+            "title": "2024–25 export value (AUD million):",
+            "format": ",.1f"
+          },
+          {
+            "field": "ChangeM",
+            "type": "quantitative",
+            "title": "Absolute change (AUD million):",
+            "format": "+,.1f"
+          },
+          {
+            "field": "ChangePct",
+            "type": "quantitative",
+            "title": "Percentage change:",
+            "format": "+.1f"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "baseline": "middle",
+        "font": "Arial"
+      },
+      "encoding": {
+        "y": {
+          "field": "Fruit",
+          "type": "nominal",
+          "sort": {
+            "field": "ChangePct",
+            "order": "descending"
+          }
+        },
+        "x": {
+          "field": "ChangePct",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "ChangeLabel"
+        },
+        "align": {
+          "condition": {
+            "test": "datum.ChangePct >= 0",
+            "value": "left"
+          },
+          "value": "right"
+        },
+        "dx": {
+          "condition": {
+            "test": "datum.ChangePct >= 0",
+            "value": 6
+          },
+          "value": -6
+        },
+        "color": {
+          "value": "#333333"
+        }
+      }
+    }
+  ],
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelColor": "#444444",
+      "titleColor": "#222222",
+      "domainColor": "#999999",
+      "tickColor": "#999999",
+      "titleFontSize": 13,
+      "labelFont": "Arial",
+      "titleFont": "Arial",
+      "labelFontSize": 12,
+      "domainWidth": 1,
+      "tickWidth": 1
+    },
+    "legend": {
+      "titleOrient": "top",
+      "labelFontSize": 12,
+      "titleFontSize": 15,
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    },
+    "font": "Arial",
+    "header": {
+      "labelFont": "Arial",
+      "titleFont": "Arial"
+    }
+  }
+}

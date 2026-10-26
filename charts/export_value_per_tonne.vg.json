@@ -207,8 +207,10 @@
       "gridColor": "#e6e6e6",
       "labelColor": "#444",
       "titleColor": "#222",
-      "domainColor": "#999",
-      "tickColor": "#999"
+      "domainColor": "#999999",
+      "tickColor": "#999999",
+      "domainWidth": 1,
+      "tickWidth": 1
     },
     "legend": {
       "layout": {
