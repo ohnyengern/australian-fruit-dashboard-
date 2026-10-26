@@ -775,32 +775,19 @@ narrativeParagraphs.forEach(paragraph => {
     node.replaceWith(fragment);
   });
 });
-// Let the browser fill the equal-width columns. Add a break only when
-// an actual rendered line contains an eleventh word; never estimate widths.
+// Explicit ten-word groups guarantee the limit even with mixed font weights.
+// The browser can wrap each group earlier on narrower screens.
 function limitNarrativeLines() {
   narrativeParagraphs.forEach(paragraph => {
     paragraph.querySelectorAll(".word-limit-break").forEach(br => br.remove());
-    const column = paragraph.closest(".explanation-column") || paragraph.parentElement;
-    const style = getComputedStyle(column);
-    const columns = Number(style.columnCount) || 1;
-    const gap = parseFloat(style.columnGap) || 0;
-    const bounds = column.getBoundingClientRect();
-    const step = (bounds.width + gap) / columns;
-    let previous;
     let count = 0;
     for (const word of paragraph.querySelectorAll(".narrative-word")) {
-      const rect = word.getBoundingClientRect();
-      const previousRect = previous?.getBoundingClientRect();
-      const sameLine = previousRect && Math.abs(rect.top - previousRect.top) < 1 &&
-        Math.floor((rect.left - bounds.left) / step) === Math.floor((previousRect.left - bounds.left) / step);
-      count = sameLine ? count + 1 : 1;
-      if (count > 10) {
+      if (count && count % 10 === 0) {
         const br = document.createElement("br");
         br.className = "word-limit-break";
         word.before(br);
-        count = 1;
       }
-      previous = word;
+      count++;
     }
   });
 
@@ -1071,6 +1058,8 @@ new MutationObserver(() => {
 function formatHeading(heading) {
   const question = heading.textContent.includes("?");
   let count = 0;
+  const totalWords = heading.textContent.trim().split(/\s+/).length;
+  const minorWords = new Set(["a", "an", "the", "and", "but", "or", "nor", "for", "so", "yet", "as", "at", "by", "in", "of", "on", "per", "to", "up", "via", "with", "from", "into", "onto", "over"]);
   const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
   const nodes = [];
   while (walker.nextNode()) nodes.push(walker.currentNode);
@@ -1079,13 +1068,19 @@ function formatHeading(heading) {
     for (const part of node.textContent.match(/\s+|\S+/g) || []) {
       if (/^\s+$/.test(part)) { fragment.append(part); continue; }
       if (count && count % 10 === 0) fragment.append(document.createElement("br"));
-      fragment.append(question ? part : part.replace(/\p{L}/u, letter => letter.toUpperCase()));
+      const formatted = part.split("-").map((word, index, pieces) => {
+        const lower = word.toLowerCase();
+        const boundary = (count === 0 && index === 0) || (count === totalWords - 1 && index === pieces.length - 1);
+        if (!boundary && minorWords.has(lower)) return lower;
+        return word.replace(/\p{L}/u, letter => letter.toUpperCase());
+      }).join("-");
+      fragment.append(question ? part : formatted);
       count++;
     }
     node.replaceWith(fragment);
   });
 }
-document.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach(formatHeading);
+document.querySelectorAll("h1, .section-title, .map-title, .chart-title").forEach(formatHeading);
 
 function compileSlopeAnnotation(spec) {
   const context = document.createElement("canvas").getContext("2d");
