@@ -360,7 +360,7 @@ body {
   font: 400 var(--font-annotation)/var(--annotation-line-height) var(--font-body-family);
 }
 
-.production-banana-callout span {
+.production-banana-callout > span {
   display: block;
 }
 
@@ -1156,4 +1156,15 @@ body {
 #state_production_map,
 #state_growth_choropleth {
   transform: translateY(-28px);
+}
+
+.production-banana-callout .annotation-fruit {
+  display: inline;
+}
+
+/* Fruit emphasis inherits annotation sizing; only colour and weight differ. */
+.annotation-fruit {
+  font-size: inherit;
+  font-family: inherit;
+  line-height: inherit;
 }

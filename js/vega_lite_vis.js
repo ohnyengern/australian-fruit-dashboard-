@@ -467,6 +467,7 @@ function setupProductionCallout(chart, view) {
   view.signal("bananaCalloutLines").forEach(line => {
     const span = document.createElement("span");
     span.textContent = line;
+    colourAnnotationFruitNames(span, false);
     note.append(span);
   });
   chart.closest(".map-layout").append(note);
@@ -968,6 +969,55 @@ function alignLabelInk(svg) {
     labelTransforms.set(label, { original, aligned });
   });
 }
+// Emphasise fruit names using their chart colour and bold weight.
+function colourAnnotationFruitNames(root, svgText = true) {
+  const colours = {
+    apple: "#4c78a8", apples: "#4c78a8",
+    avocado: "#f58518", avocados: "#f58518",
+    banana: "#A59837", bananas: "#A59837",
+    blueberry: "#72b7b2", blueberries: "#72b7b2",
+    mandarin: "#54a24b", mandarins: "#54a24b",
+    orange: "#E0A900", oranges: "#E0A900",
+    strawberry: "#b279a2", strawberries: "#b279a2",
+    "table grapes": "#E04488"
+  };
+  const pattern = /\b(table grapes|blueberries|strawberries|mandarins?|avocados?|bananas?|oranges?|apples?|blueberry|strawberry)\b/gi;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) {
+    if (!walker.currentNode.parentElement.closest(".annotation-fruit")) nodes.push(walker.currentNode);
+  }
+  nodes.forEach(node => {
+    const text = node.textContent;
+    pattern.lastIndex = 0;
+    if (!pattern.test(text)) return;
+    pattern.lastIndex = 0;
+    const fragment = document.createDocumentFragment();
+    let start = 0;
+    for (const match of text.matchAll(pattern)) {
+      fragment.append(text.slice(start, match.index));
+      const word = svgText ? document.createElementNS("http://www.w3.org/2000/svg", "tspan") : document.createElement("span");
+      word.setAttribute("class", "annotation-fruit");
+      if (svgText) {
+        word.setAttribute("fill", colours[match[0].toLowerCase()]);
+        word.setAttribute("font-weight", "700");
+      } else {
+        word.style.color = colours[match[0].toLowerCase()];
+        word.style.fontWeight = "700";
+      }
+      word.textContent = match[0];
+      fragment.append(word);
+      start = match.index + match[0].length;
+    }
+    fragment.append(text.slice(start));
+    // A single outer tspan keeps coloured runs from becoming separate lines.
+    if (svgText && node.parentElement.tagName.toLowerCase() === "text") {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+      line.append(fragment);
+      node.replaceWith(line);
+    } else node.replaceWith(fragment);
+  });
+}
 function fitChartSvg(svg) {
   // Vega can retain the initial tspan spacing after a scale signal changes.
   // Keep the rendered lines in sync with the current scenegraph line height.
@@ -981,6 +1031,10 @@ function fitChartSvg(svg) {
     const isAnnotation = /annotation|avocadoGrowthText/i.test(text.closest(".role-mark")?.getAttribute("class") || "");
     const lineHeight = (isAnnotation ? typography.annotationLineHeight : typography.labelLineHeight) / scale;
     spans.slice(1).forEach(span => span.setAttribute("dy", lineHeight));
+  });
+  svg.querySelectorAll("text").forEach(text => {
+    const markClass = text.closest(".role-mark")?.getAttribute("class") || "";
+    if (/annotation|avocadoGrowthText/i.test(markClass)) colourAnnotationFruitNames(text);
   });
   trimMapInset(svg);
   requestAnimationFrame(() => chartTypographyUpdates.get(svg.closest(".chart-shell"))?.());
