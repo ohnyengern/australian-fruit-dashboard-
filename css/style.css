@@ -310,6 +310,9 @@ body {
 
 .chart-title,
 .map-title {
+  position: relative;
+  z-index: 3;
+  overflow: visible;
   font-family: var(--font-body-family);
   font-weight: 700;
   margin: 0 0 var(--chart-title-gap);
