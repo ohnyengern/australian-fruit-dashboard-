@@ -456,7 +456,7 @@ function styleYearControl(root, view) {
   });
 }
 
-// Keep the banana callout in the sidebar without changing the map viewport.
+// Overlay the banana callout without adding a sidebar layout row.
 function setupProductionCallout(chart, view) {
   const controls = document.getElementById("production-map-controls");
   const bindings = controls.querySelector(".vega-bindings");
@@ -469,7 +469,7 @@ function setupProductionCallout(chart, view) {
     span.textContent = line;
     note.append(span);
   });
-  bindings.firstElementChild.after(note);
+  chart.closest(".map-layout").append(note);
   let frame;
   const position = () => {
     cancelAnimationFrame(frame);
@@ -884,6 +884,7 @@ embedChart("#state_production_map", vg_14, embedOptions)
       document.getElementById("production-map-controls").appendChild(bindings);
     }
     setupProductionCallout(document.getElementById("state_production_map"), result.view);
+
   })
   .catch(console.error);
 
@@ -1032,7 +1033,7 @@ document.querySelectorAll("h1, .section-title, .map-title, .chart-title").forEac
 function compileSlopeAnnotation(spec) {
   const context = document.createElement("canvas").getContext("2d");
   context.font = `${typography.annotation}px "Source Sans 3"`;
-  const lines = ["Blueberries and oranges had", "nearly identical growth rates", "despite vastly different harvest sizes."];
+  const lines = ["Blueberries and oranges had", "nearly identical growth rates", "despite vastly different harvest sizes"];
   const boxWidth = Math.ceil(Math.max(...lines.map(line => context.measureText(line).width))) + 2 * typography.paddingX;
   const boxHeight = lines.length * typography.annotationLineHeight + 2 * typography.paddingY;
   const compiled = vegaLite.compile(spec).spec;

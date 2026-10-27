@@ -517,7 +517,7 @@
           "type": "quantitative"
         },
         "text": {
-          "value": "Blueberries and oranges had\nnearly identical growth rates\ndespite vastly different harvest sizes."
+          "value": "Blueberries and oranges had\nnearly identical growth rates\ndespite vastly different harvest sizes"
         }
       },
       "name": "slopeAnnotationText",

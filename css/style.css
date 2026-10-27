@@ -42,7 +42,7 @@
   --gap: 24px;
   --section-gap: 56px;
   --font-section: 27px;
-  --font-chart-title: 23px;
+  --font-chart-title: 24px;
   --font-axis-title: 15px;
   --font-body: 17px;
   --font-chart-label: 14px;
@@ -319,6 +319,7 @@ body {
 }
 
 .map-layout {
+  position: relative;
   --map-sidebar-width: 240px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) var(--map-sidebar-width);
@@ -346,8 +347,12 @@ body {
 }
 
 .production-banana-callout {
+  position: absolute;
+  top: 90px;
+  right: calc(var(--map-sidebar-width) + 16px);
+  z-index: 2;
   width: max-content;
-  max-width: 100%;
+  max-width: 190px;
   padding: var(--annotation-padding-y) var(--annotation-padding-x);
   border: 1px solid #000;
   background: #fff;
@@ -1145,4 +1150,10 @@ body {
 .footer-sources .apa-references a {
   display: inline;
   overflow-wrap: anywhere;
+}
+
+/* Align each map's visible northern edge with its fruit selector. */
+#state_production_map,
+#state_growth_choropleth {
+  transform: translateY(-28px);
 }
